@@ -7,6 +7,7 @@ import { FinancialChart } from "./components/financial-chart";
 import { TransactionsTable } from "./components/transactions-table";
 import { TransactionFilters } from "./components/transaction-filters";
 import { TransactionDialog } from "./components/transaction-dialog";
+import { AuthenticatedLayout } from "@/components/authenticated-layout";
 import { createClient } from "@/lib/supabase/client";
 import { generateRecurringOccurrences } from "@/lib/recurring-utils";
 
@@ -186,19 +187,24 @@ export default function FinanceiroPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-900">
-      <header className="border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
-        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+    <AuthenticatedLayout>
+      <div className="border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
+        <div className="px-8 py-6">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold">Despesas e Receitas</h1>
+            <div>
+              <h1 className="text-3xl font-bold">Despesas e Receitas</h1>
+              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+                Gerencie suas transações financeiras
+              </p>
+            </div>
             <Button onClick={() => setDialogOpen(true)}>
               Adicionar Lançamento
             </Button>
           </div>
         </div>
-      </header>
+      </div>
 
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="p-8">
         <div className="space-y-6">
           {/* Filters */}
           <TransactionFilters categories={categories} />
@@ -220,7 +226,7 @@ export default function FinanceiroPage() {
             </>
           )}
         </div>
-      </main>
+      </div>
 
       {/* Dialog */}
       <TransactionDialog
@@ -229,6 +235,6 @@ export default function FinanceiroPage() {
         categories={categories}
         transaction={editingTransaction}
       />
-    </div>
+    </AuthenticatedLayout>
   );
 }

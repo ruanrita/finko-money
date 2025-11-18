@@ -3,7 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { AuthenticatedLayout } from "@/components/authenticated-layout";
 import { formatCurrency } from "@/lib/utils";
 
 export default async function DashboardPage() {
@@ -51,31 +51,21 @@ export default async function DashboardPage() {
   const balance = income - expenses;
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-900">
-      <header className="border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
-        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+    <AuthenticatedLayout>
+      <div className="border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
+        <div className="px-8 py-6">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold">FinkoMoney</h1>
-            <div className="flex items-center gap-4">
-              <Link href="/financeiro">
-                <Button>Gerenciar Finanças</Button>
-              </Link>
-              <span className="text-sm text-zinc-600 dark:text-zinc-400">
-                {userData?.full_name || user.email}
-              </span>
+            <div>
+              <h1 className="text-3xl font-bold">Dashboard</h1>
+              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+                Bem-vindo de volta, {userData?.full_name || user.email}!
+              </p>
             </div>
           </div>
         </div>
-      </header>
+      </div>
 
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold">Dashboard</h2>
-          <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-            Bem-vindo de volta! Aqui está um resumo das suas finanças.
-          </p>
-        </div>
-
+      <div className="p-8">
         {/* Summary Cards */}
         <div className="grid gap-6 md:grid-cols-3">
           <Link href="/financeiro?type=income">
@@ -159,7 +149,7 @@ export default async function DashboardPage() {
             )}
           </CardContent>
         </Card>
-      </main>
-    </div>
+      </div>
+    </AuthenticatedLayout>
   );
 }
