@@ -1,0 +1,235 @@
+# API Tests - Finko Money
+# Use a extensão REST Client do VS Code para executar estes testes
+
+@baseUrl = http://localhost:3000
+@token = seu-token-aqui
+
+### ===========================================
+### AUTH - Autenticação
+### ===========================================
+
+### 1. Login
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "novo@example.com",
+  "password": "123456"
+}
+
+### 2. Signup
+POST {{baseUrl}}/api/auth/signup
+Content-Type: application/json
+
+{
+  "email": "novo@example.com",
+  "password": "123456",
+  "full_name": "Novo Usuário"
+}
+
+### 3. Logout
+POST {{baseUrl}}/api/auth/logout
+Authorization: Bearer {{token}}
+
+### 4. Reset Password
+POST {{baseUrl}}/api/auth/reset-password
+Content-Type: application/json
+
+{
+  "email": "teste@example.com"
+}
+
+### ===========================================
+### CATEGORIES - Categorias
+### ===========================================
+
+### 5. Listar Categorias
+GET {{baseUrl}}/api/categories
+Authorization: Bearer {{token}}
+
+### 6. Criar Categoria
+POST {{baseUrl}}/api/categories
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Viagens",
+  "color": "#3b82f6",
+  "icon": "✈️"
+}
+
+### 7. Atualizar Categoria
+PATCH {{baseUrl}}/api/categories/f9f2e617-3d97-47b5-ad3f-3a4082c0d55f
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Viagens Internacionais",
+  "color": "#8b5cf6"
+}
+
+### 8. Deletar Categoria
+DELETE {{baseUrl}}/api/categories/f9f2e617-3d97-47b5-ad3f-3a4082c0d55f
+Authorization: Bearer {{token}}
+
+### ===========================================
+### TRANSACTIONS - Transações
+### ===========================================
+
+### 9. Listar Transações
+GET {{baseUrl}}/api/transactions
+Authorization: Bearer {{token}}
+
+### 10. Listar Transações com Filtros
+GET {{baseUrl}}/api/transactions?type=expense&month=2025-01&status=pending
+Authorization: Bearer {{token}}
+
+### 11. Criar Transação à Vista
+POST {{baseUrl}}/api/transactions
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "type": "expense",
+  "amount": 150.50,
+  "description": "Supermercado",
+  "due_date": "2025-01-15",
+  "category_id": "CATEGORY_ID",
+  "payment_method": "debit_card",
+  "installment_type": "a_vista",
+  "is_recurring": false,
+  "tags": ["alimentação", "essencial"]
+}
+
+### 12. Criar Transação Parcelada
+POST {{baseUrl}}/api/transactions
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "type": "expense",
+  "amount": 1200,
+  "description": "Notebook",
+  "due_date": "2025-01-10",
+  "category_id": "CATEGORY_ID",
+  "payment_method": "credit_card",
+  "installment_type": "parcelado",
+  "installments_count": 12,
+  "tags": ["eletrônicos"]
+}
+
+### 13. Criar Transação Recorrente
+POST {{baseUrl}}/api/transactions
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "type": "expense",
+  "amount": 50,
+  "description": "Assinatura Netflix",
+  "due_date": "2025-01-01",
+  "category_id": "CATEGORY_ID",
+  "payment_method": "credit_card",
+  "installment_type": "a_vista",
+  "is_recurring": true,
+  "recurrence_type": "monthly",
+  "tags": ["streaming"]
+}
+
+### 14. Criar Receita
+POST {{baseUrl}}/api/transactions
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "type": "income",
+  "amount": 5000,
+  "description": "Salário",
+  "due_date": "2025-01-05",
+  "payment_method": "bank_transfer",
+  "installment_type": "a_vista",
+  "is_recurring": true,
+  "recurrence_type": "monthly",
+  "tags": ["trabalho"]
+}
+
+### 15. Atualizar Transação
+PATCH {{baseUrl}}/api/transactions/TRANSACTION_ID
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "amount": 160,
+  "description": "Supermercado Extra",
+  "category_id": "CATEGORY_ID"
+}
+
+### 16. Marcar como Pago
+POST {{baseUrl}}/api/transactions/TRANSACTION_ID/mark-paid
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "paid_at": "2025-01-15T10:30:00Z"
+}
+
+### 17. Marcar como Não Pago
+POST {{baseUrl}}/api/transactions/TRANSACTION_ID/mark-unpaid
+Authorization: Bearer {{token}}
+
+### 18. Deletar Transação (apenas uma)
+DELETE {{baseUrl}}/api/transactions/TRANSACTION_ID
+Authorization: Bearer {{token}}
+
+### 19. Deletar Transação (todas as parcelas)
+DELETE {{baseUrl}}/api/transactions/TRANSACTION_ID?delete_all=true
+Authorization: Bearer {{token}}
+
+### ===========================================
+### USER - Usuário
+### ===========================================
+
+### 20. Buscar Perfil
+GET {{baseUrl}}/api/user/profile
+Authorization: Bearer {{token}}
+
+### 21. Atualizar Perfil
+PATCH {{baseUrl}}/api/user/profile
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "full_name": "Nome Atualizado",
+  "avatar_url": "https://example.com/avatar.jpg"
+}
+
+### 22. Alterar Senha
+POST {{baseUrl}}/api/user/change-password
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "current_password": "123456",
+  "new_password": "newpassword123"
+}
+
+### 23. Deletar Conta
+DELETE {{baseUrl}}/api/user
+Authorization: Bearer {{token}}
+
+### ===========================================
+### EXEMPLOS DE RESPOSTAS
+### ===========================================
+
+###
+# Sucesso (200/201)
+# {
+#   "data": { ... }
+# }
+
+# Erro (400/401/500)
+# {
+#   "error": "Mensagem de erro"
+# }
+
+###

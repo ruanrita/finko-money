@@ -2,52 +2,47 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { UserService } from "@/src/modules/user";
 
 export async function login(formData: FormData) {
-  const supabase = await createClient();
+  try {
+    const input = {
+      email: formData.get("email") as string,
+      password: formData.get("password") as string,
+    };
 
-  const data = {
-    email: formData.get("email") as string,
-    password: formData.get("password") as string,
-  };
+    await UserService.login(input);
 
-  const { error } = await supabase.auth.signInWithPassword(data);
-
-  if (error) {
-    return { error: error.message };
+    revalidatePath("/", "layout");
+    redirect("/dashboard");
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : "Erro ao fazer login" };
   }
-
-  revalidatePath("/", "layout");
-  redirect("/dashboard");
 }
 
 export async function signup(formData: FormData) {
-  const supabase = await createClient();
+  try {
+    const input = {
+      email: formData.get("email") as string,
+      password: formData.get("password") as string,
+      full_name: formData.get("full_name") as string,
+    };
 
-  const data = {
-    email: formData.get("email") as string,
-    password: formData.get("password") as string,
-    options: {
-      data: {
-        full_name: formData.get("full_name") as string,
-      },
-    },
-  };
+    await UserService.signup(input);
 
-  const { error } = await supabase.auth.signUp(data);
-
-  if (error) {
-    return { error: error.message };
+    revalidatePath("/", "layout");
+    redirect("/dashboard");
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : "Erro ao criar conta" };
   }
-
-  revalidatePath("/", "layout");
-  redirect("/dashboard");
 }
 
 export async function signOut() {
-  const supabase = await createClient();
-  await supabase.auth.signOut();
-  revalidatePath("/", "layout");
-  redirect("/login");
+  try {
+    await UserService.signOut();
+    revalidatePath("/", "layout");
+    redirect("/login");
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : "Erro ao sair" };
+  }
 }
