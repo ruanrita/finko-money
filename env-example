@@ -1,4 +1,46 @@
+# ===================================
+# FinkoMoney - Variáveis de Ambiente
+# ===================================
+
+# -----------------
+# SUPABASE (LOCAL)
+# -----------------
+# Para desenvolvimento local, rode: supabase start
+# E copie os valores gerados para cá
+
+# URL pública do Supabase (visível no cliente)
 NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
-NEXT_PUBLIC_SUPABASE_ANON_KEY=sua_publishable_key
-SUPABASE_SERVICE_ROLE_KEY=sua_secret_key
+
+# Chave anônima do Supabase (visível no cliente)
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sua_publishable_key_aqui
+
+# Chave de serviço (privada, apenas servidor)
+SUPABASE_SERVICE_ROLE_KEY=sua_secret_key_aqui
+
+# URL de conexão direta com o banco PostgreSQL
 DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54322/postgres
+
+
+# ---------------------
+# SUPABASE (PRODUÇÃO)
+# ---------------------
+# Para produção, crie um projeto em https://supabase.com
+# E substitua os valores acima pelos do painel do projeto
+
+# NEXT_PUBLIC_SUPABASE_URL=https://seu-projeto.supabase.co
+# NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+# SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+# DATABASE_URL=postgresql://postgres:[senha]@db.seu-projeto.supabase.co:5432/postgres
+
+
+# -----------------
+# OUTRAS OPCIONAIS
+# -----------------
+
+# Resend (para envio de emails)
+# RESEND_API_KEY=re_xxxxxxxxxxxx
+
+# Stripe (para pagamentos)
+# STRIPE_SECRET_KEY=sk_test_xxxxxxxxxxxx
+# STRIPE_WEBHOOK_SECRET=whsec_xxxxxxxxxxxx
+# NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_xxxxxxxxxxxx
