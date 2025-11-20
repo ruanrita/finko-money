@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { AuthenticatedLayout } from "@/components/authenticated-layout";
+import { getCategoriesAction } from "./actions";
+import { CategoryList } from "./components/category-list";
 
 export default async function CategoriasPage() {
   const supabase = await createClient();
@@ -12,6 +14,8 @@ export default async function CategoriasPage() {
   if (!user) {
     redirect("/login");
   }
+
+  const categories = await getCategoriesAction();
 
   return (
     <AuthenticatedLayout>
@@ -29,16 +33,7 @@ export default async function CategoriasPage() {
       </div>
 
       <div className="p-8">
-        <div className="flex min-h-[400px] items-center justify-center rounded-lg border-2 border-dashed border-zinc-300 dark:border-zinc-700">
-          <div className="text-center">
-            <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
-              Página em Desenvolvimento
-            </h3>
-            <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-              A funcionalidade de gerenciamento de categorias está sendo desenvolvida.
-            </p>
-          </div>
-        </div>
+        <CategoryList initialCategories={categories} />
       </div>
     </AuthenticatedLayout>
   );

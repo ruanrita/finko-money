@@ -3,8 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentBranch } from "@/lib/supabase/branch-context";
 import { TransactionService } from "@/src/modules/transactions";
-import type { CreateTransactionInput } from "@/src/modules/transactions";
+import { CategoryService } from "@/src/modules/categories";
+import type { CreateTransactionInput, TransactionFilters } from "@/src/modules/transactions";
 
 export async function createTransaction(formData: FormData) {
   try {
@@ -17,6 +19,9 @@ export async function createTransaction(formData: FormData) {
     if (!user) {
       return { error: "Não autenticado" };
     }
+
+    // Pegar branch atual do usuário
+    const currentBranch = await getCurrentBranch(user.id);
 
     const installmentType = (formData.get("installment_type") as "a_vista" | "parcelado") || "a_vista";
     const installmentsCount = formData.get("installments_count")
@@ -43,7 +48,7 @@ export async function createTransaction(formData: FormData) {
       ),
     };
 
-    await TransactionService.create(user.id, input);
+    await TransactionService.create(user.id, currentBranch.id, input);
 
     revalidatePath("/financeiro");
     revalidatePath("/dashboard");
@@ -65,6 +70,9 @@ export async function updateTransaction(id: string, formData: FormData) {
       return { error: "Não autenticado" };
     }
 
+    // Pegar branch atual do usuário
+    const currentBranch = await getCurrentBranch(user.id);
+
     const input = {
       type: formData.get("type") as "income" | "expense",
       amount: parseFloat(formData.get("amount") as string),
@@ -75,7 +83,7 @@ export async function updateTransaction(id: string, formData: FormData) {
       tags: formData.get("tags") ? (formData.get("tags") as string).split(",").map(t => t.trim()) : [],
     };
 
-    await TransactionService.update(id, user.id, input);
+    await TransactionService.update(id, currentBranch.id, user.id, input);
 
     revalidatePath("/financeiro");
     revalidatePath("/dashboard");
@@ -97,7 +105,10 @@ export async function deleteTransaction(id: string, deleteAllInstallments: boole
       return { error: "Não autenticado" };
     }
 
-    await TransactionService.delete(id, user.id, deleteAllInstallments);
+    // Pegar branch atual do usuário
+    const currentBranch = await getCurrentBranch(user.id);
+
+    await TransactionService.delete(id, currentBranch.id, user.id, deleteAllInstallments);
 
     revalidatePath("/financeiro");
     revalidatePath("/dashboard");
@@ -119,7 +130,10 @@ export async function markAsPaid(id: string) {
       return { error: "Não autenticado" };
     }
 
-    await TransactionService.markAsPaid(id, user.id);
+    // Pegar branch atual do usuário
+    const currentBranch = await getCurrentBranch(user.id);
+
+    await TransactionService.markAsPaid(id, currentBranch.id, user.id);
 
     revalidatePath("/financeiro");
     revalidatePath("/dashboard");
@@ -141,12 +155,61 @@ export async function markAsUnpaid(id: string) {
       return { error: "Não autenticado" };
     }
 
-    await TransactionService.markAsUnpaid(id, user.id);
+    // Pegar branch atual do usuário
+    const currentBranch = await getCurrentBranch(user.id);
+
+    await TransactionService.markAsUnpaid(id, currentBranch.id, user.id);
 
     revalidatePath("/financeiro");
     revalidatePath("/dashboard");
     return { success: true };
   } catch (error) {
     return { error: error instanceof Error ? error.message : "Erro ao marcar como não pago" };
+  }
+}
+
+export async function getTransactions(filters?: TransactionFilters) {
+  try {
+    const supabase = await createClient();
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { error: "Não autenticado", data: null };
+    }
+
+    // Pegar branch atual do usuário
+    const currentBranch = await getCurrentBranch(user.id);
+
+    const transactions = await TransactionService.list(user.id, currentBranch.id, filters);
+
+    return { data: transactions, error: null };
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : "Erro ao buscar transações", data: null };
+  }
+}
+
+export async function getCategories() {
+  try {
+    const supabase = await createClient();
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { error: "Não autenticado", data: null };
+    }
+
+    // Pegar branch atual do usuário
+    const currentBranch = await getCurrentBranch(user.id);
+
+    const categories = await CategoryService.list(user.id, currentBranch.id);
+
+    return { data: categories, error: null };
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : "Erro ao buscar categorias", data: null };
   }
 }

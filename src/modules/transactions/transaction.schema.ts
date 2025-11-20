@@ -14,6 +14,7 @@ const baseTransactionSchema = z.object({
   due_date: z.string().or(z.date()),
   payment_method: z.string().optional(),
   tags: z.array(z.string()).optional().default([]),
+  branch_id: z.string().uuid("Branch ID inválido"),
 });
 
 // Schema para criação de transação única
@@ -61,6 +62,8 @@ export const transactionFiltersSchema = z.object({
   payment_method: z.string().optional(),
   installment_type: installmentTypeEnum.optional(),
   month: z.string().regex(/^\d{4}-\d{2}$/).optional(), // YYYY-MM
+  start_date: z.string().optional(), // YYYY-MM-DD
+  end_date: z.string().optional(), // YYYY-MM-DD
   search: z.string().optional(),
   tags: z.array(z.string()).optional(),
 });

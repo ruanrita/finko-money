@@ -8,7 +8,7 @@ import { TransactionsTable } from "./components/transactions-table";
 import { TransactionFilters } from "./components/transaction-filters";
 import { TransactionDialog } from "./components/transaction-dialog";
 import { AuthenticatedLayout } from "@/components/authenticated-layout";
-import { createClient } from "@/lib/supabase/client";
+import { getTransactions, getCategories } from "./actions";
 import { generateRecurringOccurrences } from "@/lib/recurring-utils";
 
 type Transaction = {
@@ -35,6 +35,8 @@ type Transaction = {
 type Category = {
   id: string;
   name: string;
+  color?: string;
+  icon?: string | null;
 };
 
 export default function FinanceiroPage() {
@@ -48,8 +50,6 @@ export default function FinanceiroPage() {
   const [expenses, setExpenses] = useState(0);
   const [currentMonth, setCurrentMonth] = useState("");
 
-  const supabase = createClient();
-
   useEffect(() => {
     fetchData();
   }, [searchParams]);
@@ -60,111 +60,72 @@ export default function FinanceiroPage() {
     // Get current month
     const now = new Date();
     const monthParam = searchParams.get("month") || `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-    const [year, month] = monthParam.split("-").map(Number);
 
-    setCurrentMonth(monthParam); // Salvar o mês atual no estado
+    setCurrentMonth(monthParam);
 
-    const startDate = `${year}-${String(month).padStart(2, "0")}-01`;
-    const endDate = new Date(year, month, 0).toISOString().split("T")[0];
-
-    // Fetch categories
-    const { data: categoriesData } = await supabase
-      .from("categories")
-      .select("id, name")
-      .order("name");
-
-    if (categoriesData) {
+    // Fetch categories via server action
+    const { data: categoriesData, error: categoriesError } = await getCategories();
+    if (categoriesData && !categoriesError) {
       setCategories(categoriesData);
     }
 
-    // Build query para transações do mês
-    let query = supabase
-      .from("transactions")
-      .select("*, categories(name, color)")
-      .gte("due_date", startDate)
-      .lte("due_date", endDate)
-      .eq("is_recurring", false) // Só buscar não-recorrentes aqui
-      .order("due_date", { ascending: false });
-
-    // Buscar transações recorrentes separadamente (todas, sem filtro de data)
-    const recurringQuery = supabase
-      .from("transactions")
-      .select("*, categories(name, color)")
-      .eq("is_recurring", true)
-      .order("due_date", { ascending: false });
-
-    // Apply filters
+    // Build filters for transactions
     const type = searchParams.get("type");
-    if (type && type !== "all") {
-      query = query.eq("type", type);
-      recurringQuery.eq("type", type);
-    }
-
     const category = searchParams.get("category");
-    if (category && category !== "all") {
-      query = query.eq("category_id", category);
-      recurringQuery.eq("category_id", category);
-    }
-
     const status = searchParams.get("status");
-    if (status && status !== "all") {
-      if (status === "paid") {
-        query = query.not("paid_at", "is", null);
-        // Recorrentes: não aplicar filtro de pago (serão sempre pendentes)
-      } else if (status === "pending") {
-        query = query.is("paid_at", null).gte("due_date", new Date().toISOString().split("T")[0]);
-      } else if (status === "overdue") {
-        query = query.is("paid_at", null).lt("due_date", new Date().toISOString().split("T")[0]);
-      }
-    }
-
     const installment = searchParams.get("installment");
-    if (installment && installment !== "all") {
-      query = query.eq("installment_type", installment);
-      recurringQuery.eq("installment_type", installment);
-    }
-
     const method = searchParams.get("method");
+
+    const filters: any = {
+      month: monthParam,
+    };
+
+    if (type && type !== "all") {
+      filters.type = type as "income" | "expense";
+    }
+    if (category && category !== "all") {
+      filters.category_id = category;
+    }
+    if (status && status !== "all") {
+      filters.status = status as "paid" | "pending" | "overdue";
+    }
+    if (installment && installment !== "all") {
+      filters.installment_type = installment as "a_vista" | "parcelado";
+    }
     if (method && method !== "all") {
-      query = query.eq("payment_method", method);
-      recurringQuery.eq("payment_method", method);
+      filters.payment_method = method;
     }
 
-    // Executar ambas as queries
-    const [{ data: normalData }, { data: recurringData }] = await Promise.all([
-      query,
-      recurringQuery,
-    ]);
+    // Fetch transactions via server action
+    const { data: transactionsData, error: transactionsError } = await getTransactions(filters);
 
-    // Gerar ocorrências virtuais das transações recorrentes para este mês
-    const recurringOccurrences = recurringData
-      ? generateRecurringOccurrences(recurringData as Transaction[], monthParam)
-      : [];
+    if (transactionsData && !transactionsError) {
+      // Separate recurring and normal transactions
+      const normalTransactions = transactionsData.filter((t) => !t.is_recurring);
+      const recurringTransactions = transactionsData.filter((t) => t.is_recurring);
 
-    // Mesclar transações normais com ocorrências recorrentes
-    const allTransactions = [
-      ...(normalData || []),
-      ...recurringOccurrences,
-    ];
+      // Generate recurring occurrences for this month
+      const recurringOccurrences = generateRecurringOccurrences(
+        recurringTransactions as Transaction[],
+        monthParam
+      );
 
-    // Ordenar por data de vencimento
-    allTransactions.sort((a, b) => {
-      const dateA = new Date(a.due_date);
-      const dateB = new Date(b.due_date);
-      return dateB.getTime() - dateA.getTime();
-    });
+      // Merge and sort
+      const allTransactions = [...normalTransactions, ...recurringOccurrences];
+      allTransactions.sort((a, b) => {
+        const dateA = new Date(a.due_date);
+        const dateB = new Date(b.due_date);
+        return dateB.getTime() - dateA.getTime();
+      });
 
-    const data = allTransactions;
-
-    if (data) {
-      setTransactions(data as Transaction[]);
+      setTransactions(allTransactions as Transaction[]);
 
       // Calculate totals
-      const totalIncome = data
+      const totalIncome = allTransactions
         .filter((t) => t.type === "income")
         .reduce((sum, t) => sum + Number(t.amount), 0);
 
-      const totalExpenses = data
+      const totalExpenses = allTransactions
         .filter((t) => t.type === "expense")
         .reduce((sum, t) => sum + Number(t.amount), 0);
 

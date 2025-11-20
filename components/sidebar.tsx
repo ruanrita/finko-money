@@ -12,11 +12,15 @@ import {
   BarChart3,
   Settings,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Users,
+  LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { BranchSwitcher } from "./branch-switcher";
+import { signOut } from "@/app/login/actions";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -26,6 +30,7 @@ const navigation = [
   { name: "Lembretes", href: "/lembretes", icon: Bell },
   { name: "Metas", href: "/metas", icon: Target },
   { name: "Relatórios", href: "/relatorios", icon: BarChart3 },
+  { name: "Equipe", href: "/team", icon: Users },
   { name: "Configurações", href: "/configuracoes", icon: Settings },
 ];
 
@@ -61,6 +66,13 @@ export function Sidebar() {
         </Button>
       </div>
 
+      {/* Branch Switcher */}
+      {!collapsed && (
+        <div className="border-b border-zinc-200 p-2 dark:border-zinc-800">
+          <BranchSwitcher />
+        </div>
+      )}
+
       {/* Navigation */}
       <nav className="flex-1 space-y-1 p-2">
         {navigation.map((item) => {
@@ -87,15 +99,42 @@ export function Sidebar() {
       </nav>
 
       {/* Footer */}
-      {!collapsed && (
-        <div className="border-t border-zinc-200 p-4 dark:border-zinc-800">
-          <p className="text-xs text-zinc-500">
-            FinkoMoney v1.0
-            <br />
-            Controle fácil, escolhas melhores.
-          </p>
-        </div>
-      )}
+      <div className="border-t border-zinc-200 dark:border-zinc-800">
+        {!collapsed && (
+          <div className="p-2">
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-3 text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+              onClick={() => signOut()}
+            >
+              <LogOut className="h-5 w-5 shrink-0" />
+              <span>Sair</span>
+            </Button>
+          </div>
+        )}
+        {collapsed && (
+          <div className="p-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="w-full text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+              onClick={() => signOut()}
+              title="Sair"
+            >
+              <LogOut className="h-5 w-5" />
+            </Button>
+          </div>
+        )}
+        {!collapsed && (
+          <div className="p-4 pt-2">
+            <p className="text-xs text-zinc-500">
+              FinkoMoney v1.0
+              <br />
+              Controle fácil, escolhas melhores.
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

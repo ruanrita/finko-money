@@ -1,10 +1,13 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentBranch } from "@/lib/supabase/branch-context";
+import { TransactionService } from "@/src/modules/transactions";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AuthenticatedLayout } from "@/components/authenticated-layout";
 import { formatCurrency } from "@/lib/utils";
+import { SummaryCards } from "./components/summary-cards";
+import { CategoryIcon } from "@/components/category-icon";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -17,6 +20,9 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
+  // Pegar branch atual do usuário
+  const currentBranch = await getCurrentBranch(user.id);
+
   // Fetch user data
   const { data: userData } = await supabase
     .from("users")
@@ -24,31 +30,39 @@ export default async function DashboardPage() {
     .eq("id", user.id)
     .single();
 
-  // Fetch recent transactions
-  const { data: transactions } = await supabase
-    .from("transactions")
-    .select("*, categories(name, color)")
-    .eq("user_id", user.id)
-    .order("due_date", { ascending: true })
-    .limit(5);
+  // Fetch all transactions via service layer
+  const allTransactions = await TransactionService.list(user.id, currentBranch.id);
 
-  // Calculate totals
-  const thisMonth = new Date().toISOString().slice(0, 7);
-  const { data: monthlyTransactions } = await supabase
-    .from("transactions")
-    .select("type, amount")
-    .eq("user_id", user.id)
-    .gte("due_date", `${thisMonth}-01`);
+  // Get recent transactions (next 10 by due date - only unpaid)
+  const upcomingTransactions = allTransactions
+    .filter((t) => !t.paid_at) // Only unpaid
+    .sort((a, b) => new Date(a.due_date).getTime() - new Date(b.due_date).getTime())
+    .slice(0, 10);
 
-  const income = monthlyTransactions
-    ?.filter((t) => t.type === "income")
-    .reduce((sum, t) => sum + Number(t.amount), 0) || 0;
+  // Calculate totals for this month (all transactions, not just unpaid)
+  const now = new Date();
+  const thisMonth = now.toISOString().slice(0, 7);
+  const monthStartDate = `${thisMonth}-01`;
+  const monthEndDate = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+    .toISOString()
+    .split("T")[0];
 
-  const expenses = monthlyTransactions
-    ?.filter((t) => t.type === "expense")
-    .reduce((sum, t) => sum + Number(t.amount), 0) || 0;
+  const monthlyTotals = await TransactionService.calculateTotals(
+    user.id,
+    currentBranch.id,
+    monthStartDate,
+    monthEndDate
+  );
 
-  const balance = income - expenses;
+  // Calculate yearly projection considering recurring transactions
+  const yearlyTotals = await TransactionService.calculateYearlyProjection(
+    user.id,
+    currentBranch.id,
+    now.getFullYear()
+  );
+
+  // Format current month name
+  const monthName = now.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
 
   return (
     <AuthenticatedLayout>
@@ -67,40 +81,15 @@ export default async function DashboardPage() {
 
       <div className="p-8">
         {/* Summary Cards */}
-        <div className="grid gap-6 md:grid-cols-3">
-          <Link href="/financeiro?type=income">
-            <Card className="cursor-pointer transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900">
-              <CardHeader>
-                <CardDescription>Receitas do Mês</CardDescription>
-                <CardTitle className="text-3xl text-green-600">
-                  {formatCurrency(income)}
-                </CardTitle>
-              </CardHeader>
-            </Card>
-          </Link>
-
-          <Link href="/financeiro?type=expense">
-            <Card className="cursor-pointer transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900">
-              <CardHeader>
-                <CardDescription>Despesas do Mês</CardDescription>
-                <CardTitle className="text-3xl text-red-600">
-                  {formatCurrency(expenses)}
-                </CardTitle>
-              </CardHeader>
-            </Card>
-          </Link>
-
-          <Link href="/financeiro">
-            <Card className="cursor-pointer transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900">
-              <CardHeader>
-                <CardDescription>Saldo do Mês</CardDescription>
-                <CardTitle className={`text-3xl ${balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  {formatCurrency(balance)}
-                </CardTitle>
-              </CardHeader>
-            </Card>
-          </Link>
-        </div>
+        <SummaryCards
+          monthName={monthName}
+          monthlyIncome={monthlyTotals.income}
+          monthlyExpenses={monthlyTotals.expense}
+          monthlyBalance={monthlyTotals.balance}
+          yearlyIncome={yearlyTotals.income}
+          yearlyExpenses={yearlyTotals.expense}
+          yearlyBalance={yearlyTotals.balance}
+        />
 
         {/* Recent Transactions */}
         <Card className="mt-8">
@@ -111,9 +100,9 @@ export default async function DashboardPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {transactions && transactions.length > 0 ? (
+            {upcomingTransactions && upcomingTransactions.length > 0 ? (
               <div className="space-y-4">
-                {transactions.map((transaction) => (
+                {upcomingTransactions.map((transaction) => (
                   <div
                     key={transaction.id}
                     className="flex items-center justify-between rounded-lg border border-zinc-200 p-4 dark:border-zinc-800"
@@ -126,7 +115,13 @@ export default async function DashboardPage() {
                     </div>
                     <div className="flex items-center gap-4">
                       {transaction.categories && (
-                        <Badge variant="secondary">
+                        <Badge variant="secondary" className="flex items-center gap-1.5">
+                          <div
+                            className="h-4 w-4 rounded flex items-center justify-center"
+                            style={{ backgroundColor: `${transaction.categories.color}30`, color: transaction.categories.color }}
+                          >
+                            <CategoryIcon iconName={transaction.categories.icon} className="h-3 w-3" />
+                          </div>
                           {transaction.categories.name}
                         </Badge>
                       )}

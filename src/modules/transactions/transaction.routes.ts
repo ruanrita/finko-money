@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentBranch } from "@/lib/supabase/branch-context";
 import { TransactionService } from "./transaction.service";
 import {
   createTransactionSchema,
@@ -23,6 +24,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
     }
 
+    // Pegar branch atual do usuário
+    const currentBranch = await getCurrentBranch(user.id);
+
     // Parse query params para filtros
     const searchParams = request.nextUrl.searchParams;
     const filters = {
@@ -37,7 +41,7 @@ export async function GET(request: NextRequest) {
     };
 
     const validatedFilters = transactionFiltersSchema.parse(filters);
-    const transactions = await TransactionService.list(user.id, validatedFilters);
+    const transactions = await TransactionService.list(user.id, currentBranch.id, validatedFilters);
 
     return NextResponse.json({ data: transactions }, { status: 200 });
   } catch (error) {
@@ -63,10 +67,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
     }
 
+    // Pegar branch atual do usuário
+    const currentBranch = await getCurrentBranch(user.id);
+
     const body = await request.json();
     const input = createTransactionSchema.parse(body);
 
-    const transaction = await TransactionService.create(user.id, input);
+    const transaction = await TransactionService.create(user.id, currentBranch.id, input);
 
     return NextResponse.json({ data: transaction }, { status: 201 });
   } catch (error) {
@@ -95,13 +102,16 @@ export async function PATCH(
       return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
     }
 
+    // Pegar branch atual do usuário
+    const currentBranch = await getCurrentBranch(user.id);
+
     const { id } = await params;
     getTransactionByIdSchema.parse({ id });
 
     const body = await request.json();
     const input = updateTransactionSchema.parse(body);
 
-    const transaction = await TransactionService.update(id, user.id, input);
+    const transaction = await TransactionService.update(id, currentBranch.id, user.id, input);
 
     return NextResponse.json({ data: transaction }, { status: 200 });
   } catch (error) {
@@ -130,6 +140,9 @@ export async function DELETE(
       return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
     }
 
+    // Pegar branch atual do usuário
+    const currentBranch = await getCurrentBranch(user.id);
+
     const { id } = await params;
     getTransactionByIdSchema.parse({ id });
 
@@ -137,7 +150,7 @@ export async function DELETE(
     const deleteAll =
       request.nextUrl.searchParams.get("delete_all") === "true";
 
-    await TransactionService.delete(id, user.id, deleteAll);
+    await TransactionService.delete(id, currentBranch.id, user.id, deleteAll);
 
     return NextResponse.json(
       { message: "Transação deletada" },
@@ -169,13 +182,16 @@ export async function markAsPaidHandler(
       return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
     }
 
+    // Pegar branch atual do usuário
+    const currentBranch = await getCurrentBranch(user.id);
+
     const { id } = await params;
     getTransactionByIdSchema.parse({ id });
 
     const body = await request.json();
     const input = markAsPaidSchema.parse(body);
 
-    const transaction = await TransactionService.markAsPaid(id, user.id, input);
+    const transaction = await TransactionService.markAsPaid(id, currentBranch.id, user.id, input);
 
     return NextResponse.json({ data: transaction }, { status: 200 });
   } catch (error) {
@@ -204,10 +220,13 @@ export async function markAsUnpaidHandler(
       return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
     }
 
+    // Pegar branch atual do usuário
+    const currentBranch = await getCurrentBranch(user.id);
+
     const { id } = await params;
     getTransactionByIdSchema.parse({ id });
 
-    const transaction = await TransactionService.markAsUnpaid(id, user.id);
+    const transaction = await TransactionService.markAsUnpaid(id, currentBranch.id, user.id);
 
     return NextResponse.json({ data: transaction }, { status: 200 });
   } catch (error) {

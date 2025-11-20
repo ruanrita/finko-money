@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentBranch } from "@/lib/supabase/branch-context";
 import { CategoryService } from "./category.service";
 import {
   createCategorySchema,
@@ -8,7 +9,7 @@ import {
 } from "./category.schema";
 
 /**
- * GET /api/categories - Lista todas as categorias do usuário
+ * GET /api/categories - Lista todas as categorias do branch atual
  */
 export async function GET(request: NextRequest) {
   try {
@@ -21,7 +22,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
     }
 
-    const categories = await CategoryService.list(user.id);
+    // Pegar branch atual do usuário
+    const currentBranch = await getCurrentBranch(user.id);
+
+    const categories = await CategoryService.list(user.id, currentBranch.id);
 
     return NextResponse.json({ data: categories }, { status: 200 });
   } catch (error) {
@@ -47,10 +51,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
     }
 
+    // Pegar branch atual do usuário
+    const currentBranch = await getCurrentBranch(user.id);
+
     const body = await request.json();
     const input = createCategorySchema.parse(body);
 
-    const category = await CategoryService.create(user.id, input);
+    const category = await CategoryService.create(user.id, currentBranch.id, input);
 
     return NextResponse.json({ data: category }, { status: 201 });
   } catch (error) {
@@ -79,13 +86,16 @@ export async function PATCH(
       return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
     }
 
+    // Pegar branch atual do usuário
+    const currentBranch = await getCurrentBranch(user.id);
+
     const { id } = await params;
     getCategoryByIdSchema.parse({ id });
 
     const body = await request.json();
     const input = updateCategorySchema.parse(body);
 
-    const category = await CategoryService.update(id, user.id, input);
+    const category = await CategoryService.update(id, currentBranch.id, user.id, input);
 
     return NextResponse.json({ data: category }, { status: 200 });
   } catch (error) {
@@ -114,10 +124,13 @@ export async function DELETE(
       return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
     }
 
+    // Pegar branch atual do usuário
+    const currentBranch = await getCurrentBranch(user.id);
+
     const { id } = await params;
     getCategoryByIdSchema.parse({ id });
 
-    await CategoryService.delete(id, user.id);
+    await CategoryService.delete(id, currentBranch.id, user.id);
 
     return NextResponse.json({ message: "Categoria deletada" }, { status: 200 });
   } catch (error) {

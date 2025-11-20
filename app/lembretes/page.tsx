@@ -1,8 +1,11 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { AuthenticatedLayout } from "@/components/authenticated-layout";
+import { RemindersList } from "./components/reminders-list";
+import { CreateReminderDialog } from "./components/create-reminder-dialog";
+import { getRemindersAction } from "./actions";
 
-export default async function LembretesPage() {
+export default async function RemindersPage() {
   const supabase = await createClient();
 
   const {
@@ -13,32 +16,24 @@ export default async function LembretesPage() {
     redirect("/login");
   }
 
+  const reminders = await getRemindersAction();
+
   return (
     <AuthenticatedLayout>
-      <div className="border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
-        <div className="px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold">Lembretes</h1>
-              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-                Configure alertas para não perder vencimentos
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="p-8">
-        <div className="flex min-h-[400px] items-center justify-center rounded-lg border-2 border-dashed border-zinc-300 dark:border-zinc-700">
-          <div className="text-center">
-            <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
-              Página em Desenvolvimento
-            </h3>
-            <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-              A funcionalidade de lembretes e notificações está sendo desenvolvida.
+      <div className="container mx-auto max-w-5xl p-6 space-y-8">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Lembretes</h1>
+            <p className="text-muted-foreground mt-1">
+              Gerencie lembretes para suas transações
             </p>
           </div>
+          <CreateReminderDialog />
         </div>
+
+        {/* Reminders List */}
+        <RemindersList reminders={reminders || []} />
       </div>
     </AuthenticatedLayout>
   );

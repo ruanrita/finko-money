@@ -11,20 +11,21 @@ type Transaction = Database["public"]["Tables"]["transactions"]["Row"];
 
 export class TransactionService {
   /**
-   * Lista transações com filtros
+   * Lista transações de um branch com filtros
    */
   static async list(
     userId: string,
+    branchId: string,
     filters?: TransactionFilters
   ): Promise<Transaction[]> {
-    return await TransactionRepository.findByUserId(userId, filters);
+    return await TransactionRepository.findByBranchId(branchId, userId, filters);
   }
 
   /**
    * Busca uma transação por ID
    */
-  static async getById(id: string, userId: string): Promise<Transaction> {
-    const transaction = await TransactionRepository.findById(id, userId);
+  static async getById(id: string, branchId: string, userId: string): Promise<Transaction> {
+    const transaction = await TransactionRepository.findById(id, branchId, userId);
 
     if (!transaction) {
       throw new Error("Transação não encontrada");
@@ -38,6 +39,7 @@ export class TransactionService {
    */
   static async create(
     userId: string,
+    branchId: string,
     input: CreateTransactionInput
   ): Promise<Transaction | Transaction[]> {
     const dueDate = typeof input.due_date === "string"
@@ -58,6 +60,7 @@ export class TransactionService {
         is_recurring: input.is_recurring || false,
         recurrence_type: input.recurrence_type ?? null,
         paid_at: null,
+        branch_id: branchId,
       });
     }
 
@@ -80,6 +83,7 @@ export class TransactionService {
         current_installment: 1,
         is_recurring: false,
         paid_at: null,
+        branch_id: branchId,
       });
 
       // Cria as parcelas subsequentes
@@ -106,6 +110,7 @@ export class TransactionService {
           parent_transaction_id: parentTransaction.id,
           is_recurring: false,
           paid_at: null,
+          branch_id: branchId,
         });
       }
 
@@ -123,10 +128,11 @@ export class TransactionService {
    */
   static async update(
     id: string,
+    branchId: string,
     userId: string,
     input: UpdateTransactionInput
   ): Promise<Transaction> {
-    const transaction = await TransactionRepository.findById(id, userId);
+    const transaction = await TransactionRepository.findById(id, branchId, userId);
 
     if (!transaction) {
       throw new Error("Transação não encontrada");
@@ -151,7 +157,7 @@ export class TransactionService {
           : updateData.paid_at.toISOString();
     }
 
-    return await TransactionRepository.update(id, userId, updateData);
+    return await TransactionRepository.update(id, branchId, userId, updateData);
   }
 
   /**
@@ -159,10 +165,11 @@ export class TransactionService {
    */
   static async markAsPaid(
     id: string,
+    branchId: string,
     userId: string,
     input?: MarkAsPaidInput
   ): Promise<Transaction> {
-    const transaction = await TransactionRepository.findById(id, userId);
+    const transaction = await TransactionRepository.findById(id, branchId, userId);
 
     if (!transaction) {
       throw new Error("Transação não encontrada");
@@ -175,7 +182,7 @@ export class TransactionService {
         ? input.paid_at
         : input.paid_at.toISOString();
 
-    return await TransactionRepository.update(id, userId, {
+    return await TransactionRepository.update(id, branchId, userId, {
       paid_at: paidAt,
     });
   }
@@ -183,14 +190,14 @@ export class TransactionService {
   /**
    * Marca uma transação como não paga
    */
-  static async markAsUnpaid(id: string, userId: string): Promise<Transaction> {
-    const transaction = await TransactionRepository.findById(id, userId);
+  static async markAsUnpaid(id: string, branchId: string, userId: string): Promise<Transaction> {
+    const transaction = await TransactionRepository.findById(id, branchId, userId);
 
     if (!transaction) {
       throw new Error("Transação não encontrada");
     }
 
-    return await TransactionRepository.update(id, userId, {
+    return await TransactionRepository.update(id, branchId, userId, {
       paid_at: null,
     });
   }
@@ -201,10 +208,11 @@ export class TransactionService {
    */
   static async delete(
     id: string,
+    branchId: string,
     userId: string,
     deleteAllInstallments: boolean = false
   ): Promise<void> {
-    const transaction = await TransactionRepository.findById(id, userId);
+    const transaction = await TransactionRepository.findById(id, branchId, userId);
 
     if (!transaction) {
       throw new Error("Transação não encontrada");
@@ -219,10 +227,11 @@ export class TransactionService {
       if (!transaction.parent_transaction_id) {
         const children = await TransactionRepository.findByParentId(
           transaction.id,
+          branchId,
           userId
         );
         const allIds = [transaction.id, ...children.map((c) => c.id)];
-        await TransactionRepository.deleteMany(allIds, userId);
+        await TransactionRepository.deleteMany(allIds, branchId, userId);
         return;
       }
 
@@ -230,22 +239,24 @@ export class TransactionService {
       if (transaction.parent_transaction_id) {
         const parent = await TransactionRepository.findById(
           transaction.parent_transaction_id,
+          branchId,
           userId
         );
         if (parent) {
           const children = await TransactionRepository.findByParentId(
             parent.id,
+            branchId,
             userId
           );
           const allIds = [parent.id, ...children.map((c) => c.id)];
-          await TransactionRepository.deleteMany(allIds, userId);
+          await TransactionRepository.deleteMany(allIds, branchId, userId);
           return;
         }
       }
     }
 
     // Deleta apenas a transação única
-    await TransactionRepository.delete(id, userId);
+    await TransactionRepository.delete(id, branchId, userId);
   }
 
   /**
@@ -253,10 +264,12 @@ export class TransactionService {
    */
   static async calculateTotals(
     userId: string,
+    branchId: string,
     startDate: string,
     endDate: string
   ): Promise<{ income: number; expense: number; balance: number }> {
     const totals = await TransactionRepository.calculateTotals(
+      branchId,
       userId,
       startDate,
       endDate
@@ -265,6 +278,100 @@ export class TransactionService {
     return {
       ...totals,
       balance: totals.income - totals.expense,
+    };
+  }
+
+  /**
+   * Calcula projeção anual considerando recorrências
+   */
+  static async calculateYearlyProjection(
+    userId: string,
+    branchId: string,
+    year: number
+  ): Promise<{ income: number; expense: number; balance: number }> {
+    // Buscar todas as transações do ano
+    const yearStart = `${year}-01-01`;
+    const yearEnd = `${year}-12-31`;
+
+    const allTransactions = await TransactionRepository.findByBranchId(
+      branchId,
+      userId,
+      {
+        start_date: yearStart,
+        end_date: yearEnd,
+      }
+    );
+
+    let totalIncome = 0;
+    let totalExpense = 0;
+
+    // Processar cada transação
+    for (const transaction of allTransactions) {
+      const amount = Number(transaction.amount);
+
+      // Se for recorrente mensal, multiplica por 12
+      if (transaction.is_recurring && transaction.recurrence_type === 'monthly') {
+        // Calcular quantos meses faltam até o fim do ano a partir da data de vencimento
+        const dueDate = new Date(transaction.due_date);
+        const monthsRemaining = 12 - dueDate.getMonth(); // getMonth() retorna 0-11
+
+        if (transaction.type === 'income') {
+          totalIncome += amount * monthsRemaining;
+        } else {
+          totalExpense += amount * monthsRemaining;
+        }
+      }
+      // Se for recorrente semanal, multiplica por 52
+      else if (transaction.is_recurring && transaction.recurrence_type === 'weekly') {
+        const dueDate = new Date(transaction.due_date);
+        const today = new Date();
+        const startOfYear = new Date(year, 0, 1);
+        const endOfYear = new Date(year, 11, 31);
+
+        // Calcular número de semanas restantes no ano
+        const weeksInYear = 52;
+        const currentWeek = Math.floor((dueDate.getTime() - startOfYear.getTime()) / (7 * 24 * 60 * 60 * 1000));
+        const weeksRemaining = weeksInYear - currentWeek;
+
+        if (transaction.type === 'income') {
+          totalIncome += amount * weeksRemaining;
+        } else {
+          totalExpense += amount * weeksRemaining;
+        }
+      }
+      // Se for recorrente anual, adiciona apenas uma vez
+      else if (transaction.is_recurring && transaction.recurrence_type === 'yearly') {
+        if (transaction.type === 'income') {
+          totalIncome += amount;
+        } else {
+          totalExpense += amount;
+        }
+      }
+      // Para parceladas, conta apenas se não for filha (evita duplicação)
+      else if (transaction.installment_type === 'parcelado' && !transaction.parent_transaction_id) {
+        // Multiplicar pelo número de parcelas para obter o total
+        const installmentsCount = transaction.installments_count || 1;
+
+        if (transaction.type === 'income') {
+          totalIncome += amount * installmentsCount;
+        } else {
+          totalExpense += amount * installmentsCount;
+        }
+      }
+      // Transações únicas e parcelas filhas (que já estão no valor correto)
+      else if (!transaction.parent_transaction_id) {
+        if (transaction.type === 'income') {
+          totalIncome += amount;
+        } else {
+          totalExpense += amount;
+        }
+      }
+    }
+
+    return {
+      income: totalIncome,
+      expense: totalExpense,
+      balance: totalIncome - totalExpense,
     };
   }
 }

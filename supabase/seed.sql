@@ -3,13 +3,15 @@
 -- =========================================
 -- Este seed cria automaticamente:
 -- 1. Usuário de teste em auth.users
--- 2. Categorias personalizadas
--- 3. 1 receita + 6 despesas variadas
+-- 2. Branch (workspace) padrão
+-- 3. Categorias personalizadas
+-- 4. 1 receita + 6 despesas variadas
 -- =========================================
 
 DO $$
 DECLARE
   v_user_id uuid;
+  v_branch_id uuid;
   v_category_salario uuid;
   v_category_moradia uuid;
   v_category_alimentacao uuid;
@@ -22,11 +24,11 @@ BEGIN
   -- =========================================
   -- CRIAR USUÁRIO DE TESTE
   -- =========================================
-  -- Email: teste@finko.com
-  -- Senha: teste123
+  -- Email: ruan@gmail.com
+  -- Senha: 123456
 
   -- Verificar se usuário já existe
-  SELECT id INTO v_user_id FROM auth.users WHERE email = 'teste@finko.com';
+  SELECT id INTO v_user_id FROM auth.users WHERE email = 'ruan@gmail.com';
 
   IF v_user_id IS NULL THEN
     -- Criar usuário em auth.users
@@ -82,7 +84,7 @@ BEGIN
       NULL,
       NULL,
       '{"provider":"email","providers":["email"]}',
-      '{"full_name":"Usuário Teste"}',
+      '{"full_name":"Ruan Rita"}',
       FALSE,
       NOW(),
       NOW(),
@@ -100,10 +102,10 @@ BEGIN
       NULL
     ) RETURNING id INTO v_user_id;
 
-    RAISE NOTICE '✅ Usuário criado: teste@finko.com (senha: teste123)';
+    RAISE NOTICE '✅ Usuário criado: ruan@gmail.com (senha: 123456)';
     RAISE NOTICE '📝 User ID: %', v_user_id;
   ELSE
-    RAISE NOTICE '⚠️  Usuário teste@finko.com já existe (ID: %)', v_user_id;
+    RAISE NOTICE '⚠️  Usuário ruan@gmail.com já existe (ID: %)', v_user_id;
   END IF;
 
   -- Esperar trigger criar em public.users
@@ -112,60 +114,96 @@ BEGIN
   -- Verificar se public.users foi criado, senão criar manualmente
   IF NOT EXISTS (SELECT 1 FROM public.users WHERE id = v_user_id) THEN
     INSERT INTO public.users (id, email, full_name)
-    VALUES (v_user_id, 'teste@finko.com', 'Usuário Teste');
+    VALUES (v_user_id, 'ruan@gmail.com', 'Ruan Rita');
     RAISE NOTICE '✅ Registro criado em public.users';
   END IF;
+
+  -- =========================================
+  -- LIMPAR DADOS ANTIGOS (se existirem)
+  -- =========================================
+  -- Deletar transações antigas
+  DELETE FROM public.transactions WHERE user_id = v_user_id;
+
+  -- Deletar categorias antigas
+  DELETE FROM public.categories WHERE user_id = v_user_id;
+
+  -- Deletar memberships antigos
+  DELETE FROM public.branch_members WHERE user_id = v_user_id;
+
+  -- Deletar branches antigos (se não tiver outros membros)
+  DELETE FROM public.branches WHERE id IN (
+    SELECT b.id FROM public.branches b
+    LEFT JOIN public.branch_members bm ON bm.branch_id = b.id
+    WHERE bm.id IS NULL
+  );
+
+  RAISE NOTICE '🧹 Dados antigos limpos';
+
+  -- =========================================
+  -- CRIAR BRANCH (WORKSPACE)
+  -- =========================================
+  -- Criar branch novo
+  INSERT INTO public.branches (name, description)
+  VALUES ('Minhas Financas', 'Workspace financeiro pessoal')
+  RETURNING id INTO v_branch_id;
+
+  -- Adicionar usuário como owner
+  INSERT INTO public.branch_members (branch_id, user_id, role)
+  VALUES (v_branch_id, v_user_id, 'owner');
+
+  RAISE NOTICE '✅ Branch criado: Minhas Financas';
+  RAISE NOTICE '📝 Branch ID: %', v_branch_id;
 
   -- =========================================
   -- CATEGORIAS
   -- =========================================
   -- Buscar ou criar categorias
-  SELECT id INTO v_category_salario FROM public.categories WHERE user_id = v_user_id AND name = 'Salário' LIMIT 1;
+  SELECT id INTO v_category_salario FROM public.categories WHERE branch_id = v_branch_id AND name = 'Salario' LIMIT 1;
   IF v_category_salario IS NULL THEN
-    INSERT INTO public.categories (user_id, name, color)
-    VALUES (v_user_id, 'Salário', '#10b981')
+    INSERT INTO public.categories (user_id, branch_id, name, color, icon)
+    VALUES (v_user_id, v_branch_id, 'Salario', '#10b981', 'DollarSign')
     RETURNING id INTO v_category_salario;
   END IF;
 
-  SELECT id INTO v_category_moradia FROM public.categories WHERE user_id = v_user_id AND name = 'Moradia' LIMIT 1;
+  SELECT id INTO v_category_moradia FROM public.categories WHERE branch_id = v_branch_id AND name = 'Moradia' LIMIT 1;
   IF v_category_moradia IS NULL THEN
-    INSERT INTO public.categories (user_id, name, color)
-    VALUES (v_user_id, 'Moradia', '#ef4444')
+    INSERT INTO public.categories (user_id, branch_id, name, color, icon)
+    VALUES (v_user_id, v_branch_id, 'Moradia', '#ef4444', 'Home')
     RETURNING id INTO v_category_moradia;
   END IF;
 
-  SELECT id INTO v_category_alimentacao FROM public.categories WHERE user_id = v_user_id AND name = 'Alimentação' LIMIT 1;
+  SELECT id INTO v_category_alimentacao FROM public.categories WHERE branch_id = v_branch_id AND name = 'Alimentacao' LIMIT 1;
   IF v_category_alimentacao IS NULL THEN
-    INSERT INTO public.categories (user_id, name, color)
-    VALUES (v_user_id, 'Alimentação', '#f59e0b')
+    INSERT INTO public.categories (user_id, branch_id, name, color, icon)
+    VALUES (v_user_id, v_branch_id, 'Alimentacao', '#f59e0b', 'Utensils')
     RETURNING id INTO v_category_alimentacao;
   END IF;
 
-  SELECT id INTO v_category_transporte FROM public.categories WHERE user_id = v_user_id AND name = 'Transporte' LIMIT 1;
+  SELECT id INTO v_category_transporte FROM public.categories WHERE branch_id = v_branch_id AND name = 'Transporte' LIMIT 1;
   IF v_category_transporte IS NULL THEN
-    INSERT INTO public.categories (user_id, name, color)
-    VALUES (v_user_id, 'Transporte', '#3b82f6')
+    INSERT INTO public.categories (user_id, branch_id, name, color, icon)
+    VALUES (v_user_id, v_branch_id, 'Transporte', '#3b82f6', 'Car')
     RETURNING id INTO v_category_transporte;
   END IF;
 
-  SELECT id INTO v_category_lazer FROM public.categories WHERE user_id = v_user_id AND name = 'Lazer' LIMIT 1;
+  SELECT id INTO v_category_lazer FROM public.categories WHERE branch_id = v_branch_id AND name = 'Lazer' LIMIT 1;
   IF v_category_lazer IS NULL THEN
-    INSERT INTO public.categories (user_id, name, color)
-    VALUES (v_user_id, 'Lazer', '#8b5cf6')
+    INSERT INTO public.categories (user_id, branch_id, name, color, icon)
+    VALUES (v_user_id, v_branch_id, 'Lazer', '#8b5cf6', 'Gamepad2')
     RETURNING id INTO v_category_lazer;
   END IF;
 
-  SELECT id INTO v_category_saude FROM public.categories WHERE user_id = v_user_id AND name = 'Saúde' LIMIT 1;
+  SELECT id INTO v_category_saude FROM public.categories WHERE branch_id = v_branch_id AND name = 'Saude' LIMIT 1;
   IF v_category_saude IS NULL THEN
-    INSERT INTO public.categories (user_id, name, color)
-    VALUES (v_user_id, 'Saúde', '#ec4899')
+    INSERT INTO public.categories (user_id, branch_id, name, color, icon)
+    VALUES (v_user_id, v_branch_id, 'Saude', '#ec4899', 'Heart')
     RETURNING id INTO v_category_saude;
   END IF;
 
-  SELECT id INTO v_category_educacao FROM public.categories WHERE user_id = v_user_id AND name = 'Educação' LIMIT 1;
+  SELECT id INTO v_category_educacao FROM public.categories WHERE branch_id = v_branch_id AND name = 'Educacao' LIMIT 1;
   IF v_category_educacao IS NULL THEN
-    INSERT INTO public.categories (user_id, name, color)
-    VALUES (v_user_id, 'Educação', '#06b6d4')
+    INSERT INTO public.categories (user_id, branch_id, name, color, icon)
+    VALUES (v_user_id, v_branch_id, 'Educacao', '#06b6d4', 'GraduationCap')
     RETURNING id INTO v_category_educacao;
   END IF;
 
@@ -176,6 +214,7 @@ BEGIN
   -- 1️⃣ RECEITA: Salário (pago mensalmente)
   INSERT INTO public.transactions (
     user_id,
+    branch_id,
     type,
     amount,
     description,
@@ -188,9 +227,10 @@ BEGIN
     recurrence_type
   ) VALUES (
     v_user_id,
+    v_branch_id,
     'income',
     5500.00,
-    'Salário',
+    'Salario',
     DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '5 days', -- Dia 5 do mês atual
     DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '5 days', -- Já pago
     'pix',
@@ -203,6 +243,7 @@ BEGIN
   -- 2️⃣ DESPESA RECORRENTE: Aluguel
   INSERT INTO public.transactions (
     user_id,
+    branch_id,
     type,
     amount,
     description,
@@ -214,6 +255,7 @@ BEGIN
     recurrence_type
   ) VALUES (
     v_user_id,
+    v_branch_id,
     'expense',
     1800.00,
     'Aluguel',
@@ -228,6 +270,7 @@ BEGIN
   -- 3️⃣ DESPESA RECORRENTE: Netflix
   INSERT INTO public.transactions (
     user_id,
+    branch_id,
     type,
     amount,
     description,
@@ -239,6 +282,7 @@ BEGIN
     recurrence_type
   ) VALUES (
     v_user_id,
+    v_branch_id,
     'expense',
     49.90,
     'Netflix',
@@ -253,6 +297,7 @@ BEGIN
   -- 4️⃣ DESPESA PARCELADA: Notebook (12x)
   INSERT INTO public.transactions (
     user_id,
+    branch_id,
     type,
     amount,
     description,
@@ -265,6 +310,7 @@ BEGIN
     is_recurring
   ) VALUES (
     v_user_id,
+    v_branch_id,
     'expense',
     291.67, -- 3500 / 12 = 291,67 por parcela
     'Notebook (1/12)',
@@ -280,6 +326,7 @@ BEGIN
   -- 5️⃣ DESPESA À VISTA: Mercado
   INSERT INTO public.transactions (
     user_id,
+    branch_id,
     type,
     amount,
     description,
@@ -291,6 +338,7 @@ BEGIN
     is_recurring
   ) VALUES (
     v_user_id,
+    v_branch_id,
     'expense',
     450.00,
     'Mercado',
@@ -305,6 +353,7 @@ BEGIN
   -- 6️⃣ DESPESA À VISTA: Uber
   INSERT INTO public.transactions (
     user_id,
+    branch_id,
     type,
     amount,
     description,
@@ -316,6 +365,7 @@ BEGIN
     is_recurring
   ) VALUES (
     v_user_id,
+    v_branch_id,
     'expense',
     85.50,
     'Corridas Uber',
@@ -330,6 +380,7 @@ BEGIN
   -- 7️⃣ DESPESA PENDENTE: Plano de Saúde
   INSERT INTO public.transactions (
     user_id,
+    branch_id,
     type,
     amount,
     description,
@@ -340,9 +391,10 @@ BEGIN
     is_recurring
   ) VALUES (
     v_user_id,
+    v_branch_id,
     'expense',
     380.00,
-    'Plano de Saúde',
+    'Plano de Saude',
     DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '25 days', -- Pendente
     'boleto',
     v_category_saude,
@@ -350,25 +402,155 @@ BEGIN
     false
   );
 
-  RAISE NOTICE '';
-  RAISE NOTICE '========================================';
-  RAISE NOTICE '✅ SEEDS CRIADOS COM SUCESSO!';
-  RAISE NOTICE '========================================';
-  RAISE NOTICE '';
-  RAISE NOTICE '👤 USUÁRIO DE TESTE:';
-  RAISE NOTICE '   Email: teste@finko.com';
-  RAISE NOTICE '   Senha: teste123';
-  RAISE NOTICE '   ID: %', v_user_id;
-  RAISE NOTICE '';
-  RAISE NOTICE '📊 TRANSAÇÕES CRIADAS:';
-  RAISE NOTICE '   💰 1 receita (Salário)';
-  RAISE NOTICE '   💸 6 despesas variadas';
-  RAISE NOTICE '   🔄 3 recorrentes (Salário, Aluguel, Netflix)';
-  RAISE NOTICE '   💳 1 parcelada (Notebook 1/12)';
-  RAISE NOTICE '   ✅ 3 pagas';
-  RAISE NOTICE '   ⏳ 4 pendentes';
-  RAISE NOTICE '';
-  RAISE NOTICE '🚀 Acesse: http://localhost:3000/login';
-  RAISE NOTICE '';
+  -- =========================================
+  -- ORÇAMENTOS
+  -- =========================================
+
+  -- Criar orçamentos para o mês atual (novembro 2025)
+  INSERT INTO public.budgets (user_id, category_id, amount, month, rollover, alert_80, alert_90, alert_100)
+  VALUES
+    (v_user_id, v_category_alimentacao, 600.00, DATE_TRUNC('month', CURRENT_DATE), false, true, true, true),
+    (v_user_id, v_category_transporte, 400.00, DATE_TRUNC('month', CURRENT_DATE), false, true, true, true);
+
+  RAISE NOTICE '✅ Orçamentos criados: Alimentação (R$ 600) e Transporte (R$ 400)';
+
+  -- =========================================
+  -- SEGUNDO USUÁRIO (MEMBRO DO TEAM)
+  -- =========================================
+
+  DECLARE
+    v_user2_id uuid;
+  BEGIN
+    -- Verificar se segundo usuário já existe
+    SELECT id INTO v_user2_id FROM auth.users WHERE email = 'maria@gmail.com';
+
+    IF v_user2_id IS NULL THEN
+      -- Criar segundo usuário em auth.users
+      INSERT INTO auth.users (
+        instance_id,
+        id,
+        aud,
+        role,
+        email,
+        encrypted_password,
+        email_confirmed_at,
+        raw_app_meta_data,
+        raw_user_meta_data,
+        created_at,
+        updated_at,
+        confirmation_token,
+        recovery_token,
+        email_change_token_new,
+        email_change_token_current,
+        is_sso_user
+      ) VALUES (
+        '00000000-0000-0000-0000-000000000000',
+        gen_random_uuid(),
+        'authenticated',
+        'authenticated',
+        'maria@gmail.com',
+        crypt('123456', gen_salt('bf')), -- Senha: 123456
+        NOW(),
+        '{"provider":"email","providers":["email"]}',
+        '{"full_name":"Maria Silva"}',
+        NOW(),
+        NOW(),
+        '',
+        '',
+        '',
+        '',
+        FALSE
+      ) RETURNING id INTO v_user2_id;
+
+      RAISE NOTICE '✅ Segundo usuário criado: maria@gmail.com (senha: 123456)';
+      RAISE NOTICE '📝 User ID: %', v_user2_id;
+    ELSE
+      RAISE NOTICE '⚠️  Usuário maria@gmail.com já existe (ID: %)', v_user2_id;
+    END IF;
+
+    -- Esperar trigger criar em public.users
+    PERFORM pg_sleep(0.1);
+
+    -- Verificar se public.users foi criado, senão criar manualmente
+    IF NOT EXISTS (SELECT 1 FROM public.users WHERE id = v_user2_id) THEN
+      INSERT INTO public.users (id, email, full_name)
+      VALUES (v_user2_id, 'maria@gmail.com', 'Maria Silva');
+      RAISE NOTICE '✅ Registro criado em public.users para Maria';
+    END IF;
+
+    -- Adicionar Maria como member na branch
+    IF NOT EXISTS (SELECT 1 FROM public.branch_members WHERE user_id = v_user2_id AND branch_id = v_branch_id) THEN
+      INSERT INTO public.branch_members (branch_id, user_id, role, invited_by)
+      VALUES (v_branch_id, v_user2_id, 'member', v_user_id);
+
+      RAISE NOTICE '✅ Maria Silva adicionada como member na branch';
+    ELSE
+      RAISE NOTICE '⚠️  Maria Silva já é membro da branch';
+    END IF;
+  END;
+
+  -- =========================================
+  -- VERIFICAÇÃO FINAL
+  -- =========================================
+  DECLARE
+    v_transaction_count INTEGER;
+    v_category_count INTEGER;
+    v_membership_verified BOOLEAN;
+  BEGIN
+    -- Contar transações criadas
+    SELECT COUNT(*) INTO v_transaction_count
+    FROM public.transactions
+    WHERE user_id = v_user_id AND branch_id = v_branch_id;
+
+    -- Contar categorias criadas
+    SELECT COUNT(*) INTO v_category_count
+    FROM public.categories
+    WHERE user_id = v_user_id AND branch_id = v_branch_id;
+
+    -- Verificar membership
+    SELECT EXISTS(
+      SELECT 1 FROM public.branch_members
+      WHERE user_id = v_user_id AND branch_id = v_branch_id
+    ) INTO v_membership_verified;
+
+    RAISE NOTICE '';
+    RAISE NOTICE '========================================';
+    RAISE NOTICE '✅ SEEDS CRIADOS COM SUCESSO!';
+    RAISE NOTICE '========================================';
+    RAISE NOTICE '';
+    RAISE NOTICE '👤 USUÁRIOS DE TESTE:';
+    RAISE NOTICE '   1. ruan@gmail.com (Owner) - Senha: 123456';
+    RAISE NOTICE '   2. maria@gmail.com (Member) - Senha: 123456';
+    RAISE NOTICE '';
+    RAISE NOTICE '🏢 WORKSPACE:';
+    RAISE NOTICE '   Nome: Minhas Financas';
+    RAISE NOTICE '   Branch ID: %', v_branch_id;
+    RAISE NOTICE '   Membros: 2 (1 owner, 1 member)';
+    RAISE NOTICE '';
+    RAISE NOTICE '📊 DADOS CRIADOS:';
+    RAISE NOTICE '   Categorias: %', v_category_count;
+    RAISE NOTICE '   Transações: %', v_transaction_count;
+    RAISE NOTICE '   💰 1 receita (Salário)';
+    RAISE NOTICE '   💸 6 despesas variadas';
+    RAISE NOTICE '   🔄 3 recorrentes (Salário, Aluguel, Netflix)';
+    RAISE NOTICE '   💳 1 parcelada (Notebook 1/12)';
+    RAISE NOTICE '   💼 2 orçamentos (Alimentação: R$ 600, Transporte: R$ 400)';
+    RAISE NOTICE '';
+    RAISE NOTICE '🔍 DEBUG INFO:';
+    RAISE NOTICE '   Branch ID: %', v_branch_id;
+    RAISE NOTICE '   Ruan ID: %', v_user_id;
+    RAISE NOTICE '';
+    RAISE NOTICE '🚀 Acesse: http://localhost:3000/login';
+    RAISE NOTICE '';
+
+    -- Alertar se algo estiver errado
+    IF v_transaction_count = 0 THEN
+      RAISE WARNING '⚠️  ATENÇÃO: Nenhuma transação foi criada!';
+    END IF;
+
+    IF NOT v_membership_verified THEN
+      RAISE WARNING '⚠️  ATENÇÃO: Usuário não é membro do branch!';
+    END IF;
+  END;
 
 END $$;

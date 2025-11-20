@@ -17,6 +17,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { createTransaction, updateTransaction } from "../actions";
 import { toast } from "sonner";
 import { formatCurrency } from "@/lib/utils";
+import { QuickCreateCategory } from "@/components/quick-create-category";
+import { CategoryIcon } from "@/components/category-icon";
 
 const transactionSchema = z.object({
   type: z.enum(["income", "expense"]),
@@ -37,6 +39,8 @@ type TransactionFormData = z.infer<typeof transactionSchema>;
 type Category = {
   id: string;
   name: string;
+  color?: string;
+  icon?: string | null;
 };
 
 type Transaction = {
@@ -72,6 +76,7 @@ export function TransactionDialog({
   const [isRecurring, setIsRecurring] = useState(false);
   const [isInstallment, setIsInstallment] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [localCategories, setLocalCategories] = useState<Category[]>(categories);
 
   const {
     register,
@@ -92,6 +97,10 @@ export function TransactionDialog({
 
   const type = watch("type");
   const installmentType = watch("installment_type");
+
+  useEffect(() => {
+    setLocalCategories(categories);
+  }, [categories]);
 
   useEffect(() => {
     if (transaction) {
@@ -258,7 +267,17 @@ export function TransactionDialog({
           <div className="grid grid-cols-2 gap-4">
             {/* Categoria */}
             <div className="space-y-2">
-              <Label htmlFor="category_id">Categoria</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="category_id">Categoria</Label>
+                <QuickCreateCategory
+                  variant="compact"
+                  onCategoryCreated={(newCategory) => {
+                    setLocalCategories((prev) => [...prev, newCategory]);
+                    setValue("category_id", newCategory.id);
+                  }}
+                />
+              </div>
+
               <Select
                 value={watch("category_id")}
                 onValueChange={(value) => setValue("category_id", value)}
@@ -267,9 +286,19 @@ export function TransactionDialog({
                   <SelectValue placeholder="Selecione..." />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories.map((category) => (
+                  {localCategories.map((category) => (
                     <SelectItem key={category.id} value={category.id}>
-                      {category.name}
+                      <div className="flex items-center gap-2">
+                        {category.color && (
+                          <div
+                            className="h-6 w-6 rounded flex items-center justify-center"
+                            style={{ backgroundColor: `${category.color}20`, color: category.color }}
+                          >
+                            <CategoryIcon iconName={category.icon} className="h-4 w-4" />
+                          </div>
+                        )}
+                        {category.name}
+                      </div>
                     </SelectItem>
                   ))}
                 </SelectContent>
