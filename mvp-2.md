@@ -19,7 +19,51 @@
 
 ## 🚀 MVP 2.0 - TODO List
 
-### 1. Features Pendentes do Core
+### 1. Sistema de Billing & Trial (PRIORIDADE)
+
+#### Trial Gratuito de 30 Dias
+- [ ] Criar trial sem cartão de crédito
+- [ ] Contador de dias restantes do trial
+- [ ] Banner/badge mostrando status do trial
+- [ ] Emails automáticos de lembrete
+  - [ ] 7 dias antes do fim
+  - [ ] 3 dias antes do fim
+  - [ ] 1 dia antes do fim
+  - [ ] No dia do fim (com CTA para assinar)
+- [ ] Downgrade automático para plano FREE ao final
+- [ ] Possibilidade de estender trial (admin)
+- [ ] Histórico de trials por usuário
+- [ ] Analytics de conversão trial → paid
+
+#### Sistema de Billing
+- [ ] Integração com Stripe
+- [ ] Integração com Paddle (backup)
+- [ ] Página de checkout
+- [ ] Gestão de cartões de crédito
+- [ ] Webhooks de pagamento
+- [ ] Sistema de invoices/faturas
+- [ ] Emails de confirmação de pagamento
+- [ ] Emails de falha de pagamento
+- [ ] Retry automático de pagamentos falhados
+- [ ] Cancelamento de assinatura
+- [ ] Upgrade/downgrade de planos
+- [ ] Proration (cálculo proporcional)
+- [ ] Cupons de desconto
+- [ ] Afiliados (futuro)
+
+#### Limitações por Plano
+- [ ] Middleware de validação de plano
+- [ ] Limitar transações/mês no plano FREE
+- [ ] Limitar workspaces por plano
+- [ ] Limitar membros por workspace
+- [ ] Limitar categorias no plano FREE
+- [ ] Bloquear features premium (dashboard customização, AI, etc)
+- [ ] Mensagens de upgrade quando atingir limites
+- [ ] Analytics de features mais bloqueadas
+
+---
+
+### 2. Features Pendentes do Core
 
 #### Lembretes (Notifications)
 - [ ] Sistema de lembretes para contas a pagar/receber
@@ -54,7 +98,7 @@
 
 ---
 
-### 2. 🎨 Customização de Interface (NOVA FEATURE)
+### 3. 🎨 Customização de Interface (NOVA FEATURE)
 
 #### Theme Customization
 - [ ] Editor de cores do tema
@@ -191,7 +235,9 @@
 
 ## 💰 Planos e Pricing
 
-### 📦 Plano BÁSICO - R$ 0/mês (FREE)
+> 🎁 **TRIAL GRATUITO:** Teste os planos **PRO** ou **BUSINESS** por **30 dias grátis**, sem cartão de crédito!
+
+### 📦 Plano BÁSICO - R$ 0/mês (SEMPRE GRÁTIS)
 **Ideal para uso pessoal e teste da plataforma**
 
 #### Recursos Inclusos:
@@ -217,6 +263,8 @@
 
 ### 🚀 Plano PRO - R$ 29,90/mês
 **Para indivíduos que levam suas finanças a sério**
+
+> 🎁 **30 dias grátis para testar!** Cancele quando quiser, sem cobranças.
 
 #### Recursos Inclusos:
 - ✅ **Tudo do Básico +**
@@ -254,6 +302,8 @@
 
 ### 🏢 Plano BUSINESS - R$ 99,90/mês
 **Para empresas e times que precisam de controle total**
+
+> 🎁 **30 dias grátis para testar!** Experimente todos os recursos enterprise sem compromisso.
 
 #### Recursos Inclusos:
 - ✅ **Tudo do Pro +**
@@ -324,11 +374,59 @@
 
 ---
 
+## 🎁 Trial Gratuito de 30 Dias
+
+### Como Funciona?
+
+**1. Escolha seu plano** (PRO ou BUSINESS)
+- Crie sua conta gratuitamente
+- Selecione o plano que deseja testar
+- **Sem cartão de crédito necessário!**
+
+**2. Teste todas as features por 30 dias**
+- Acesso completo a todos os recursos do plano
+- Sem limitações
+- Sem cobranças surpresa
+- Cancele quando quiser
+
+**3. Decida ao final do trial**
+- ✅ **Gostou?** Adicione seu cartão e continue usando
+- ✅ **Não gostou?** Seja rebaixado automaticamente para o plano BÁSICO (grátis para sempre)
+- ✅ **Quer mais tempo?** Entre em contato, podemos estender!
+
+### Benefícios do Trial:
+
+- 🚀 **Acesso completo** a todas as features do plano escolhido
+- 💳 **Sem cartão de crédito** - só pedimos na hora de assinar
+- 🔒 **Seus dados são seus** - mesmo se cancelar, você mantém acesso ao plano básico
+- 📧 **Lembretes amigáveis** - avisaremos 7, 3 e 1 dia antes do fim do trial
+- ⏱️ **Sem truques** - o que você vê é o que você terá
+
+### FAQ do Trial:
+
+**P: Preciso colocar cartão de crédito para testar?**
+R: Não! O trial é 100% gratuito e não pedimos cartão.
+
+**P: O que acontece no fim do trial se eu não fizer nada?**
+R: Você é automaticamente movido para o plano BÁSICO gratuito. Seus dados são mantidos.
+
+**P: Posso testar o plano BUSINESS depois do PRO?**
+R: Sim! Entre em contato com nosso suporte.
+
+**P: Posso estender o trial?**
+R: Em casos específicos, sim. Entre em contato conosco.
+
+**P: Meus dados são deletados se eu cancelar?**
+R: Nunca! Você mantém acesso ao plano BÁSICO com seus últimos 3 meses de dados.
+
+---
+
 ## 📊 Comparação de Planos
 
 | Feature | Básico | Pro | Business | Enterprise |
 |---------|--------|-----|----------|------------|
 | **Preço** | Grátis | R$ 29,90/mês | R$ 99,90/mês | Customizado |
+| **Trial Gratuito** | - | 30 dias | 30 dias | Customizado |
 | **Workspaces** | 1 | 3 | Ilimitado | Ilimitado |
 | **Membros/Workspace** | 1 | 3 | 15 | Ilimitado |
 | **Transações/mês** | 50 | Ilimitado | Ilimitado | Ilimitado |
@@ -356,9 +454,14 @@
 ### Sprint 1-2 (2 semanas) - Foundation Premium
 1. Implementar sistema de planos e billing
 2. Stripe/Paddle para pagamentos
-3. Limitações por plano (middleware)
-4. Página de pricing
-5. Upgrade/downgrade de planos
+3. **Sistema de trial de 30 dias**
+   - Criação de trial sem cartão
+   - Contador de dias restantes
+   - Emails de lembrete (7, 3, 1 dia antes)
+   - Downgrade automático para FREE ao final
+4. Limitações por plano (middleware)
+5. Página de pricing com CTA de trial
+6. Upgrade/downgrade de planos
 
 ### Sprint 3-4 (2 semanas) - Customização Básica
 1. Theme customization (cores primárias)

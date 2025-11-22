@@ -1,13 +1,53 @@
 @import "tailwindcss";
 
+/* ========================================
+   FinkoMoney Brand Colors - Confiança Azul
+   ======================================== */
+
 :root {
+  /* Background & Foreground */
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Brand Colors */
+  --brand-primary: #2563eb;        /* Azul Royal - Botões, links, CTAs */
+  --brand-primary-hover: #1d4ed8;  /* Azul Royal Escuro - Hover states */
+  --brand-primary-light: #3b82f6;  /* Azul Royal Claro - Backgrounds */
+
+  --brand-secondary: #0ea5e9;      /* Azul Céu - Elementos secundários */
+  --brand-secondary-hover: #0284c7; /* Azul Céu Escuro - Hover */
+  --brand-secondary-light: #38bdf8; /* Azul Céu Claro - Backgrounds */
+
+  --brand-accent: #10b981;         /* Verde Sucesso - Alertas positivos */
+  --brand-accent-hover: #059669;   /* Verde Escuro - Hover */
+  --brand-accent-light: #34d399;   /* Verde Claro - Backgrounds */
+
+  /* Semantic Colors */
+  --success: #10b981;
+  --success-bg: #d1fae5;
+  --warning: #f59e0b;
+  --warning-bg: #fef3c7;
+  --error: #ef4444;
+  --error-bg: #fee2e2;
+  --info: #0ea5e9;
+  --info-bg: #e0f2fe;
+
+  /* Gradients */
+  --gradient-brand: linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%);
+  --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  --gradient-hero: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #0ea5e9 100%);
+
+  /* Shadows */
+  --shadow-brand: 0 4px 14px 0 rgba(37, 99, 235, 0.25);
+  --shadow-brand-lg: 0 10px 40px 0 rgba(37, 99, 235, 0.35);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-primary: var(--brand-primary);
+  --color-secondary: var(--brand-secondary);
+  --color-accent: var(--brand-accent);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -16,6 +56,27 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+
+    /* Adjust brand colors for dark mode */
+    --brand-primary: #3b82f6;
+    --brand-primary-hover: #2563eb;
+    --brand-primary-light: #1e40af;
+
+    --brand-secondary: #38bdf8;
+    --brand-secondary-hover: #0ea5e9;
+    --brand-secondary-light: #075985;
+
+    --brand-accent: #34d399;
+    --brand-accent-hover: #10b981;
+    --brand-accent-light: #065f46;
+
+    --success-bg: #064e3b;
+    --warning-bg: #78350f;
+    --error-bg: #7f1d1d;
+    --info-bg: #0c4a6e;
+
+    --shadow-brand: 0 4px 14px 0 rgba(59, 130, 246, 0.4);
+    --shadow-brand-lg: 0 10px 40px 0 rgba(59, 130, 246, 0.5);
   }
 }
 
@@ -23,4 +84,53 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ========================================
+   Brand Utility Classes
+   ======================================== */
+
+.bg-brand-gradient {
+  background: var(--gradient-brand);
+}
+
+.bg-brand-gradient-hero {
+  background: var(--gradient-hero);
+}
+
+.text-brand {
+  color: var(--brand-primary);
+}
+
+.btn-brand {
+  background: var(--brand-primary);
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.btn-brand:hover {
+  background: var(--brand-primary-hover);
+  box-shadow: var(--shadow-brand);
+  transform: translateY(-1px);
+}
+
+.btn-brand-outline {
+  border: 2px solid var(--brand-primary);
+  color: var(--brand-primary);
+  background: transparent;
+  transition: all 0.2s ease;
+}
+
+.btn-brand-outline:hover {
+  background: var(--brand-primary);
+  color: white;
+  transform: translateY(-1px);
+}
+
+.shadow-brand {
+  box-shadow: var(--shadow-brand);
+}
+
+.shadow-brand-lg {
+  box-shadow: var(--shadow-brand-lg);
 }
