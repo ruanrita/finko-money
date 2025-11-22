@@ -41,30 +41,53 @@ export function Sidebar() {
   return (
     <div
       className={cn(
-        "flex flex-col border-r border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 transition-all duration-300",
+        "flex flex-col border-r-2 border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 transition-all duration-300",
         collapsed ? "w-16" : "w-64"
       )}
     >
       {/* Header */}
-      <div className="flex h-16 items-center justify-between border-b border-zinc-200 px-4 dark:border-zinc-800">
+      <div className="flex h-16 items-center justify-between border-b-2 border-zinc-200 px-4 dark:border-zinc-800">
         {!collapsed && (
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <span className="text-xl font-bold">FinkoMoney</span>
+          <Link href="/dashboard" className="flex items-center gap-2 transition-transform hover:scale-105">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-gradient shadow-sm">
+              <Wallet className="h-5 w-5 text-white" />
+            </div>
+            <span className="text-lg font-bold text-brand">FinkoMoney</span>
           </Link>
         )}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setCollapsed(!collapsed)}
-          className={cn("shrink-0", collapsed && "mx-auto")}
-        >
-          {collapsed ? (
-            <ChevronRight className="h-4 w-4" />
-          ) : (
+        {collapsed && (
+          <Link href="/dashboard" className="mx-auto transition-transform hover:scale-110">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-gradient shadow-sm">
+              <Wallet className="h-5 w-5 text-white" />
+            </div>
+          </Link>
+        )}
+        {!collapsed && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setCollapsed(!collapsed)}
+            className="shrink-0 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+          >
             <ChevronLeft className="h-4 w-4" />
-          )}
-        </Button>
+          </Button>
+        )}
       </div>
+
+      {/* Expand button when collapsed */}
+      {collapsed && (
+        <div className="border-b-2 border-zinc-200 p-2 dark:border-zinc-800">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setCollapsed(false)}
+            className="w-full hover:bg-blue-50 dark:hover:bg-blue-900/20"
+            title="Expandir menu"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
 
       {/* Branch Switcher */}
       {!collapsed && (
@@ -74,7 +97,7 @@ export function Sidebar() {
       )}
 
       {/* Navigation */}
-      <nav className="flex-1 space-y-1 p-2">
+      <nav className="flex-1 space-y-1 p-3">
         {navigation.map((item) => {
           const isActive = pathname === item.href || pathname?.startsWith(item.href + "/");
           const Icon = item.icon;
@@ -84,14 +107,14 @@ export function Sidebar() {
               key={item.name}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all",
                 isActive
-                  ? "bg-indigo-50 text-indigo-600 dark:bg-indigo-950 dark:text-indigo-400"
-                  : "text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+                  ? "bg-gradient-to-r from-blue-600 to-sky-500 text-white shadow-sm"
+                  : "text-zinc-700 hover:bg-blue-50 hover:text-brand dark:text-zinc-300 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
               )}
               title={collapsed ? item.name : undefined}
             >
-              <Icon className="h-5 w-5 shrink-0" />
+              <Icon className={cn("h-5 w-5 shrink-0", isActive && "drop-shadow-sm")} />
               {!collapsed && <span>{item.name}</span>}
             </Link>
           );
@@ -99,16 +122,16 @@ export function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="border-t border-zinc-200 dark:border-zinc-800">
+      <div className="border-t-2 border-zinc-200 dark:border-zinc-800">
         {!collapsed && (
-          <div className="p-2">
+          <div className="p-3">
             <Button
               variant="ghost"
-              className="w-full justify-start gap-3 text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+              className="w-full justify-start gap-3 text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-900/20 dark:hover:text-red-300"
               onClick={() => signOut()}
             >
               <LogOut className="h-5 w-5 shrink-0" />
-              <span>Sair</span>
+              <span className="font-medium">Sair</span>
             </Button>
           </div>
         )}
@@ -117,7 +140,7 @@ export function Sidebar() {
             <Button
               variant="ghost"
               size="icon"
-              className="w-full text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+              className="w-full text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
               onClick={() => signOut()}
               title="Sair"
             >
@@ -126,10 +149,11 @@ export function Sidebar() {
           </div>
         )}
         {!collapsed && (
-          <div className="p-4 pt-2">
-            <p className="text-xs text-zinc-500">
+          <div className="bg-gradient-to-r from-blue-50 to-sky-50 p-4 pt-3 dark:from-blue-950/20 dark:to-sky-950/20">
+            <p className="text-xs font-medium text-brand">
               FinkoMoney v1.0
-              <br />
+            </p>
+            <p className="mt-0.5 text-xs text-zinc-600 dark:text-zinc-400">
               Controle fácil, escolhas melhores.
             </p>
           </div>

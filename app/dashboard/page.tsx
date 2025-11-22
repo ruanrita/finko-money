@@ -77,12 +77,13 @@ export default async function DashboardPage() {
 
   return (
     <AuthenticatedLayout>
-      <div className="border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
-        <div className="px-8 py-6">
+      <div className="relative overflow-hidden border-b border-zinc-200 bg-gradient-to-r from-blue-600 to-sky-500 dark:border-zinc-800">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-10"></div>
+        <div className="relative px-8 py-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold">Dashboard</h1>
-              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+              <h1 className="text-3xl font-bold text-white">Dashboard</h1>
+              <p className="mt-2 text-sm text-blue-100">
                 Bem-vindo de volta, {userData?.full_name || user.email}!
               </p>
             </div>
@@ -108,7 +109,7 @@ export default async function DashboardPage() {
           <GoalsWidget goals={goals} />
 
           {/* Recent Transactions */}
-          <Card>
+          <Card className="border-2">
           <CardHeader>
             <CardTitle>Próximas Transações</CardTitle>
             <CardDescription>
@@ -117,15 +118,15 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent>
             {upcomingTransactions && upcomingTransactions.length > 0 ? (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {upcomingTransactions.map((transaction) => (
                   <div
                     key={transaction.id}
-                    className="flex items-center justify-between rounded-lg border border-zinc-200 p-4 dark:border-zinc-800"
+                    className="flex items-center justify-between rounded-lg border border-zinc-200 bg-white p-4 transition-all hover:border-brand hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-950"
                   >
                     <div className="flex-1">
-                      <p className="font-medium">{transaction.description}</p>
-                      <p className="text-sm text-zinc-500">
+                      <p className="font-semibold text-zinc-900 dark:text-zinc-100">{transaction.description}</p>
+                      <p className="text-sm text-zinc-500 dark:text-zinc-400">
                         Vencimento: {new Date(transaction.due_date).toLocaleDateString('pt-BR')}
                       </p>
                     </div>
@@ -141,8 +142,8 @@ export default async function DashboardPage() {
                           {transaction.categories.name}
                         </Badge>
                       )}
-                      <p className={`font-bold ${
-                        transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
+                      <p className={`text-lg font-bold ${
+                        transaction.type === 'income' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
                       }`}>
                         {transaction.type === 'income' ? '+' : '-'}
                         {formatCurrency(Number(transaction.amount))}
@@ -153,8 +154,14 @@ export default async function DashboardPage() {
               </div>
             ) : (
               <div className="py-12 text-center">
-                <p className="text-zinc-500">
-                  Nenhuma transação encontrada. Comece adicionando suas primeiras transações!
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/20">
+                  <svg className="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                </div>
+                <p className="font-medium text-zinc-900 dark:text-zinc-100">Nenhuma transação encontrada</p>
+                <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                  Comece adicionando suas primeiras transações!
                 </p>
               </div>
             )}

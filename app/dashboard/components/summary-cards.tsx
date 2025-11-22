@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, TrendingUp, TrendingDown, Wallet } from "lucide-react";
 import { Card, CardHeader, CardDescription, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/lib/utils";
@@ -29,13 +29,13 @@ export function SummaryCards({
   const [showYearly, setShowYearly] = useState(false);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-zinc-700 dark:text-zinc-300">
+          <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
             Resumo Financeiro
           </h2>
-          <p className="text-sm text-zinc-500 capitalize">
+          <p className="text-sm text-zinc-600 dark:text-zinc-400 capitalize">
             {monthName}
           </p>
         </div>
@@ -43,6 +43,7 @@ export function SummaryCards({
           variant="outline"
           size="sm"
           onClick={() => setShowYearly(!showYearly)}
+          className="border-brand text-brand hover:bg-brand hover:text-white"
         >
           {showYearly ? (
             <>
@@ -61,21 +62,23 @@ export function SummaryCards({
       <div className="grid gap-6 md:grid-cols-3">
         {/* Receitas */}
         <Link href="/financeiro?type=income">
-          <Card className="cursor-pointer transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900">
-            <CardHeader>
-              <CardDescription>Receitas</CardDescription>
-              <CardTitle className="text-3xl text-green-600">
+          <Card className="group cursor-pointer border-2 transition-all hover:border-green-500 hover:shadow-lg">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardDescription className="text-zinc-600 dark:text-zinc-400">Receitas</CardDescription>
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-100 text-green-600 transition-transform group-hover:scale-110 dark:bg-green-900/20 dark:text-green-400">
+                  <TrendingUp className="h-5 w-5" />
+                </div>
+              </div>
+              <CardTitle className="text-3xl font-bold text-green-600 dark:text-green-400">
                 {formatCurrency(monthlyIncome)}
-                {showYearly && (
-                  <span className="text-base text-zinc-500 ml-2">
-                    / {formatCurrency(yearlyIncome)}
-                  </span>
-                )}
               </CardTitle>
               {showYearly && (
-                <p className="text-xs text-zinc-500 mt-1">
-                  Mês / Ano
-                </p>
+                <>
+                  <p className="text-base text-zinc-500 dark:text-zinc-400">
+                    {formatCurrency(yearlyIncome)} <span className="text-xs">/ ano</span>
+                  </p>
+                </>
               )}
             </CardHeader>
           </Card>
@@ -83,21 +86,23 @@ export function SummaryCards({
 
         {/* Despesas */}
         <Link href="/financeiro?type=expense">
-          <Card className="cursor-pointer transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900">
-            <CardHeader>
-              <CardDescription>Despesas</CardDescription>
-              <CardTitle className="text-3xl text-red-600">
+          <Card className="group cursor-pointer border-2 transition-all hover:border-red-500 hover:shadow-lg">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardDescription className="text-zinc-600 dark:text-zinc-400">Despesas</CardDescription>
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-100 text-red-600 transition-transform group-hover:scale-110 dark:bg-red-900/20 dark:text-red-400">
+                  <TrendingDown className="h-5 w-5" />
+                </div>
+              </div>
+              <CardTitle className="text-3xl font-bold text-red-600 dark:text-red-400">
                 {formatCurrency(monthlyExpenses)}
-                {showYearly && (
-                  <span className="text-base text-zinc-500 ml-2">
-                    / {formatCurrency(yearlyExpenses)}
-                  </span>
-                )}
               </CardTitle>
               {showYearly && (
-                <p className="text-xs text-zinc-500 mt-1">
-                  Mês / Ano
-                </p>
+                <>
+                  <p className="text-base text-zinc-500 dark:text-zinc-400">
+                    {formatCurrency(yearlyExpenses)} <span className="text-xs">/ ano</span>
+                  </p>
+                </>
               )}
             </CardHeader>
           </Card>
@@ -105,21 +110,39 @@ export function SummaryCards({
 
         {/* Saldo */}
         <Link href="/financeiro">
-          <Card className="cursor-pointer transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900">
-            <CardHeader>
-              <CardDescription>Saldo</CardDescription>
-              <CardTitle className={`text-3xl ${monthlyBalance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+          <Card className={`group cursor-pointer border-2 transition-all hover:shadow-lg ${
+            monthlyBalance >= 0
+              ? 'hover:border-blue-500'
+              : 'hover:border-orange-500'
+          }`}>
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardDescription className="text-zinc-600 dark:text-zinc-400">Saldo</CardDescription>
+                <div className={`flex h-10 w-10 items-center justify-center rounded-lg transition-transform group-hover:scale-110 ${
+                  monthlyBalance >= 0
+                    ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'
+                    : 'bg-orange-100 text-orange-600 dark:bg-orange-900/20 dark:text-orange-400'
+                }`}>
+                  <Wallet className="h-5 w-5" />
+                </div>
+              </div>
+              <CardTitle className={`text-3xl font-bold ${
+                monthlyBalance >= 0
+                  ? 'text-blue-600 dark:text-blue-400'
+                  : 'text-orange-600 dark:text-orange-400'
+              }`}>
                 {formatCurrency(monthlyBalance)}
-                {showYearly && (
-                  <span className={`text-base ml-2 ${yearlyBalance >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                    / {formatCurrency(yearlyBalance)}
-                  </span>
-                )}
               </CardTitle>
               {showYearly && (
-                <p className="text-xs text-zinc-500 mt-1">
-                  Mês / Ano
-                </p>
+                <>
+                  <p className={`text-base ${
+                    yearlyBalance >= 0
+                      ? 'text-zinc-500 dark:text-zinc-400'
+                      : 'text-zinc-500 dark:text-zinc-400'
+                  }`}>
+                    {formatCurrency(yearlyBalance)} <span className="text-xs">/ ano</span>
+                  </p>
+                </>
               )}
             </CardHeader>
           </Card>

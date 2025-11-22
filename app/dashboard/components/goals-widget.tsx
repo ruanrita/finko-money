@@ -37,20 +37,22 @@ export function GoalsWidget({ goals }: GoalsWidgetProps) {
   const totalGoals = goals.length;
 
   return (
-    <Card>
+    <Card className="border-2">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="flex items-center gap-2">
-              <Target className="h-5 w-5" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400">
+                <Target className="h-4 w-4" />
+              </div>
               Metas Financeiras
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="mt-1">
               Acompanhe o progresso das suas metas
             </CardDescription>
           </div>
           <Link href="/metas">
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" className="text-brand hover:bg-blue-50 hover:text-brand dark:hover:bg-blue-900/20">
               Ver todas
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
@@ -60,8 +62,8 @@ export function GoalsWidget({ goals }: GoalsWidgetProps) {
       <CardContent>
         {totalGoals === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800 mb-4">
-              <Target className="h-6 w-6 text-zinc-400" />
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/20 mb-4">
+              <Target className="h-6 w-6 text-blue-600 dark:text-blue-400" />
             </div>
             <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">
               Nenhuma meta criada
@@ -70,32 +72,34 @@ export function GoalsWidget({ goals }: GoalsWidgetProps) {
               Defina metas de economia para alcançar seus objetivos financeiros.
             </p>
             <Link href="/metas/criar">
-              <Button className="mt-4" size="sm">
+              <Button className="btn-brand mt-4" size="sm">
                 <Target className="mr-2 h-4 w-4" />
                 Criar Meta
               </Button>
             </Link>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {topGoals.map((goal) => (
               <Link key={goal.id} href={`/metas/${goal.id}`}>
-                <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 p-4 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors cursor-pointer">
+                <div className="rounded-lg border-2 border-zinc-200 dark:border-zinc-800 bg-white p-4 transition-all hover:border-brand hover:shadow-md dark:bg-zinc-950 cursor-pointer">
                   <div className="flex items-start justify-between gap-3 mb-3">
-                    <div className="flex items-start gap-2 flex-1">
-                      <span className="text-xl">{goal.icon}</span>
+                    <div className="flex items-start gap-3 flex-1">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-sky-500 text-2xl shadow-sm">
+                        {goal.icon}
+                      </div>
                       <div className="flex-1">
-                        <p className="font-semibold text-sm leading-none">{goal.name}</p>
+                        <p className="font-semibold text-zinc-900 dark:text-zinc-100">{goal.name}</p>
                         <Badge
                           variant="secondary"
-                          className="mt-1.5 text-xs"
+                          className="mt-1.5 text-xs bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300"
                         >
                           {goalTypeLabels[goal.goal_type]}
                         </Badge>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className={`text-lg font-bold ${statusColors[goal.status]}`}>
+                      <p className={`text-xl font-bold ${statusColors[goal.status]}`}>
                         {Math.min(goal.progress_percentage, 100).toFixed(0)}%
                       </p>
                     </div>
@@ -103,15 +107,15 @@ export function GoalsWidget({ goals }: GoalsWidgetProps) {
 
                   <Progress
                     value={Math.min(goal.progress_percentage, 100)}
-                    className="h-2 mb-2"
+                    className="h-2.5 mb-3"
                   />
 
                   <div className="flex items-center justify-between text-xs text-zinc-600 dark:text-zinc-400">
-                    <span>
+                    <span className="font-medium">
                       {formatCurrency(goal.current_amount)} de {formatCurrency(goal.target_amount)}
                     </span>
                     {goal.remaining_amount > 0 && (
-                      <span className="flex items-center gap-1">
+                      <span className="flex items-center gap-1 text-blue-600 dark:text-blue-400">
                         <TrendingUp className="h-3 w-3" />
                         Faltam {formatCurrency(goal.remaining_amount)}
                       </span>
@@ -123,7 +127,7 @@ export function GoalsWidget({ goals }: GoalsWidgetProps) {
 
             {totalGoals > 3 && (
               <Link href="/metas">
-                <Button variant="outline" className="w-full" size="sm">
+                <Button variant="outline" className="w-full border-brand text-brand hover:bg-brand hover:text-white" size="sm">
                   Ver todas as {totalGoals} metas
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
