@@ -74,14 +74,8 @@ export class BranchRepository {
     const supabase = await createClient();
 
     // Check if user is owner
-    const { data: membership } = await supabase
-      .from("branch_members")
-      .select("role")
-      .eq("branch_id", branchId)
-      .eq("user_id", userId)
-      .single();
-
-    if (!membership || membership.role !== "owner") {
+    const isOwner = await this.verifyOwnership(branchId, userId);
+    if (!isOwner) {
       throw new Error("Apenas donos podem atualizar o branch");
     }
 
@@ -100,14 +94,8 @@ export class BranchRepository {
     const supabase = await createClient();
 
     // Check if user is owner
-    const { data: membership } = await supabase
-      .from("branch_members")
-      .select("role")
-      .eq("branch_id", branchId)
-      .eq("user_id", userId)
-      .single();
-
-    if (!membership || membership.role !== "owner") {
+    const isOwner = await this.verifyOwnership(branchId, userId);
+    if (!isOwner) {
       throw new Error("Apenas donos podem deletar o branch");
     }
 
@@ -123,14 +111,8 @@ export class BranchRepository {
     const supabase = await createClient();
 
     // Verify user has access to this branch
-    const { data: membership } = await supabase
-      .from("branch_members")
-      .select("id")
-      .eq("branch_id", branchId)
-      .eq("user_id", userId)
-      .single();
-
-    if (!membership) {
+    const isMember = await this.verifyMembership(branchId, userId);
+    if (!isMember) {
       throw new Error("Acesso negado a este branch");
     }
 
@@ -158,14 +140,8 @@ export class BranchRepository {
     const supabase = await createClient();
 
     // Check if inviter is owner
-    const { data: membership } = await supabase
-      .from("branch_members")
-      .select("role")
-      .eq("branch_id", branchId)
-      .eq("user_id", invitedBy)
-      .single();
-
-    if (!membership || membership.role !== "owner") {
+    const isOwner = await this.verifyOwnership(branchId, invitedBy);
+    if (!isOwner) {
       throw new Error("Apenas donos podem adicionar membros");
     }
 
@@ -194,14 +170,8 @@ export class BranchRepository {
     const supabase = await createClient();
 
     // Check if remover is owner
-    const { data: membership } = await supabase
-      .from("branch_members")
-      .select("role")
-      .eq("branch_id", branchId)
-      .eq("user_id", removedBy)
-      .single();
-
-    if (!membership || membership.role !== "owner") {
+    const isOwner = await this.verifyOwnership(branchId, removedBy);
+    if (!isOwner) {
       throw new Error("Apenas donos podem remover membros");
     }
 
@@ -229,14 +199,8 @@ export class BranchRepository {
     const supabase = await createClient();
 
     // Check if updater is owner
-    const { data: membership } = await supabase
-      .from("branch_members")
-      .select("role")
-      .eq("branch_id", branchId)
-      .eq("user_id", updatedBy)
-      .single();
-
-    if (!membership || membership.role !== "owner") {
+    const isOwner = await this.verifyOwnership(branchId, updatedBy);
+    if (!isOwner) {
       throw new Error("Apenas donos podem alterar roles de membros");
     }
 
@@ -276,5 +240,59 @@ export class BranchRepository {
 
     if (error) return null;
     return data;
+  }
+
+  // =========================================
+  // MÉTODOS DE VERIFICAÇÃO DE ACESSO
+  // =========================================
+
+  /**
+   * Verifica se usuário é membro do branch
+   */
+  static async verifyMembership(branchId: string, userId: string): Promise<boolean> {
+    const supabase = await createClient();
+
+    const { data, error } = await supabase
+      .from("branch_members")
+      .select("id")
+      .eq("branch_id", branchId)
+      .eq("user_id", userId)
+      .single();
+
+    return !!data && !error;
+  }
+
+  /**
+   * Verifica se usuário é owner do branch
+   */
+  static async verifyOwnership(branchId: string, userId: string): Promise<boolean> {
+    const supabase = await createClient();
+
+    const { data, error } = await supabase
+      .from("branch_members")
+      .select("role")
+      .eq("branch_id", branchId)
+      .eq("user_id", userId)
+      .eq("role", "owner")
+      .single();
+
+    return !!data && !error;
+  }
+
+  /**
+   * Obtém a role do usuário no branch
+   */
+  static async getUserRole(branchId: string, userId: string): Promise<"owner" | "member" | null> {
+    const supabase = await createClient();
+
+    const { data, error } = await supabase
+      .from("branch_members")
+      .select("role")
+      .eq("branch_id", branchId)
+      .eq("user_id", userId)
+      .single();
+
+    if (error || !data) return null;
+    return data.role as "owner" | "member";
   }
 }

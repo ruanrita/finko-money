@@ -21,16 +21,20 @@ export function FinancialChart({ income, expenses, month }: FinancialChartProps)
 
   const balance = income - expenses;
 
-  // Formatar mês para exibição
-  const formattedMonth = month
-    ? new Date(month + "-01").toLocaleDateString("pt-BR", {
-        month: "long",
-        year: "numeric",
-      })
-    : "";
-  const displayMonth = formattedMonth
-    ? formattedMonth.charAt(0).toUpperCase() + formattedMonth.slice(1)
-    : "Mês atual";
+  // Formatar mês para exibição (evitando problemas de timezone)
+  const getDisplayMonth = () => {
+    if (!month) return "Mês atual";
+
+    const [year, monthNum] = month.split("-").map(Number);
+    const date = new Date(year, monthNum - 1, 1); // month - 1 porque JS usa 0-indexed
+    const formatted = date.toLocaleDateString("pt-BR", {
+      month: "long",
+      year: "numeric",
+    });
+    return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+  };
+
+  const displayMonth = getDisplayMonth();
 
   return (
     <Card>

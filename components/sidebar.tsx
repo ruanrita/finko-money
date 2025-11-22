@@ -11,9 +11,9 @@ import {
   Target,
   BarChart3,
   Settings,
+  Users,
   ChevronLeft,
   ChevronRight,
-  Users,
   LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -30,7 +30,7 @@ const navigation = [
   { name: "Lembretes", href: "/lembretes", icon: Bell },
   { name: "Metas", href: "/metas", icon: Target },
   { name: "Relatórios", href: "/relatorios", icon: BarChart3 },
-  { name: "Equipe", href: "/team", icon: Users },
+  { name: "Equipe", href: "/equipe", icon: Users },
   { name: "Configurações", href: "/configuracoes", icon: Settings },
 ];
 

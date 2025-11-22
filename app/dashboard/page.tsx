@@ -2,11 +2,13 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentBranch } from "@/lib/supabase/branch-context";
 import { TransactionService } from "@/src/modules/transactions";
+import { GoalService } from "@/src/modules/goals";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AuthenticatedLayout } from "@/components/authenticated-layout";
 import { formatCurrency } from "@/lib/utils";
 import { SummaryCards } from "./components/summary-cards";
+import { GoalsWidget } from "./components/goals-widget";
 import { CategoryIcon } from "@/components/category-icon";
 
 export default async function DashboardPage() {
@@ -61,6 +63,15 @@ export default async function DashboardPage() {
     now.getFullYear()
   );
 
+  // Fetch active goals (com error handling)
+  let goals = [];
+  try {
+    goals = await GoalService.listGoals(user.id, currentBranch.id, { is_active: true });
+  } catch (error) {
+    console.error("Erro ao carregar metas:", error);
+    // Continua sem as metas em caso de erro
+  }
+
   // Format current month name
   const monthName = now.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
 
@@ -91,8 +102,13 @@ export default async function DashboardPage() {
           yearlyBalance={yearlyTotals.balance}
         />
 
-        {/* Recent Transactions */}
-        <Card className="mt-8">
+        {/* Two Column Layout */}
+        <div className="mt-8 grid gap-8 lg:grid-cols-2">
+          {/* Goals Widget */}
+          <GoalsWidget goals={goals} />
+
+          {/* Recent Transactions */}
+          <Card>
           <CardHeader>
             <CardTitle>Próximas Transações</CardTitle>
             <CardDescription>
@@ -144,6 +160,7 @@ export default async function DashboardPage() {
             )}
           </CardContent>
         </Card>
+        </div>
       </div>
     </AuthenticatedLayout>
   );

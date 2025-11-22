@@ -63,15 +63,34 @@ export function TransactionFilters({ categories }: TransactionFiltersProps) {
     updateMonth(newMonth);
   };
 
-  // Generate month options (current month and last 11 months)
-  const monthOptions = Array.from({ length: 12 }, (_, i) => {
-    const date = new Date(currentYear, currentMonth - i, 1);
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    const value = `${year}-${String(month).padStart(2, "0")}`;
-    const label = date.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
-    return { value, label: label.charAt(0).toUpperCase() + label.slice(1) };
-  });
+  // Generate month options (last 12 months from current date)
+  const generateMonthOptions = () => {
+    const options = Array.from({ length: 12 }, (_, i) => {
+      const date = new Date(currentYear, currentMonth - i, 1);
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
+      const value = `${year}-${String(month).padStart(2, "0")}`;
+      const label = date.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+      return { value, label: label.charAt(0).toUpperCase() + label.slice(1) };
+    });
+
+    // Add selected month if not in list (for navigation to future/past months)
+    if (!options.find(opt => opt.value === monthYear)) {
+      const [year, month] = monthYear.split("-").map(Number);
+      const date = new Date(year, month - 1, 1);
+      const label = date.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+      options.push({
+        value: monthYear,
+        label: label.charAt(0).toUpperCase() + label.slice(1)
+      });
+      // Sort by date (newest first)
+      options.sort((a, b) => b.value.localeCompare(a.value));
+    }
+
+    return options;
+  };
+
+  const monthOptions = generateMonthOptions();
 
   return (
     <Card>

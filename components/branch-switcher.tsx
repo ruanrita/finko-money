@@ -82,7 +82,7 @@ export function BranchSwitcher() {
 
   function handleCreateBranch() {
     setOpen(false);
-    router.push("/team?action=create");
+    router.push("/configuracoes?tab=workspace&action=create");
   }
 
   if (loading) {
@@ -95,7 +95,16 @@ export function BranchSwitcher() {
   }
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover
+      open={open}
+      onOpenChange={(isOpen) => {
+        setOpen(isOpen);
+        // Recarregar branches quando abrir o popover
+        if (isOpen) {
+          loadBranches();
+        }
+      }}
+    >
       <PopoverTrigger asChild>
         <Button
           variant="outline"

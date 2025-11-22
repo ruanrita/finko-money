@@ -64,6 +64,9 @@ export async function getCurrentBranch(userId: string) {
     if (!error && branch) {
       return branch;
     }
+
+    // Se o branch do cookie não existe mais, continua para pegar o primeiro disponível
+    // (O cookie será atualizado automaticamente na próxima navegação)
   }
 
   // Se não encontrou no cookie ou não tem acesso, pegar primeiro branch disponível

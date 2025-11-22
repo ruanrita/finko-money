@@ -1,48 +1,25 @@
-import { createClient } from "@/lib/supabase/server";
+import { BranchRepository } from "@/src/modules/branches/branch.repository";
 
 /**
  * Controle de acesso baseado em branches
  * Verifica se usuários têm permissão para acessar/modificar recursos de um branch
+ *
+ * IMPORTANTE: Este arquivo NÃO acessa o banco diretamente.
+ * Ele delega para o BranchRepository que é a camada de acesso a dados.
  */
 export class BranchAccessControl {
   /**
    * Verifica se o usuário é membro do branch
    */
   static async verifyMembership(branchId: string, userId: string): Promise<boolean> {
-    const supabase = await createClient();
-
-    const { data, error } = await supabase
-      .from("branch_members")
-      .select("id")
-      .eq("branch_id", branchId)
-      .eq("user_id", userId)
-      .single();
-
-    if (error || !data) {
-      return false;
-    }
-
-    return true;
+    return BranchRepository.verifyMembership(branchId, userId);
   }
 
   /**
    * Verifica se o usuário é dono do branch
    */
   static async verifyOwnership(branchId: string, userId: string): Promise<boolean> {
-    const supabase = await createClient();
-
-    const { data, error } = await supabase
-      .from("branch_members")
-      .select("role")
-      .eq("branch_id", branchId)
-      .eq("user_id", userId)
-      .single();
-
-    if (error || !data) {
-      return false;
-    }
-
-    return data.role === "owner";
+    return BranchRepository.verifyOwnership(branchId, userId);
   }
 
   /**
@@ -71,19 +48,6 @@ export class BranchAccessControl {
    * Obtém a role do usuário no branch
    */
   static async getUserRole(branchId: string, userId: string): Promise<"owner" | "member" | null> {
-    const supabase = await createClient();
-
-    const { data, error } = await supabase
-      .from("branch_members")
-      .select("role")
-      .eq("branch_id", branchId)
-      .eq("user_id", userId)
-      .single();
-
-    if (error || !data) {
-      return null;
-    }
-
-    return data.role as "owner" | "member";
+    return BranchRepository.getUserRole(branchId, userId);
   }
 }

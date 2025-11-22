@@ -374,4 +374,192 @@ export class TransactionService {
       balance: totalIncome - totalExpense,
     };
   }
+
+  /**
+   * Obtém distribuição de despesas/receitas por categoria
+   */
+  static async getCategoryDistribution(
+    userId: string,
+    branchId: string,
+    startDate: string,
+    endDate: string,
+    type?: 'income' | 'expense'
+  ): Promise<Array<{ category: string; categoryId: string | null; amount: number; color: string; icon: string | null; percentage: number }>> {
+    const filters: TransactionFilters = {
+      start_date: startDate,
+      end_date: endDate,
+    };
+
+    if (type) {
+      filters.type = type;
+    }
+
+    const transactions = await TransactionRepository.findByBranchId(branchId, userId, filters);
+
+    // Agrupar por categoria
+    const categoryMap = new Map<string, { amount: number; name: string; color: string; icon: string | null; categoryId: string | null }>();
+
+    for (const transaction of transactions) {
+      const categoryId = transaction.category_id || 'sem-categoria';
+      const categoryName = (transaction.categories as any)?.name || 'Sem categoria';
+      const categoryColor = (transaction.categories as any)?.color || '#6b7280';
+      const categoryIcon = (transaction.categories as any)?.icon || null;
+
+      if (!categoryMap.has(categoryId)) {
+        categoryMap.set(categoryId, {
+          amount: 0,
+          name: categoryName,
+          color: categoryColor,
+          icon: categoryIcon,
+          categoryId: transaction.category_id,
+        });
+      }
+
+      const current = categoryMap.get(categoryId)!;
+      current.amount += Number(transaction.amount);
+    }
+
+    // Calcular total para percentuais
+    const total = Array.from(categoryMap.values()).reduce((sum, cat) => sum + cat.amount, 0);
+
+    // Converter para array e ordenar por valor
+    return Array.from(categoryMap.entries())
+      .map(([_, data]) => ({
+        category: data.name,
+        categoryId: data.categoryId,
+        amount: data.amount,
+        color: data.color,
+        icon: data.icon,
+        percentage: total > 0 ? (data.amount / total) * 100 : 0,
+      }))
+      .sort((a, b) => b.amount - a.amount);
+  }
+
+  /**
+   * Obtém evolução mensal das transações
+   */
+  static async getMonthlyEvolution(
+    userId: string,
+    branchId: string,
+    monthsCount: number = 6
+  ): Promise<Array<{ month: string; monthName: string; income: number; expense: number; balance: number }>> {
+    const now = new Date();
+    const months: Array<{ month: string; monthName: string; income: number; expense: number; balance: number }> = [];
+
+    for (let i = monthsCount - 1; i >= 0; i--) {
+      const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const year = date.getFullYear();
+      const month = date.getMonth();
+
+      const monthStr = `${year}-${String(month + 1).padStart(2, '0')}`;
+      const startDate = `${monthStr}-01`;
+      const endDate = new Date(year, month + 1, 0).toISOString().split('T')[0];
+
+      const totals = await this.calculateTotals(userId, branchId, startDate, endDate);
+
+      months.push({
+        month: monthStr,
+        monthName: date.toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' }),
+        income: totals.income,
+        expense: totals.expense,
+        balance: totals.balance,
+      });
+    }
+
+    return months;
+  }
+
+  /**
+   * Identifica os melhores e piores meses
+   */
+  static async getBestWorstMonths(
+    userId: string,
+    branchId: string,
+    monthsCount: number = 12
+  ): Promise<{
+    bestMonth: { month: string; monthName: string; balance: number };
+    worstMonth: { month: string; monthName: string; balance: number };
+    highestIncome: { month: string; monthName: string; income: number };
+    highestExpense: { month: string; monthName: string; expense: number };
+  }> {
+    const evolution = await this.getMonthlyEvolution(userId, branchId, monthsCount);
+
+    if (evolution.length === 0) {
+      const empty = { month: '', monthName: 'N/A', balance: 0, income: 0, expense: 0 };
+      return {
+        bestMonth: empty,
+        worstMonth: empty,
+        highestIncome: empty,
+        highestExpense: empty,
+      };
+    }
+
+    const sortedByBalance = [...evolution].sort((a, b) => b.balance - a.balance);
+    const sortedByIncome = [...evolution].sort((a, b) => b.income - a.income);
+    const sortedByExpense = [...evolution].sort((a, b) => b.expense - a.expense);
+
+    return {
+      bestMonth: {
+        month: sortedByBalance[0].month,
+        monthName: sortedByBalance[0].monthName,
+        balance: sortedByBalance[0].balance,
+      },
+      worstMonth: {
+        month: sortedByBalance[sortedByBalance.length - 1].month,
+        monthName: sortedByBalance[sortedByBalance.length - 1].monthName,
+        balance: sortedByBalance[sortedByBalance.length - 1].balance,
+      },
+      highestIncome: {
+        month: sortedByIncome[0].month,
+        monthName: sortedByIncome[0].monthName,
+        income: sortedByIncome[0].income,
+      },
+      highestExpense: {
+        month: sortedByExpense[0].month,
+        monthName: sortedByExpense[0].monthName,
+        expense: sortedByExpense[0].expense,
+      },
+    };
+  }
+
+  /**
+   * Calcula métricas resumidas para relatórios
+   */
+  static async getReportsMetrics(
+    userId: string,
+    branchId: string,
+    startDate: string,
+    endDate: string
+  ): Promise<{
+    totalIncome: number;
+    totalExpense: number;
+    balance: number;
+    savingsRate: number;
+    averageMonthlyIncome: number;
+    averageMonthlyExpense: number;
+    transactionCount: number;
+  }> {
+    const totals = await this.calculateTotals(userId, branchId, startDate, endDate);
+    const transactions = await TransactionRepository.findByBranchId(branchId, userId, {
+      start_date: startDate,
+      end_date: endDate,
+    });
+
+    // Calcular número de meses no período
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const monthsDiff = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth()) + 1;
+
+    const savingsRate = totals.income > 0 ? ((totals.income - totals.expense) / totals.income) * 100 : 0;
+
+    return {
+      totalIncome: totals.income,
+      totalExpense: totals.expense,
+      balance: totals.balance,
+      savingsRate,
+      averageMonthlyIncome: monthsDiff > 0 ? totals.income / monthsDiff : 0,
+      averageMonthlyExpense: monthsDiff > 0 ? totals.expense / monthsDiff : 0,
+      transactionCount: transactions.length,
+    };
+  }
 }
