@@ -80,7 +80,7 @@ export default async function EquipePage() {
             </CardHeader>
             <CardContent>
               <TeamMembersList
-                members={members || []}
+                members={(members || []) as any}
                 currentUserId={user.id}
                 userRole={userRole}
                 branchId={currentBranch.id}

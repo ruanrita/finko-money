@@ -305,7 +305,7 @@ export class GoalRepository {
         (lastDate.getMonth() - firstDate.getMonth()) + 1
     );
 
-    const totalAmount = contributions.reduce((sum: number, c: GoalContribution) => sum + Number(c.amount), 0);
+    const totalAmount = contributions.reduce((sum: number, c: any) => sum + Number(c.amount), 0);
     return totalAmount / monthsDiff;
   }
 
@@ -357,24 +357,24 @@ export class GoalRepository {
     }
 
     const totalGoals = goals.length;
-    const activeGoals = goals.filter((g: Goal) => g.is_active).length;
-    const achievedGoals = goals.filter((g: Goal) => g.achieved_at !== null).length;
-    const totalTargetAmount = goals.reduce((sum: number, g: Goal) => sum + Number(g.target_amount), 0);
-    const totalCurrentAmount = goals.reduce((sum: number, g: Goal) => sum + Number(g.current_amount), 0);
+    const activeGoals = goals.filter((g: any) => g.is_active).length;
+    const achievedGoals = goals.filter((g: any) => g.achieved_at !== null).length;
+    const totalTargetAmount = goals.reduce((sum: number, g: any) => sum + Number(g.target_amount), 0);
+    const totalCurrentAmount = goals.reduce((sum: number, g: any) => sum + Number(g.current_amount), 0);
     const overallProgress = totalTargetAmount > 0 ? (totalCurrentAmount / totalTargetAmount) * 100 : 0;
 
     const goalsByType = {
-      emergency_fund: goals.filter((g: Goal) => g.goal_type === 'emergency_fund').length,
-      savings: goals.filter((g: Goal) => g.goal_type === 'savings').length,
-      debt_payoff: goals.filter((g: Goal) => g.goal_type === 'debt_payoff').length,
-      purchase: goals.filter((g: Goal) => g.goal_type === 'purchase').length,
+      emergency_fund: goals.filter((g: any) => g.goal_type === 'emergency_fund').length,
+      savings: goals.filter((g: any) => g.goal_type === 'savings').length,
+      debt_payoff: goals.filter((g: any) => g.goal_type === 'debt_payoff').length,
+      purchase: goals.filter((g: any) => g.goal_type === 'purchase').length,
     };
 
     const goalsByPriority = {
-      critical: goals.filter((g: Goal) => g.priority === 'critical').length,
-      high: goals.filter((g: Goal) => g.priority === 'high').length,
-      medium: goals.filter((g: Goal) => g.priority === 'medium').length,
-      low: goals.filter((g: Goal) => g.priority === 'low').length,
+      critical: goals.filter((g: any) => g.priority === 'critical').length,
+      high: goals.filter((g: any) => g.priority === 'high').length,
+      medium: goals.filter((g: any) => g.priority === 'medium').length,
+      low: goals.filter((g: any) => g.priority === 'low').length,
     };
 
     return {

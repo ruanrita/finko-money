@@ -77,7 +77,7 @@ export class BudgetRepository {
       error: transError
     });
 
-    const spent = transactions?.reduce((sum: number, t: Transaction) => sum + Number(t.amount), 0) || 0;
+    const spent = transactions?.reduce((sum: number, t: any) => sum + Number(t.amount), 0) || 0;
 
     // Buscar gastos do mês anterior para comparação
     const previousDate = new Date(year, monthNum - 1, 1);
@@ -98,7 +98,7 @@ export class BudgetRepository {
       .gte("due_date", previousFirstStr)
       .lte("due_date", previousLastStr);
 
-    const previousMonthSpent = previousTransactions?.reduce((sum: number, t: Transaction) => sum + Number(t.amount), 0) || 0;
+    const previousMonthSpent = previousTransactions?.reduce((sum: number, t: any) => sum + Number(t.amount), 0) || 0;
 
     // Calcular valores
     const budgetAmount = Number(budget.amount);

@@ -61,7 +61,7 @@ export class BranchRepository {
     const { data: branch, error: branchError } = await supabase
       .rpc("create_branch_with_owner", {
         p_name: input.name,
-        p_description: input.description ?? null,
+        p_description: input.description || undefined,
       })
       .single();
 

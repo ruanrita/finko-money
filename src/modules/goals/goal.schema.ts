@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { Database } from "@/types/database";
 
 // Enums
 export const GoalType = z.enum(['emergency_fund', 'savings', 'debt_payoff', 'purchase']);
@@ -57,37 +58,9 @@ export type GoalTypeValue = z.infer<typeof GoalType>;
 export type GoalPriorityValue = z.infer<typeof GoalPriority>;
 
 // Database interfaces
-export interface Goal {
-  id: string;
-  user_id: string;
-  branch_id: string;
-  name: string;
-  description: string | null;
-  icon: string;
-  goal_type: GoalTypeValue;
-  priority: GoalPriorityValue;
-  target_amount: number;
-  current_amount: number;
-  target_date: string | null;
-  achieved_at: string | null;
-  is_active: boolean;
-  auto_contribute: boolean;
-  monthly_target: number | null;
-  category_id: string | null;
-  created_at: string;
-  updated_at: string;
-}
+export type Goal = Database["public"]["Tables"]["goals"]["Row"];
 
-export interface GoalContribution {
-  id: string;
-  goal_id: string;
-  user_id: string;
-  amount: number;
-  notes: string | null;
-  transaction_id: string | null;
-  contributed_at: string;
-  created_at: string;
-}
+export type GoalContribution = Database["public"]["Tables"]["goal_contributions"]["Row"];
 
 // Goal com informações calculadas
 export interface GoalWithProgress extends Goal {

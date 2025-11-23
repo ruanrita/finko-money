@@ -85,6 +85,10 @@ export class ReminderRepository {
       throw new Error("Transação não encontrada");
     }
 
+    if (!transaction.branch_id) {
+      throw new Error("Transação sem branch associada");
+    }
+
     // Verificar se o usuário tem acesso à branch da transação
     const { data: membership } = await supabase
       .from("branch_members")

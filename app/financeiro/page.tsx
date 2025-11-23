@@ -107,7 +107,7 @@ export default function FinanceiroPage() {
 
       // Generate recurring occurrences for this month
       const recurringOccurrences = generateRecurringOccurrences(
-        recurringTransactions as Transaction[],
+        recurringTransactions as any,
         monthParam
       );
 
@@ -190,7 +190,7 @@ export default function FinanceiroPage() {
               {/* Table */}
               <TransactionsTable
                 transactions={transactions}
-                onEdit={handleEdit}
+                onEdit={handleEdit as any}
               />
             </>
           )}

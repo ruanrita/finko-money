@@ -40,7 +40,7 @@ export class UserRepository {
     const updateData: Partial<UserProfileUpdate> = input;
     const { data, error } = await supabase
       .from("users")
-      .update(updateData as any)
+      .update(updateData)
       .eq("id", userId)
       .select()
       .single();
@@ -69,7 +69,7 @@ export class UserRepository {
     };
     const { data, error } = await supabase
       .from("users")
-      .insert(insertData as any)
+      .insert(insertData)
       .select()
       .single();
 

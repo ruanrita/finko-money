@@ -63,7 +63,7 @@ export async function getCurrentBranch(userId: string): Promise<BranchWithMember
       .single();
 
     if (!error && branch) {
-      return branch;
+      return branch as any;
     }
 
     // Se o branch do cookie não existe mais, continua para pegar o primeiro disponível
@@ -124,7 +124,7 @@ export async function getCurrentBranch(userId: string): Promise<BranchWithMember
   const firstBranch = branches[0];
 
   // Nota: Cookie será setado na primeira request subsequente
-  return firstBranch;
+  return firstBranch as any;
 }
 
 /**
@@ -150,7 +150,7 @@ export async function getUserBranches(userId: string): Promise<BranchWithMembers
     throw new Error("Erro ao buscar branches do usuário");
   }
 
-  return data || [];
+  return (data || []) as any;
 }
 
 /**

@@ -28,7 +28,7 @@ export async function createTransaction(formData: FormData) {
       ? parseInt(formData.get("installments_count") as string)
       : 1;
 
-    const input: CreateTransactionInput = {
+    const input: any = {
       type: formData.get("type") as "income" | "expense",
       amount: parseFloat(formData.get("amount") as string),
       description: formData.get("description") as string,
