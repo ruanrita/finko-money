@@ -9,8 +9,12 @@
 # SUPABASE MIGRATIONS SCRIPT
 ###############################################
 # Configurado no package.json como:
-# "supa:migrate": "supabase migration up --db-url \"$DATABASE_URL\""
-# Certifique-se de configurar DATABASE_URL nas variáveis de ambiente do Netlify
+# "supa:migrate": "supabase migration up --db-url \"$SUPABASE_DB_URL\""
+#
+# Configure SUPABASE_DB_URL no Netlify com o formato:
+# postgresql://postgres:[PASSWORD]@db.[PROJECT_REF].supabase.co:6543/postgres?sslmode=require
+#
+# IMPORTANTE: Use a porta 6543 (Session Pooler) para compatibilidade IPv4
 ###############################################
 
 ###############################################

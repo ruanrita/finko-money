@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "supa:migrate": "supabase migration up --db-url \"$DATABASE_URL\""
+    "supa:migrate": "supabase migration up --db-url \"$SUPABASE_DB_URL\" || echo 'Skipping migrations - no database configured'"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
