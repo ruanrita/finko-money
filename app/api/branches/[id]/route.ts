@@ -3,21 +3,24 @@ import { BranchRoutes } from "@/src/modules/branches";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  return BranchRoutes.getById(request, params.id);
+  const { id } = await params;
+  return BranchRoutes.getById(request, id);
 }
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  return BranchRoutes.update(request, params.id);
+  const { id } = await params;
+  return BranchRoutes.update(request, id);
 }
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  return BranchRoutes.delete(request, params.id);
+  const { id } = await params;
+  return BranchRoutes.delete(request, id);
 }

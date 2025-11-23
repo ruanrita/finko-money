@@ -3,14 +3,16 @@ import { BranchRoutes } from "@/src/modules/branches";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  return BranchRoutes.getMembers(request, params.id);
+  const { id } = await params;
+  return BranchRoutes.getMembers(request, id);
 }
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  return BranchRoutes.addMember(request, params.id);
+  const { id } = await params;
+  return BranchRoutes.addMember(request, id);
 }
