@@ -338,7 +338,19 @@ export interface Database {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      create_branch_with_owner: {
+        Args: {
+          p_name: string;
+          p_description?: string;
+        };
+        Returns: {
+          id: string;
+          name: string;
+          description: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+      };
     };
     Enums: {
       transaction_type: "income" | "expense";

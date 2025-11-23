@@ -106,7 +106,7 @@ export async function createBranchAction(name: string, description?: string) {
       { user_id: user.id, branch_id: newBranch.id, name: "Educacao", color: "#f59e0b", icon: "GraduationCap" },
       { user_id: user.id, branch_id: newBranch.id, name: "Assinaturas", color: "#6366f1", icon: "ShoppingCart" },
       { user_id: user.id, branch_id: newBranch.id, name: "Outros", color: "#6b7280", icon: "DollarSign" },
-    ]);
+    ] as any);
 
     // Trocar para o novo workspace automaticamente
     await switchBranch(user.id, newBranch.id);

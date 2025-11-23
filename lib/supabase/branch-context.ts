@@ -113,7 +113,7 @@ export async function getCurrentBranch(userId: string): Promise<BranchWithMember
       { user_id: userId, branch_id: newBranch.id, name: "Educacao", color: "#f59e0b", icon: "GraduationCap" },
       { user_id: userId, branch_id: newBranch.id, name: "Assinaturas", color: "#6366f1", icon: "ShoppingCart" },
       { user_id: userId, branch_id: newBranch.id, name: "Outros", color: "#6b7280", icon: "DollarSign" },
-    ]);
+    ] as any);
 
     // Nota: Cookie será setado na primeira request subsequente
     return newBranch;
@@ -201,7 +201,7 @@ export async function getUserRoleInBranch(
     return null;
   }
 
-  return data.role as "owner" | "member";
+  return (data as { role: "owner" | "member" }).role;
 }
 
 /**
