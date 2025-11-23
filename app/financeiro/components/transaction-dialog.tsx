@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { formatCurrency } from "@/lib/utils";
 import { QuickCreateCategory } from "@/components/quick-create-category";
 import { CategoryIcon } from "@/components/category-icon";
+import { Calendar1Icon } from "lucide-react";
 
 const transactionSchema = z.object({
   type: z.enum(["income", "expense"]),
@@ -307,7 +308,9 @@ export function TransactionDialog({
 
             {/* Data de Vencimento */}
             <div className="space-y-2">
-              <Label>Data de Vencimento *</Label>
+              <div className="flex items-center justify-between mb-4 mt-3">
+                <Label>Data de Vencimento *</Label>
+              </div>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button

@@ -112,7 +112,7 @@ export function BudgetsList({ budgets, selectedMonth }: Props) {
                 return (
                   <div
                     key={budget.id}
-                    className="p-4 rounded-lg border-2 space-y-4 bg-white transition-all hover:border-brand hover:shadow-md dark:bg-zinc-950"
+                    className="p-4 rounded-lg border-2 border-gray-300 space-y-4 bg-white transition-all hover:border-brand hover:shadow-md dark:bg-zinc-950"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3 flex-1">
@@ -178,7 +178,7 @@ export function BudgetsList({ budgets, selectedMonth }: Props) {
                           {isExceeded ? (
                             <span className="text-red-600">Excedeu em {formatCurrency(Math.abs(budget.remaining))}</span>
                           ) : (
-                            <span className="text-green-600">Restam {formatCurrency(budget.remaining)}</span>
+                            <span className="text-green-600 font-bold">Restam {formatCurrency(budget.remaining)}</span>
                           )}
                         </span>
                       </div>

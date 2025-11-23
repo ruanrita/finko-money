@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { deleteTransaction, markAsPaid, markAsUnpaid } from "../actions";
 import { toast } from "sonner";
+import { Pencil, Trash2, Check, X } from "lucide-react";
 
 type Transaction = {
   id: string;
@@ -200,28 +201,34 @@ export function TransactionsTable({ transactions, onEdit }: TransactionsTablePro
                     <td className="py-4 text-right">
                       <div className="flex justify-end gap-2">
                         <Button
-                          size="sm"
+                          size="icon"
                           variant="ghost"
                           onClick={() => handleTogglePaid(transaction.id, isPaid)}
                           disabled={loading === transaction.id}
+                          className={isPaid ? "hover:bg-amber-100 hover:text-amber-700 dark:hover:bg-amber-900/30 dark:hover:text-amber-400 transition-all" : "hover:bg-green-100 hover:text-green-700 dark:hover:bg-green-900/30 dark:hover:text-green-400 transition-all"}
+                          title={isPaid ? "Marcar como Pendente" : "Marcar como Pago"}
                         >
-                          {isPaid ? "Pendente" : "Pagar"}
+                          {isPaid ? <X className="h-4 w-4 text-amber-600 dark:text-amber-500" /> : <Check className="h-4 w-4 text-green-600 dark:text-green-500" />}
                         </Button>
                         <Button
-                          size="sm"
+                          size="icon"
                           variant="ghost"
                           onClick={() => onEdit(transaction)}
                           disabled={loading === transaction.id}
+                          className="hover:bg-brand hover:text-white transition-all"
+                          title="Editar transação"
                         >
-                          Editar
+                          <Pencil className="h-4 w-4" />
                         </Button>
                         <Button
-                          size="sm"
+                          size="icon"
                           variant="ghost"
                           onClick={() => handleDelete(transaction.id)}
                           disabled={loading === transaction.id}
+                          className="hover:bg-red-100 hover:text-red-700 dark:hover:bg-red-900/30 dark:hover:text-red-400 transition-all"
+                          title="Deletar transação"
                         >
-                          Deletar
+                          <Trash2 className="h-4 w-4 text-red-600 dark:text-red-500" />
                         </Button>
                       </div>
                     </td>

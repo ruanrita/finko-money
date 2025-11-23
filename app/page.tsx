@@ -49,10 +49,10 @@ export default function Home() {
           <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
           <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center">
-              <Badge className="mb-4 bg-white/20 text-white hover:bg-white/30">
+              {/* <Badge className="mb-4 bg-white/20 text-white hover:bg-white/30">
                 <Sparkles className="mr-1 h-3 w-3" />
                 Teste grátis por 30 dias
-              </Badge>
+              </Badge> */}
               <h1 className="text-5xl font-bold tracking-tight text-white sm:text-7xl">
                 Controle Financeiro
                 <br />
@@ -75,14 +75,15 @@ export default function Home() {
                   </Button>
                 </Link> */}
               </div>
-              <p className="mt-4 text-sm text-blue-200">
+              {/* <p className="mt-4 text-sm text-blue-200">
                 ✨ Sem cartão de crédito • Cancele quando quiser
-              </p>
+              </p> */}
             </div>
 
             {/* Hero Image/Dashboard Preview */}
             <div className="mt-16 rounded-xl bg-white/10 p-2 shadow-brand-lg backdrop-blur">
               <div className="rounded-lg bg-white p-8 shadow-2xl">
+                <h1 className="text-4xl mb-4 font-semibold text-zinc-700">Dashboard</h1>
                 {/* Summary Cards */}
                 <div className="grid gap-4 md:grid-cols-3 mb-8">
                   <div className="rounded-lg border-2 border-green-200 bg-white p-4">
@@ -101,6 +102,45 @@ export default function Home() {
 
                 {/* Grid Layout: Transactions + Goals */}
                 <div className="grid gap-6 md:grid-cols-2">
+                  {/* Metas Financeiras */}
+                  <div>
+                    <h3 className="text-lg font-semibold text-zinc-900 mb-4">Metas Financeiras</h3>
+                    <div className="space-y-4">
+                      {/* Meta: Carro Novo */}
+                      <div className="rounded-lg border-2 border-blue-100 bg-white p-4 hover:border-brand transition-colors">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-2xl">🚗</span>
+                            <div>
+                              <div className="font-semibold text-zinc-900 text-sm">Carro Novo</div>
+                              <div className="text-xs text-zinc-500">R$ 15.000 de R$ 45.000</div>
+                            </div>
+                          </div>
+                          <div className="text-sm font-bold text-brand">33%</div>
+                        </div>
+                        <div className="mt-2 h-2 rounded-full bg-zinc-100 overflow-hidden">
+                          <div className="h-full rounded-full bg-blue-500" style={{width: '33.3%'}}></div>
+                        </div>
+                      </div>
+
+                      {/* Meta: Reserva de Emergência */}
+                      <div className="rounded-lg border-2 border-blue-100 bg-white p-4 hover:border-brand transition-colors">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-2xl">🚨</span>
+                            <div>
+                              <div className="font-semibold text-zinc-900 text-sm">Reserva de Emergência</div>
+                              <div className="text-xs text-zinc-500">R$ 6.000 de R$ 10.000</div>
+                            </div>
+                          </div>
+                          <div className="text-sm font-bold text-brand">60%</div>
+                        </div>
+                        <div className="mt-2 h-2 rounded-full bg-zinc-100 overflow-hidden">
+                          <div className="h-full rounded-full bg-blue-500" style={{width: '60%'}}></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                   {/* Próximas Transações */}
                   <div>
                     <h3 className="text-lg font-semibold text-zinc-900 mb-4">Próximas Transações</h3>
@@ -152,46 +192,6 @@ export default function Home() {
                           </div>
                         </div>
                         <div className="text-sm font-semibold text-green-600">+R$ 4.000</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Metas Financeiras */}
-                  <div>
-                    <h3 className="text-lg font-semibold text-zinc-900 mb-4">Metas Financeiras</h3>
-                    <div className="space-y-4">
-                      {/* Meta: Carro Novo */}
-                      <div className="rounded-lg border-2 border-blue-100 bg-white p-4 hover:border-brand transition-colors">
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center gap-2">
-                            <span className="text-2xl">🚗</span>
-                            <div>
-                              <div className="font-semibold text-zinc-900 text-sm">Carro Novo</div>
-                              <div className="text-xs text-zinc-500">R$ 15.000 de R$ 45.000</div>
-                            </div>
-                          </div>
-                          <div className="text-sm font-bold text-brand">33%</div>
-                        </div>
-                        <div className="mt-2 h-2 rounded-full bg-zinc-100 overflow-hidden">
-                          <div className="h-full rounded-full bg-brand" style={{width: '33.3%'}}></div>
-                        </div>
-                      </div>
-
-                      {/* Meta: Reserva de Emergência */}
-                      <div className="rounded-lg border-2 border-blue-100 bg-white p-4 hover:border-brand transition-colors">
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center gap-2">
-                            <span className="text-2xl">🚨</span>
-                            <div>
-                              <div className="font-semibold text-zinc-900 text-sm">Reserva de Emergência</div>
-                              <div className="text-xs text-zinc-500">R$ 6.000 de R$ 10.000</div>
-                            </div>
-                          </div>
-                          <div className="text-sm font-bold text-brand">60%</div>
-                        </div>
-                        <div className="mt-2 h-2 rounded-full bg-zinc-100 overflow-hidden">
-                          <div className="h-full rounded-full bg-brand" style={{width: '60%'}}></div>
-                        </div>
                       </div>
                     </div>
                   </div>
@@ -310,7 +310,8 @@ export default function Home() {
             </div>
 
             <div className="mt-16 grid gap-8 lg:grid-cols-3">
-              {/* FREE Plan */}
+              {/* FREE Plan*/}
+              {/*
               <Card className="flex flex-col">
                 <CardHeader>
                   <CardTitle className="text-2xl">Básico</CardTitle>
@@ -350,6 +351,7 @@ export default function Home() {
               </Card>
 
               {/* PRO Plan */}
+              {/*
               <Card className="relative flex flex-col border-2 border-brand shadow-brand-lg">
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
                   <Badge className="bg-brand px-4 py-1 text-white">Mais Popular</Badge>
@@ -403,6 +405,7 @@ export default function Home() {
               </Card>
 
               {/* BUSINESS Plan */}
+              {/*
               <Card className="flex flex-col">
                 <CardHeader>
                   <CardTitle className="text-2xl">Business</CardTitle>
@@ -467,14 +470,14 @@ export default function Home() {
             <div className="mt-10 flex items-center justify-center gap-6">
               <Link href="/signup">
                 <Button size="lg" className="h-14 bg-white px-10 text-lg font-semibold text-blue-600 shadow-brand-lg hover:bg-blue-50">
-                  Começar Grátis - 30 Dias
+                  Começar
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
             </div>
-            <p className="mt-6 text-blue-200">
+            {/* <p className="mt-6 text-blue-200">
               Sem cartão de crédito • Cancele quando quiser • Suporte em português
-            </p>
+            </p> */}
           </div>
         </section>
       </main>

@@ -91,22 +91,28 @@ export function CategoryList({ initialCategories }: Props) {
           </div>
         </div>
       ) : (
-        <div className="rounded-md border-2 border-zinc-200 dark:border-zinc-800">
+        <div className="overflow-hidden rounded-lg border-2 border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead className="w-[60px]">Ícone</TableHead>
-                <TableHead className="w-[60px]">Cor</TableHead>
-                <TableHead>Nome</TableHead>
-                <TableHead className="w-[100px]">Ações</TableHead>
+              <TableRow className="bg-gradient-to-r from-blue-50 to-sky-50 border-gray-300 hover:from-blue-50 hover:to-sky-50 dark:from-blue-950/30 dark:to-sky-950/30">
+                <TableHead className="w-[80px] font-semibold text-zinc-700 dark:text-zinc-300">Ícone</TableHead>
+                <TableHead className="w-[80px] font-semibold text-zinc-700 dark:text-zinc-300">Cor</TableHead>
+                <TableHead className="font-semibold text-zinc-700 dark:text-zinc-300">Nome</TableHead>
+                <TableHead className="w-[120px] font-semibold text-zinc-700 dark:text-zinc-300">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {categories.map((category) => (
-                <TableRow key={category.id}>
+              {categories.map((category, index) => (
+                <TableRow
+                  key={category.id}
+                  className={`
+                    transition-all hover:bg-blue-50 dark:hover:bg-blue-950/20 border-gray-300
+                    ${index % 2 === 0 ? 'bg-white dark:bg-zinc-900/10' : 'bg-zinc-50/50 dark:bg-zinc-800/10'}
+                  `}
+                >
                   <TableCell>
                     <div
-                      className="h-8 w-8 rounded-lg flex items-center justify-center"
+                      className="h-10 w-10 rounded-lg flex items-center justify-center shadow-sm transition-transform hover:scale-110"
                       style={{ backgroundColor: `${category.color}20`, color: category.color }}
                     >
                       <CategoryIcon iconName={category.icon} className="h-5 w-5" />
@@ -114,17 +120,19 @@ export function CategoryList({ initialCategories }: Props) {
                   </TableCell>
                   <TableCell>
                     <div
-                      className="h-6 w-6 rounded-full border border-zinc-200 dark:border-zinc-700"
+                      className="h-8 w-8 rounded-full border-2 border-zinc-200 shadow-sm dark:border-zinc-700"
                       style={{ backgroundColor: category.color }}
                     />
                   </TableCell>
-                  <TableCell className="font-medium">{category.name}</TableCell>
+                  <TableCell className="font-medium text-zinc-900 dark:text-zinc-100">{category.name}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <Button
                         variant="ghost"
                         size="icon"
                         onClick={() => setEditingCategory(category)}
+                        className="hover:bg-brand hover:text-white transition-all"
+                        title="Editar categoria"
                       >
                         <Pencil className="h-4 w-4" />
                       </Button>
@@ -132,8 +140,10 @@ export function CategoryList({ initialCategories }: Props) {
                         variant="ghost"
                         size="icon"
                         onClick={() => setDeletingCategoryId(category.id)}
+                        className="hover:bg-red-100 hover:text-red-700 dark:hover:bg-red-900/30 dark:hover:text-red-400 transition-all"
+                        title="Excluir categoria"
                       >
-                        <Trash2 className="h-4 w-4 text-red-600" />
+                        <Trash2 className="h-4 w-4 text-red-600 dark:text-red-500" />
                       </Button>
                     </div>
                   </TableCell>

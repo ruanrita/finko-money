@@ -19,8 +19,6 @@ export class TransactionRepository {
     // Verificar se usuário é membro do branch
     await BranchAccessControl.requireMembership(branchId, userId);
 
-    console.log('HEELLL', branchId, userId);
-
     const supabase = await createClient();
 
     let query = supabase
