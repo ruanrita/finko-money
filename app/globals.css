@@ -9,6 +9,25 @@
   --background: #ffffff;
   --foreground: #171717;
 
+  /* Card & Surface Colors */
+  --card: #ffffff;
+  --card-foreground: #171717;
+  --popover: #ffffff;
+  --popover-foreground: #171717;
+
+  /* Border & Divider Colors */
+  --border: #e4e4e7;
+  --input: #e4e4e7;
+  --ring: #2563eb;
+
+  /* Muted Colors */
+  --muted: #f4f4f5;
+  --muted-foreground: #71717a;
+
+  /* Accent Colors */
+  --accent-bg: #f4f4f5;
+  --accent-fg: #171717;
+
   /* Brand Colors */
   --brand-primary: #2563eb;        /* Azul Royal - Botões, links, CTAs */
   --brand-primary-hover: #1d4ed8;  /* Azul Royal Escuro - Hover states */
@@ -36,6 +55,7 @@
   --gradient-brand: linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%);
   --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
   --gradient-hero: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #0ea5e9 100%);
+  --gradient-header: linear-gradient(to right, #2563eb 0%, #0ea5e9 100%);
 
   /* Shadows */
   --shadow-brand: 0 4px 14px 0 rgba(37, 99, 235, 0.25);
@@ -45,18 +65,94 @@
 @theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--brand-primary);
   --color-brand: var(--brand-primary);
   --color-secondary: var(--brand-secondary);
   --color-accent: var(--brand-accent);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+
+  /* Card & Surface Colors */
+  --card: #18181b;
+  --card-foreground: #ededed;
+  --popover: #18181b;
+  --popover-foreground: #ededed;
+
+  /* Border & Divider Colors */
+  --border: #27272a;
+  --input: #27272a;
+  --ring: #3b82f6;
+
+  /* Muted Colors */
+  --muted: #27272a;
+  --muted-foreground: #a1a1aa;
+
+  /* Accent Colors */
+  --accent-bg: #27272a;
+  --accent-fg: #ededed;
+
+  /* Adjust brand colors for dark mode */
+  --brand-primary: #3b82f6;
+  --brand-primary-hover: #2563eb;
+  --brand-primary-light: #1e40af;
+
+  --brand-secondary: #38bdf8;
+  --brand-secondary-hover: #0ea5e9;
+  --brand-secondary-light: #075985;
+
+  --brand-accent: #34d399;
+  --brand-accent-hover: #10b981;
+  --brand-accent-light: #065f46;
+
+  --success-bg: #064e3b;
+  --warning-bg: #78350f;
+  --error-bg: #7f1d1d;
+  --info-bg: #0c4a6e;
+
+  /* Gradients - Dark mode */
+  --gradient-header: linear-gradient(to right, #1e3a8a 0%, #0c4a6e 100%);
+
+  --shadow-brand: 0 4px 14px 0 rgba(59, 130, 246, 0.4);
+  --shadow-brand-lg: 0 10px 40px 0 rgba(59, 130, 246, 0.5);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+
+    /* Card & Surface Colors */
+    --card: #18181b;
+    --card-foreground: #ededed;
+    --popover: #18181b;
+    --popover-foreground: #ededed;
+
+    /* Border & Divider Colors */
+    --border: #27272a;
+    --input: #27272a;
+    --ring: #3b82f6;
+
+    /* Muted Colors */
+    --muted: #27272a;
+    --muted-foreground: #a1a1aa;
+
+    /* Accent Colors */
+    --accent-bg: #27272a;
+    --accent-fg: #ededed;
 
     /* Adjust brand colors for dark mode */
     --brand-primary: #3b82f6;
@@ -75,6 +171,9 @@
     --warning-bg: #78350f;
     --error-bg: #7f1d1d;
     --info-bg: #0c4a6e;
+
+    /* Gradients - Dark mode */
+    --gradient-header: linear-gradient(to right, #1e3a8a 0%, #0c4a6e 100%);
 
     --shadow-brand: 0 4px 14px 0 rgba(59, 130, 246, 0.4);
     --shadow-brand-lg: 0 10px 40px 0 rgba(59, 130, 246, 0.5);
@@ -97,6 +196,10 @@ body {
 
 .bg-brand-gradient-hero {
   background: var(--gradient-hero);
+}
+
+.bg-header-gradient {
+  background: var(--gradient-header);
 }
 
 .text-brand {

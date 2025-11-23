@@ -26,7 +26,7 @@ export default async function ConfiguracoesPage() {
   return (
     <AuthenticatedLayout>
       <SettingsWrapper>
-        <div className="relative overflow-hidden border-b-2 border-zinc-200 bg-gradient-to-r from-blue-600 to-sky-500 dark:border-zinc-800">
+        <div className="relative overflow-hidden border-b-2 border-border bg-header-gradient">
           <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-10"></div>
           <div className="relative px-8 py-8">
             <div className="flex items-center justify-between">

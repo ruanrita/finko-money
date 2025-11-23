@@ -78,7 +78,7 @@ export default async function DashboardPage() {
 
   return (
     <AuthenticatedLayout>
-      <div className="relative overflow-hidden border-b border-zinc-200 bg-gradient-to-r from-blue-600 to-sky-500 dark:border-zinc-800">
+      <div className="relative overflow-hidden border-b border-border bg-header-gradient">
         <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-10"></div>
         <div className="relative px-8 py-8">
           <div className="flex items-center justify-between">
@@ -124,11 +124,11 @@ export default async function DashboardPage() {
                 {upcomingTransactions.map((transaction) => (
                   <div
                     key={transaction.id}
-                    className="flex items-center justify-between rounded-lg border border-zinc-200 bg-white p-4 transition-all hover:border-brand hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-950"
+                    className="flex items-center justify-between rounded-lg border border-border bg-card p-4 transition-all hover:border-brand hover:shadow-sm"
                   >
                     <div className="flex-1">
-                      <p className="font-semibold text-zinc-900 dark:text-zinc-100">{transaction.description}</p>
-                      <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                      <p className="font-semibold text-card-foreground">{transaction.description}</p>
+                      <p className="text-sm text-muted-foreground">
                         Vencimento: {new Date(transaction.due_date).toLocaleDateString('pt-BR')}
                       </p>
                     </div>
@@ -161,8 +161,8 @@ export default async function DashboardPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                   </svg>
                 </div>
-                <p className="font-medium text-zinc-900 dark:text-zinc-100">Nenhuma transação encontrada</p>
-                <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                <p className="font-medium text-card-foreground">Nenhuma transação encontrada</p>
+                <p className="mt-1 text-sm text-muted-foreground">
                   Comece adicionando suas primeiras transações!
                 </p>
               </div>

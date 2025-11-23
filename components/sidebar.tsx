@@ -41,12 +41,12 @@ export function Sidebar() {
   return (
     <div
       className={cn(
-        "flex flex-col border-r-2 border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 transition-all duration-300",
+        "flex flex-col border-r-2 border-border bg-card transition-all duration-300",
         collapsed ? "w-16" : "w-64"
       )}
     >
       {/* Header */}
-      <div className="flex h-16 items-center justify-between border-b-2 border-zinc-200 px-4 dark:border-zinc-800">
+      <div className="flex h-16 items-center justify-between border-b-2 border-border px-4">
         {!collapsed && (
           <Link href="/dashboard" className="flex items-center gap-2 transition-transform hover:scale-105">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-gradient shadow-sm">
@@ -76,7 +76,7 @@ export function Sidebar() {
 
       {/* Expand button when collapsed */}
       {collapsed && (
-        <div className="border-b-2 border-zinc-200 p-2 dark:border-zinc-800">
+        <div className="border-b-2 border-border p-2">
           <Button
             variant="ghost"
             size="icon"
@@ -91,7 +91,7 @@ export function Sidebar() {
 
       {/* Branch Switcher */}
       {!collapsed && (
-        <div className="border-b border-zinc-200 p-2 dark:border-zinc-800">
+        <div className="border-b border-border p-2">
           <BranchSwitcher />
         </div>
       )}
@@ -110,7 +110,7 @@ export function Sidebar() {
                 "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all",
                 isActive
                   ? "bg-gradient-to-r from-blue-600 to-sky-500 text-white shadow-sm"
-                  : "text-zinc-700 hover:bg-blue-50 hover:text-brand dark:text-zinc-300 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
+                  : "text-card-foreground hover:bg-blue-50 hover:text-brand dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
               )}
               title={collapsed ? item.name : undefined}
             >
@@ -122,7 +122,7 @@ export function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="border-t-2 border-zinc-200 dark:border-zinc-800">
+      <div className="border-t-2 border-border">
         {!collapsed && (
           <div className="p-3">
             <Button
@@ -153,7 +153,7 @@ export function Sidebar() {
             <p className="text-xs font-medium text-brand">
               FinkoMoney v1.0
             </p>
-            <p className="mt-0.5 text-xs text-zinc-600 dark:text-zinc-400">
+            <p className="mt-0.5 text-xs text-muted-foreground">
               Controle fácil, escolhas melhores.
             </p>
           </div>

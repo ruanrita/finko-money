@@ -65,10 +65,10 @@ export function GoalsWidget({ goals }: GoalsWidgetProps) {
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/20 mb-4">
               <Target className="h-6 w-6 text-blue-600 dark:text-blue-400" />
             </div>
-            <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">
+            <h3 className="font-semibold text-card-foreground">
               Nenhuma meta criada
             </h3>
-            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400 max-w-sm">
+            <p className="mt-1 text-sm text-muted-foreground max-w-sm">
               Defina metas de economia para alcançar seus objetivos financeiros.
             </p>
             <Link href="/metas/criar">
@@ -82,14 +82,14 @@ export function GoalsWidget({ goals }: GoalsWidgetProps) {
           <div className="space-y-3">
             {topGoals.map((goal) => (
               <Link key={goal.id} href={`/metas/${goal.id}`}>
-                <div className="rounded-lg border-2 border-zinc-200 dark:border-zinc-800 bg-white p-4 transition-all hover:border-brand hover:shadow-md dark:bg-zinc-950 cursor-pointer">
+                <div className="rounded-lg border-2 border-border bg-card p-4 transition-all hover:border-brand hover:shadow-md cursor-pointer">
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="flex items-start gap-3 flex-1">
                       <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-sky-500 text-2xl shadow-sm">
                         {goal.icon}
                       </div>
                       <div className="flex-1">
-                        <p className="font-semibold text-zinc-900 dark:text-zinc-100">{goal.name}</p>
+                        <p className="font-semibold text-card-foreground">{goal.name}</p>
                         <Badge
                           variant="secondary"
                           className="mt-1.5 text-xs bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300"
@@ -110,7 +110,7 @@ export function GoalsWidget({ goals }: GoalsWidgetProps) {
                     className="h-2.5 mb-3"
                   />
 
-                  <div className="flex items-center justify-between text-xs text-zinc-600 dark:text-zinc-400">
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
                     <span className="font-medium">
                       {formatCurrency(goal.current_amount)} de {formatCurrency(goal.target_amount)}
                     </span>

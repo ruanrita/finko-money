@@ -96,10 +96,10 @@ export function RemindersList({ reminders }: Props) {
               <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/20">
                 <BellOff className="h-6 w-6 text-blue-600 dark:text-blue-400" />
               </div>
-              <p className="font-medium text-zinc-900 dark:text-zinc-100">
+              <p className="font-medium text-card-foreground">
                 Nenhum lembrete cadastrado ainda.
               </p>
-              <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+              <p className="mt-2 text-sm text-muted-foreground">
                 Crie lembretes para não perder o vencimento das suas transações.
               </p>
             </div>
@@ -112,7 +112,7 @@ export function RemindersList({ reminders }: Props) {
                 return (
                   <div
                     key={reminder.id}
-                    className="flex items-center justify-between p-4 rounded-lg border-2 bg-white transition-all hover:border-brand hover:shadow-md dark:bg-zinc-950"
+                    className="flex items-center justify-between p-4 rounded-lg border-2 border-border bg-card transition-all hover:border-brand hover:shadow-md"
                   >
                     <div className="flex items-center gap-4 flex-1">
                       <div className={`flex h-10 w-10 items-center justify-center rounded-full ${isSent ? "bg-gray-100 text-gray-600" : "bg-indigo-100 text-indigo-600"}`}>

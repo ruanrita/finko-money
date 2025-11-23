@@ -46,20 +46,20 @@ export function FinancialChart({ income, expenses, month }: FinancialChartProps)
       </CardHeader>
       <CardContent>
         <div className="mb-6 grid gap-4 md:grid-cols-3">
-          <div className="rounded-lg border-2 border-green-200 bg-white p-4 transition-all hover:border-green-500 hover:shadow-md dark:border-green-900/30 dark:bg-zinc-950">
-            <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400">Receitas</p>
+          <div className="rounded-lg border-2 border-green-200 bg-card p-4 transition-all hover:border-green-500 hover:shadow-md dark:border-green-900/30">
+            <p className="text-sm font-medium text-muted-foreground">Receitas</p>
             <p className="mt-1 text-2xl font-bold text-green-600 dark:text-green-400">
               {formatCurrency(income)}
             </p>
           </div>
-          <div className="rounded-lg border-2 border-red-200 bg-white p-4 transition-all hover:border-red-500 hover:shadow-md dark:border-red-900/30 dark:bg-zinc-950">
-            <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400">Despesas</p>
+          <div className="rounded-lg border-2 border-red-200 bg-card p-4 transition-all hover:border-red-500 hover:shadow-md dark:border-red-900/30">
+            <p className="text-sm font-medium text-muted-foreground">Despesas</p>
             <p className="mt-1 text-2xl font-bold text-red-600 dark:text-red-400">
               {formatCurrency(expenses)}
             </p>
           </div>
-          <div className={`rounded-lg border-2 bg-white p-4 transition-all hover:shadow-md dark:bg-zinc-950 ${balance >= 0 ? 'border-blue-200 hover:border-brand dark:border-blue-900/30' : 'border-orange-200 hover:border-orange-500 dark:border-orange-900/30'}`}>
-            <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400">Saldo</p>
+          <div className={`rounded-lg border-2 bg-card p-4 transition-all hover:shadow-md ${balance >= 0 ? 'border-blue-200 hover:border-brand dark:border-blue-900/30' : 'border-orange-200 hover:border-orange-500 dark:border-orange-900/30'}`}>
+            <p className="text-sm font-medium text-muted-foreground">Saldo</p>
             <p className={`mt-1 text-2xl font-bold ${balance >= 0 ? 'text-brand' : 'text-orange-600 dark:text-orange-400'}`}>
               {formatCurrency(balance)}
             </p>

@@ -77,21 +77,21 @@ export function CategoryList({ initialCategories }: Props) {
       </div>
 
       {categories.length === 0 ? (
-        <div className="flex min-h-[400px] items-center justify-center rounded-lg border-2 border-dashed border-zinc-300 dark:border-zinc-700">
+        <div className="flex min-h-[400px] items-center justify-center rounded-lg border-2 border-dashed border-border">
           <div className="text-center">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/20">
               <span className="text-2xl">🏷️</span>
             </div>
-            <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+            <h3 className="text-lg font-semibold text-card-foreground">
               Nenhuma Categoria
             </h3>
-            <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+            <p className="mt-2 text-sm text-muted-foreground">
               Crie sua primeira categoria para começar a organizar suas transações.
             </p>
           </div>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-lg border-2 border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
+        <div className="overflow-hidden rounded-lg border-2 border-border bg-card">
           <Table>
             <TableHeader>
               <TableRow className="bg-gradient-to-r from-blue-50 to-sky-50 border-gray-300 hover:from-blue-50 hover:to-sky-50 dark:from-blue-950/30 dark:to-sky-950/30">
@@ -106,8 +106,8 @@ export function CategoryList({ initialCategories }: Props) {
                 <TableRow
                   key={category.id}
                   className={`
-                    transition-all hover:bg-blue-50 dark:hover:bg-blue-950/20 border-gray-300
-                    ${index % 2 === 0 ? 'bg-white dark:bg-zinc-900/10' : 'bg-zinc-50/50 dark:bg-zinc-800/10'}
+                    transition-all hover:bg-blue-50 dark:hover:bg-blue-950/20 border-border
+                    ${index % 2 === 0 ? 'bg-card' : 'bg-muted/30'}
                   `}
                 >
                   <TableCell>
@@ -120,11 +120,11 @@ export function CategoryList({ initialCategories }: Props) {
                   </TableCell>
                   <TableCell>
                     <div
-                      className="h-8 w-8 rounded-full border-2 border-zinc-200 shadow-sm dark:border-zinc-700"
+                      className="h-8 w-8 rounded-full border-2 border-border shadow-sm"
                       style={{ backgroundColor: category.color }}
                     />
                   </TableCell>
-                  <TableCell className="font-medium text-zinc-900 dark:text-zinc-100">{category.name}</TableCell>
+                  <TableCell className="font-medium text-card-foreground">{category.name}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <Button

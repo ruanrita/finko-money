@@ -94,10 +94,10 @@ export function BudgetsList({ budgets, selectedMonth }: Props) {
               <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/20">
                 <Wallet className="h-6 w-6 text-blue-600 dark:text-blue-400" />
               </div>
-              <p className="font-medium text-zinc-900 dark:text-zinc-100">
+              <p className="font-medium text-card-foreground">
                 Nenhum orçamento definido para este mês.
               </p>
-              <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-2">
+              <p className="text-sm text-muted-foreground mt-2">
                 Crie um orçamento para começar a controlar seus gastos.
               </p>
             </div>
@@ -112,7 +112,7 @@ export function BudgetsList({ budgets, selectedMonth }: Props) {
                 return (
                   <div
                     key={budget.id}
-                    className="p-4 rounded-lg border-2 border-gray-300 space-y-4 bg-white transition-all hover:border-brand hover:shadow-md dark:bg-zinc-950"
+                    className="p-4 rounded-lg border-2 border-border space-y-4 bg-card transition-all hover:border-brand hover:shadow-md"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3 flex-1">
