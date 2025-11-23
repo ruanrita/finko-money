@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { createClient } from "./server";
+import type { BranchWithMembers } from "@/src/types/database";
 
 const CURRENT_BRANCH_COOKIE = "finko_current_branch";
 
@@ -39,7 +40,7 @@ export async function clearCurrentBranchId(): Promise<void> {
 /**
  * Pega o branch atual do usuário (do cookie ou primeiro disponível)
  */
-export async function getCurrentBranch(userId: string) {
+export async function getCurrentBranch(userId: string): Promise<BranchWithMembers> {
   const supabase = await createClient();
 
   // Tentar pegar do cookie primeiro
@@ -127,7 +128,7 @@ export async function getCurrentBranch(userId: string) {
 /**
  * Pega todos os branches que o usuário tem acesso
  */
-export async function getUserBranches(userId: string) {
+export async function getUserBranches(userId: string): Promise<BranchWithMembers[]> {
   const supabase = await createClient();
 
   const { data, error } = await supabase
