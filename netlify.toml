@@ -1,0 +1,98 @@
+###############################################
+# GLOBAL BUILD SETTINGS
+###############################################
+[build]
+  base = "project/"
+  publish = "build-output/"
+  command = "npm run supa:migrate && npm run build"
+
+###############################################
+# SUPABASE MIGRATIONS SCRIPT
+###############################################
+# Você chamará no package.json:
+# "supa:migrate": "npx supabase migrations up --non-interactive"
+###############################################
+
+###############################################
+# PLUGINS
+###############################################
+[[plugins]]
+  package = "@netlify/plugin-lighthouse"
+
+###############################################
+# PRODUCTION CONTEXT (PRINCIPAL)
+###############################################
+[context.production]
+  publish = "output/"
+  command = "npm run supa:migrate && npm run build"
+
+[context.production.environment]
+  NODE_VERSION = "22"
+  NEXT_TELEMETRY_DISABLED = "1"
+
+###############################################
+# DEPLOY PREVIEW
+###############################################
+[context.deploy-preview]
+  publish = "dist/"
+
+[context.deploy-preview.environment]
+  NOT_PRIVATE_ITEM = "not so secret"
+
+###############################################
+# BRANCH DEPLOY
+###############################################
+[context.branch-deploy]
+  command = "echo branch"
+
+[context.branch-deploy.environment]
+  NODE_ENV = "development"
+
+###############################################
+# DEV
+###############################################
+[context.dev.environment]
+  NODE_ENV = "development"
+
+###############################################
+# SPECIFIC BRANCHES
+###############################################
+[context.staging]
+  command = "echo 'staging'"
+  base = "staging"
+
+[context."feat/branch"]
+  command = "echo 'special branch'"
+  base = "branch"
+
+###############################################
+# SERVERLESS FUNCTIONS FOLDER
+###############################################
+[functions]
+  directory = "functions/"
+
+###############################################
+# SPA FALLBACK REDIRECT
+###############################################
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+###############################################
+# HEADERS
+###############################################
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    Content-Security-Policy = "frame-ancestors https://www.facebook.com"
+    cache-control = '''
+    max-age=0,
+    no-cache,
+    no-store,
+    must-revalidate'''
+
+###############################################
+# END
+###############################################
