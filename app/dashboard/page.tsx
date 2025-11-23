@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentBranch } from "@/lib/supabase/branch-context";
 import { TransactionService } from "@/src/modules/transactions";
-import { GoalService } from "@/src/modules/goals";
+import { GoalService, type GoalWithProgress } from "@/src/modules/goals";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AuthenticatedLayout } from "@/components/authenticated-layout";
@@ -65,7 +65,7 @@ export default async function DashboardPage() {
   );
 
   // Fetch active goals (com error handling)
-  let goals = [];
+  let goals: GoalWithProgress[] = [];
   try {
     goals = await GoalService.listGoals(user.id, currentBranch.id, { is_active: true });
   } catch (error) {

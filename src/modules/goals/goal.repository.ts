@@ -58,7 +58,7 @@ export class GoalRepository {
 
     // Calcular progresso para cada meta
     const goalsWithProgress = await Promise.all(
-      goals.map((goal) => this.calculateGoalProgress(goal, branchId))
+      goals.map((goal: Goal) => this.calculateGoalProgress(goal, branchId))
     );
 
     return goalsWithProgress;
@@ -171,7 +171,7 @@ export class GoalRepository {
     if (error) throw new Error(error.message);
     if (!contributions) return [];
 
-    return contributions.map((contrib) => ({
+    return contributions.map((contrib: any) => ({
       ...contrib,
       transaction: contrib.transactions || null,
       user: contrib.users,
@@ -305,7 +305,7 @@ export class GoalRepository {
         (lastDate.getMonth() - firstDate.getMonth()) + 1
     );
 
-    const totalAmount = contributions.reduce((sum, c) => sum + Number(c.amount), 0);
+    const totalAmount = contributions.reduce((sum: number, c: GoalContribution) => sum + Number(c.amount), 0);
     return totalAmount / monthsDiff;
   }
 
@@ -357,10 +357,10 @@ export class GoalRepository {
     }
 
     const totalGoals = goals.length;
-    const activeGoals = goals.filter((g) => g.is_active).length;
-    const achievedGoals = goals.filter((g) => g.achieved_at !== null).length;
-    const totalTargetAmount = goals.reduce((sum, g) => sum + Number(g.target_amount), 0);
-    const totalCurrentAmount = goals.reduce((sum, g) => sum + Number(g.current_amount), 0);
+    const activeGoals = goals.filter((g: Goal) => g.is_active).length;
+    const achievedGoals = goals.filter((g: Goal) => g.achieved_at !== null).length;
+    const totalTargetAmount = goals.reduce((sum: number, g: Goal) => sum + Number(g.target_amount), 0);
+    const totalCurrentAmount = goals.reduce((sum: number, g: Goal) => sum + Number(g.current_amount), 0);
     const overallProgress = totalTargetAmount > 0 ? (totalCurrentAmount / totalTargetAmount) * 100 : 0;
 
     const goalsByType = {

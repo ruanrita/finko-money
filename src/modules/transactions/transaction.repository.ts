@@ -379,7 +379,7 @@ export class TransactionRepository {
     }
 
     const totals = (data || []).reduce(
-      (acc, transaction) => {
+      (acc: { income: number; expense: number }, transaction: Transaction) => {
         if (transaction.type === "income") {
           acc.income += Number(transaction.amount);
         } else {

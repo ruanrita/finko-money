@@ -1,5 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
+import type { Database } from "@/types/database";
 import type { CreateBudgetInput, UpdateBudgetInput, BudgetWithStats } from "./budget.schema";
+
+type Budget = Database["public"]["Tables"]["budgets"]["Row"];
+type Transaction = Database["public"]["Tables"]["transactions"]["Row"];
 
 export class BudgetRepository {
   // Buscar orçamentos de um mês específico com estatísticas
@@ -26,7 +30,7 @@ export class BudgetRepository {
 
     // Calcular estatísticas para cada orçamento
     const budgetsWithStats = await Promise.all(
-      budgets.map((budget) => this.calculateBudgetStats(budget, branchId, month))
+      budgets.map((budget: any) => this.calculateBudgetStats(budget, branchId, month))
     );
 
     return budgetsWithStats;
@@ -73,7 +77,7 @@ export class BudgetRepository {
       error: transError
     });
 
-    const spent = transactions?.reduce((sum, t) => sum + Number(t.amount), 0) || 0;
+    const spent = transactions?.reduce((sum: number, t: Transaction) => sum + Number(t.amount), 0) || 0;
 
     // Buscar gastos do mês anterior para comparação
     const previousDate = new Date(year, monthNum - 1, 1);
@@ -94,7 +98,7 @@ export class BudgetRepository {
       .gte("due_date", previousFirstStr)
       .lte("due_date", previousLastStr);
 
-    const previousMonthSpent = previousTransactions?.reduce((sum, t) => sum + Number(t.amount), 0) || 0;
+    const previousMonthSpent = previousTransactions?.reduce((sum: number, t: Transaction) => sum + Number(t.amount), 0) || 0;
 
     // Calcular valores
     const budgetAmount = Number(budget.amount);
@@ -301,7 +305,7 @@ export class BudgetRepository {
     }
 
     // Criar novos orçamentos baseados no mês anterior
-    const newBudgets = previousBudgets.map(budget => ({
+    const newBudgets = previousBudgets.map((budget: any) => ({
       user_id: userId,
       category_id: budget.category_id,
       amount: budget.amount,

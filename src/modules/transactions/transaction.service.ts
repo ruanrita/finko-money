@@ -4,10 +4,10 @@ import type {
   UpdateTransactionInput,
   TransactionFilters,
   MarkAsPaidInput,
+  Transaction,
+  TransactionWithCategory,
+  TransactionInsert,
 } from "./transaction.schema";
-import type { Database } from "@/types/database";
-
-type Transaction = Database["public"]["Tables"]["transactions"]["Row"];
 
 export class TransactionService {
   /**
@@ -17,7 +17,7 @@ export class TransactionService {
     userId: string,
     branchId: string,
     filters?: TransactionFilters
-  ): Promise<Transaction[]> {
+  ): Promise<TransactionWithCategory[]> {
     return await TransactionRepository.findByBranchId(branchId, userId, filters);
   }
 
@@ -87,10 +87,7 @@ export class TransactionService {
       });
 
       // Cria as parcelas subsequentes
-      const childTransactions: Omit<
-        Database["public"]["Tables"]["transactions"]["Insert"],
-        "user_id" | "id"
-      >[] = [];
+      const childTransactions: Omit<TransactionInsert, "user_id" | "id">[] = [];
 
       for (let i = 2; i <= installmentsCount; i++) {
         const installmentDate = new Date(dueDate);
