@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "supa:migrate": "supabase migration up --db-url \"$SUPABASE_DB_URL\" || echo 'Skipping migrations - no database configured'"
+    "supa:migrate": "node scripts/migrate.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
