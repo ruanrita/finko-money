@@ -61,8 +61,8 @@ export function GoalCard({ goal, priority = false }: GoalCardProps) {
     <Link href={`/metas/${goal.id}`}>
       <Card
         className={cn(
-          "transition-all hover:shadow-md cursor-pointer",
-          priority && "border-2 border-red-200 dark:border-red-900/30"
+          "border-2 transition-all hover:shadow-md cursor-pointer hover:border-brand",
+          priority && "border-red-200 hover:border-red-500 dark:border-red-900/30"
         )}
       >
         <CardHeader className="pb-3">

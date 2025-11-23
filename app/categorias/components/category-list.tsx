@@ -79,6 +79,9 @@ export function CategoryList({ initialCategories }: Props) {
       {categories.length === 0 ? (
         <div className="flex min-h-[400px] items-center justify-center rounded-lg border-2 border-dashed border-zinc-300 dark:border-zinc-700">
           <div className="text-center">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/20">
+              <span className="text-2xl">🏷️</span>
+            </div>
             <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
               Nenhuma Categoria
             </h3>
@@ -88,7 +91,7 @@ export function CategoryList({ initialCategories }: Props) {
           </div>
         </div>
       ) : (
-        <div className="rounded-md border border-zinc-200 dark:border-zinc-800">
+        <div className="rounded-md border-2 border-zinc-200 dark:border-zinc-800">
           <Table>
             <TableHeader>
               <TableRow>

@@ -54,11 +54,11 @@ export function GoalStats({ stats }: GoalStatsProps) {
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {statCards.map((stat, index) => (
-        <Card key={index}>
+        <Card key={index} className="border-2 transition-all hover:shadow-md">
           <CardContent className="p-6">
             <div className="flex items-center gap-4">
-              <div className={`flex h-12 w-12 items-center justify-center rounded-lg ${stat.bgColor}`}>
-                <stat.icon className={`h-6 w-6 ${stat.color}`} />
+              <div className={`flex h-12 w-12 items-center justify-center rounded-lg shadow-sm transition-transform hover:scale-110 ${stat.bgColor}`}>
+                <stat.icon className={`h-6 w-6 ${stat.color} drop-shadow-sm`} />
               </div>
               <div className="flex-1">
                 <p className="text-sm text-zinc-600 dark:text-zinc-400">

@@ -82,16 +82,16 @@ export function CreateReminderDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
+        <Button className="bg-white text-brand hover:bg-blue-50 shadow-md">
           <Plus className="h-4 w-4 mr-2" />
           Novo Lembrete
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="border-2">
         <form onSubmit={handleSubmit}>
-          <DialogHeader>
-            <DialogTitle>Criar Lembrete</DialogTitle>
-            <DialogDescription>
+          <DialogHeader className="pb-4 border-b-2 border-zinc-100 dark:border-zinc-800">
+            <DialogTitle className="text-2xl">Criar Lembrete</DialogTitle>
+            <DialogDescription className="text-base">
               Configure um lembrete para uma transação pendente
             </DialogDescription>
           </DialogHeader>
@@ -147,16 +147,17 @@ export function CreateReminderDialog() {
             </div>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="pt-4 border-t-2 border-zinc-100 dark:border-zinc-800">
             <Button
               type="button"
               variant="outline"
               onClick={() => setOpen(false)}
               disabled={loading}
+              className="border-2"
             >
               Cancelar
             </Button>
-            <Button type="submit" disabled={loading || !formData.transaction_id}>
+            <Button type="submit" disabled={loading || !formData.transaction_id} className="bg-brand hover:bg-blue-700 shadow-md">
               {loading ? "Criando..." : "Criar Lembrete"}
             </Button>
           </DialogFooter>

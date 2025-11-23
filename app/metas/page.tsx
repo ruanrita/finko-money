@@ -35,17 +35,18 @@ export default async function MetasPage() {
 
   return (
     <AuthenticatedLayout>
-      <div className="border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
-        <div className="px-8 py-6">
+      <div className="relative overflow-hidden border-b-2 border-zinc-200 bg-gradient-to-r from-blue-600 to-sky-500 dark:border-zinc-800">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-10"></div>
+        <div className="relative px-8 py-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold">Metas Financeiras</h1>
-              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+              <h1 className="text-3xl font-bold text-white">Metas Financeiras</h1>
+              <p className="mt-2 text-sm text-blue-100">
                 Defina e acompanhe suas metas de economia e gastos
               </p>
             </div>
             <Link href="/metas/criar">
-              <Button>
+              <Button className="bg-white text-brand hover:bg-blue-50 shadow-md">
                 <Plus className="mr-2 h-4 w-4" />
                 Nova Meta
               </Button>
@@ -98,8 +99,8 @@ export default async function MetasPage() {
         {goals.length === 0 && (
           <div className="flex min-h-[400px] items-center justify-center rounded-lg border-2 border-dashed border-zinc-300 dark:border-zinc-700">
             <div className="text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800">
-                <span className="text-3xl">🎯</span>
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-sky-500 shadow-sm">
+                <span className="text-3xl drop-shadow-sm">🎯</span>
               </div>
               <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
                 Nenhuma meta criada
@@ -108,7 +109,7 @@ export default async function MetasPage() {
                 Comece criando sua reserva de emergência ou defina uma meta de economia para realizar seus sonhos.
               </p>
               <Link href="/metas/criar">
-                <Button className="mt-6">
+                <Button className="mt-6 bg-brand hover:bg-blue-700 shadow-md">
                   <Plus className="mr-2 h-4 w-4" />
                   Criar Primeira Meta
                 </Button>
