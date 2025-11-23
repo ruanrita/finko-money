@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { Database } from "@/types/database";
 
 // Enums
 export const transactionTypeEnum = z.enum(["income", "expense"]);
@@ -83,3 +84,13 @@ export type CreateTransactionInput = z.infer<typeof createTransactionSchema>;
 export type UpdateTransactionInput = z.infer<typeof updateTransactionSchema>;
 export type TransactionFilters = z.infer<typeof transactionFiltersSchema>;
 export type MarkAsPaidInput = z.infer<typeof markAsPaidSchema>;
+
+// Database types
+export type Transaction = Database["public"]["Tables"]["transactions"]["Row"];
+export type TransactionInsert = Database["public"]["Tables"]["transactions"]["Insert"];
+export type TransactionUpdate = Database["public"]["Tables"]["transactions"]["Update"];
+
+// Type for transaction with joined category
+export type TransactionWithCategory = Transaction & {
+  categories: Database["public"]["Tables"]["categories"]["Row"] | null;
+};

@@ -1,11 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { BranchAccessControl } from "@/lib/authorization/branch-access";
 import type { Database } from "@/types/database";
-import type { TransactionFilters } from "./transaction.schema";
-
-type Transaction = Database["public"]["Tables"]["transactions"]["Row"];
-type TransactionInsert = Database["public"]["Tables"]["transactions"]["Insert"];
-type TransactionUpdate = Database["public"]["Tables"]["transactions"]["Update"];
+import type { TransactionFilters, Transaction, TransactionWithCategory, TransactionInsert, TransactionUpdate } from "./transaction.schema";
 
 export class TransactionRepository {
   /**
@@ -15,7 +11,7 @@ export class TransactionRepository {
     branchId: string,
     userId: string,
     filters?: TransactionFilters
-  ): Promise<Transaction[]> {
+  ): Promise<TransactionWithCategory[]> {
     // Verificar se usuário é membro do branch
     await BranchAccessControl.requireMembership(branchId, userId);
 

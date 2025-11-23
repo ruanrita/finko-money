@@ -5,7 +5,9 @@
       "Bash(git add:*)",
       "Bash(mkdir:*)",
       "Bash(npx shadcn@latest add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(npx tsc:*)",
+      "Bash(tee:*)"
     ],
     "deny": [],
     "ask": []
