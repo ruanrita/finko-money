@@ -65,15 +65,15 @@ export default function Home() {
               <div className="mt-10 flex items-center justify-center gap-6">
                 <Link href="/signup">
                   <Button size="lg" className="h-12 bg-white px-8 text-lg font-semibold text-blue-600 shadow-brand-lg hover:bg-blue-50">
-                    Começar Grátis - 30 Dias
+                    Começar Grátis Agora
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
-                <Link href="#pricing">
+                {/* <Link href="#pricing">
                   <Button variant="outline" size="lg" className="h-12 border-2 border-white bg-transparent px-8 text-lg text-white hover:bg-white/10">
                     Ver Preços
                   </Button>
-                </Link>
+                </Link> */}
               </div>
               <p className="mt-4 text-sm text-blue-200">
                 ✨ Sem cartão de crédito • Cancele quando quiser
@@ -83,18 +83,117 @@ export default function Home() {
             {/* Hero Image/Dashboard Preview */}
             <div className="mt-16 rounded-xl bg-white/10 p-2 shadow-brand-lg backdrop-blur">
               <div className="rounded-lg bg-white p-8 shadow-2xl">
-                <div className="grid gap-4 md:grid-cols-3">
-                  <div className="rounded-lg bg-blue-50 p-4">
-                    <div className="text-sm font-medium text-blue-700">Receitas</div>
+                {/* Summary Cards */}
+                <div className="grid gap-4 md:grid-cols-3 mb-8">
+                  <div className="rounded-lg border-2 border-green-200 bg-white p-4">
+                    <div className="text-sm font-medium text-zinc-600">Receitas</div>
                     <div className="mt-2 text-3xl font-bold text-green-600">R$ 12.500</div>
                   </div>
-                  <div className="rounded-lg bg-red-50 p-4">
-                    <div className="text-sm font-medium text-red-700">Despesas</div>
+                  <div className="rounded-lg border-2 border-red-200 bg-white p-4">
+                    <div className="text-sm font-medium text-zinc-600">Despesas</div>
                     <div className="mt-2 text-3xl font-bold text-red-600">R$ 8.340</div>
                   </div>
-                  <div className="rounded-lg bg-green-50 p-4">
-                    <div className="text-sm font-medium text-green-700">Saldo</div>
-                    <div className="mt-2 text-3xl font-bold text-green-600">R$ 4.160</div>
+                  <div className="rounded-lg border-2 border-blue-200 bg-white p-4">
+                    <div className="text-sm font-medium text-zinc-600">Saldo</div>
+                    <div className="mt-2 text-3xl font-bold text-brand">R$ 4.160</div>
+                  </div>
+                </div>
+
+                {/* Grid Layout: Transactions + Goals */}
+                <div className="grid gap-6 md:grid-cols-2">
+                  {/* Próximas Transações */}
+                  <div>
+                    <h3 className="text-lg font-semibold text-zinc-900 mb-4">Próximas Transações</h3>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between rounded-lg border-2 border-zinc-100 p-3 hover:border-brand transition-colors">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-50">
+                            <span className="text-red-600 font-semibold text-sm">🏠</span>
+                          </div>
+                          <div>
+                            <div className="font-medium text-zinc-900 text-sm">Aluguel</div>
+                            <div className="text-xs text-zinc-500">Venc. 05/12</div>
+                          </div>
+                        </div>
+                        <div className="text-sm font-semibold text-red-600">-R$ 2.500</div>
+                      </div>
+                      <div className="flex items-center justify-between rounded-lg border-2 border-zinc-100 p-3 hover:border-brand transition-colors">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-50">
+                            <span className="text-green-600 font-semibold text-sm">💼</span>
+                          </div>
+                          <div>
+                            <div className="font-medium text-zinc-900 text-sm">Salário</div>
+                            <div className="text-xs text-zinc-500">Venc. 05/12</div>
+                          </div>
+                        </div>
+                        <div className="text-sm font-semibold text-green-600">+R$ 8.500</div>
+                      </div>
+                      <div className="flex items-center justify-between rounded-lg border-2 border-zinc-100 p-3 hover:border-brand transition-colors">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-50">
+                            <span className="text-red-600 font-semibold text-sm">🛒</span>
+                          </div>
+                          <div>
+                            <div className="font-medium text-zinc-900 text-sm">Supermercado</div>
+                            <div className="text-xs text-zinc-500">Venc. 10/12</div>
+                          </div>
+                        </div>
+                        <div className="text-sm font-semibold text-red-600">-R$ 840</div>
+                      </div>
+                      <div className="flex items-center justify-between rounded-lg border-2 border-zinc-100 p-3 hover:border-brand transition-colors">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-50">
+                            <span className="text-green-600 font-semibold text-sm">📊</span>
+                          </div>
+                          <div>
+                            <div className="font-medium text-zinc-900 text-sm">Freelance</div>
+                            <div className="text-xs text-zinc-500">Venc. 15/12</div>
+                          </div>
+                        </div>
+                        <div className="text-sm font-semibold text-green-600">+R$ 4.000</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Metas Financeiras */}
+                  <div>
+                    <h3 className="text-lg font-semibold text-zinc-900 mb-4">Metas Financeiras</h3>
+                    <div className="space-y-4">
+                      {/* Meta: Carro Novo */}
+                      <div className="rounded-lg border-2 border-blue-100 bg-white p-4 hover:border-brand transition-colors">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-2xl">🚗</span>
+                            <div>
+                              <div className="font-semibold text-zinc-900 text-sm">Carro Novo</div>
+                              <div className="text-xs text-zinc-500">R$ 15.000 de R$ 45.000</div>
+                            </div>
+                          </div>
+                          <div className="text-sm font-bold text-brand">33%</div>
+                        </div>
+                        <div className="mt-2 h-2 rounded-full bg-zinc-100 overflow-hidden">
+                          <div className="h-full rounded-full bg-brand" style={{width: '33.3%'}}></div>
+                        </div>
+                      </div>
+
+                      {/* Meta: Reserva de Emergência */}
+                      <div className="rounded-lg border-2 border-blue-100 bg-white p-4 hover:border-brand transition-colors">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-2xl">🚨</span>
+                            <div>
+                              <div className="font-semibold text-zinc-900 text-sm">Reserva de Emergência</div>
+                              <div className="text-xs text-zinc-500">R$ 6.000 de R$ 10.000</div>
+                            </div>
+                          </div>
+                          <div className="text-sm font-bold text-brand">60%</div>
+                        </div>
+                        <div className="mt-2 h-2 rounded-full bg-zinc-100 overflow-hidden">
+                          <div className="h-full rounded-full bg-brand" style={{width: '60%'}}></div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -197,8 +296,8 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Pricing Section */}
-        <section id="pricing" className="bg-zinc-50 py-24 dark:bg-zinc-900">
+        {/* Pricing Section - Temporariamente desativado */}
+        {/* <section id="pricing" className="bg-zinc-50 py-24 dark:bg-zinc-900">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <h2 className="text-base font-semibold text-brand">Preços</h2>
@@ -354,7 +453,7 @@ export default function Home() {
               </Card>
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* CTA Section */}
         <section className="bg-brand-gradient-hero py-20">
@@ -401,9 +500,9 @@ export default function Home() {
                 <li>
                   <Link href="#" className="hover:text-brand">Features</Link>
                 </li>
-                <li>
+                {/* <li>
                   <Link href="#pricing" className="hover:text-brand">Preços</Link>
-                </li>
+                </li> */}
                 <li>
                   <Link href="#" className="hover:text-brand">Roadmap</Link>
                 </li>
