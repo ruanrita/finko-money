@@ -35,7 +35,7 @@ export default function Home() {
             </Link>
             <Link href="/signup">
               <Button className="btn-brand">
-                Começar Grátis
+                Começar
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
