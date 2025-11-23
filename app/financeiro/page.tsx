@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { FinancialChart } from "./components/financial-chart";
@@ -40,7 +40,7 @@ type Category = {
   icon?: string | null;
 };
 
-export default function FinanceiroPage() {
+function FinanceiroPageContent() {
   const searchParams = useSearchParams();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -205,5 +205,13 @@ export default function FinanceiroPage() {
         transaction={editingTransaction}
       />
     </AuthenticatedLayout>
+  );
+}
+
+export default function FinanceiroPage() {
+  return (
+    <Suspense fallback={<div>Carregando...</div>}>
+      <FinanceiroPageContent />
+    </Suspense>
   );
 }
