@@ -364,17 +364,17 @@ export class GoalRepository {
     const overallProgress = totalTargetAmount > 0 ? (totalCurrentAmount / totalTargetAmount) * 100 : 0;
 
     const goalsByType = {
-      emergency_fund: goals.filter((g) => g.goal_type === 'emergency_fund').length,
-      savings: goals.filter((g) => g.goal_type === 'savings').length,
-      debt_payoff: goals.filter((g) => g.goal_type === 'debt_payoff').length,
-      purchase: goals.filter((g) => g.goal_type === 'purchase').length,
+      emergency_fund: goals.filter((g: Goal) => g.goal_type === 'emergency_fund').length,
+      savings: goals.filter((g: Goal) => g.goal_type === 'savings').length,
+      debt_payoff: goals.filter((g: Goal) => g.goal_type === 'debt_payoff').length,
+      purchase: goals.filter((g: Goal) => g.goal_type === 'purchase').length,
     };
 
     const goalsByPriority = {
-      critical: goals.filter((g) => g.priority === 'critical').length,
-      high: goals.filter((g) => g.priority === 'high').length,
-      medium: goals.filter((g) => g.priority === 'medium').length,
-      low: goals.filter((g) => g.priority === 'low').length,
+      critical: goals.filter((g: Goal) => g.priority === 'critical').length,
+      high: goals.filter((g: Goal) => g.priority === 'high').length,
+      medium: goals.filter((g: Goal) => g.priority === 'medium').length,
+      low: goals.filter((g: Goal) => g.priority === 'low').length,
     };
 
     return {
@@ -412,7 +412,7 @@ export class GoalRepository {
     }
 
     // Calcular média mensal
-    const totalExpenses = transactions.reduce((sum, t) => sum + Number(t.amount), 0);
+    const totalExpenses = transactions.reduce((sum: number, t: any) => sum + Number(t.amount), 0);
     const monthlyAverage = totalExpenses / 3;
 
     // Sugerir 6 meses de despesas

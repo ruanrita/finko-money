@@ -136,7 +136,7 @@ export class TransactionService {
     }
 
     // Converte due_date se necessário
-    const updateData = { ...input };
+    const updateData: any = { ...input };
     if (updateData.due_date) {
       updateData.due_date =
         typeof updateData.due_date === "string"
