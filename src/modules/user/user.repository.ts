@@ -3,6 +3,7 @@ import type { Database } from "@/types/database";
 
 type UserProfile = Database["public"]["Tables"]["users"]["Row"];
 type UserProfileUpdate = Database["public"]["Tables"]["users"]["Update"];
+type UserProfileInsert = Database["public"]["Tables"]["users"]["Insert"];
 
 export class UserRepository {
   /**
@@ -36,9 +37,10 @@ export class UserRepository {
   ): Promise<UserProfile> {
     const supabase = await createClient();
 
+    const updateData: Partial<UserProfileUpdate> = input;
     const { data, error } = await supabase
       .from("users")
-      .update(input)
+      .update(updateData as any)
       .eq("id", userId)
       .select()
       .single();
@@ -60,13 +62,14 @@ export class UserRepository {
   ): Promise<UserProfile> {
     const supabase = await createClient();
 
+    const insertData: UserProfileInsert = {
+      id: userId,
+      email,
+      full_name: fullName,
+    };
     const { data, error } = await supabase
       .from("users")
-      .insert({
-        id: userId,
-        email,
-        full_name: fullName,
-      })
+      .insert(insertData as any)
       .select()
       .single();
 

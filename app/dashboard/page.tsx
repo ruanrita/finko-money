@@ -11,6 +11,7 @@ import { SummaryCards } from "./components/summary-cards";
 import { GoalsWidget } from "./components/goals-widget";
 import { CategoryIcon } from "@/components/category-icon";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { getUserProfileAction } from "./actions";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -26,12 +27,8 @@ export default async function DashboardPage() {
   // Pegar branch atual do usuário
   const currentBranch = await getCurrentBranch(user.id);
 
-  // Fetch user data
-  const { data: userData } = await supabase
-    .from("users")
-    .select("*")
-    .eq("id", user.id)
-    .single();
+  // Fetch user data via server action
+  const userData = await getUserProfileAction();
 
   // Fetch all transactions via service layer
   const allTransactions = await TransactionService.list(user.id, currentBranch.id);
