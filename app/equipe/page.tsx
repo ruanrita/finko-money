@@ -7,6 +7,7 @@ import { InviteMemberDialog } from "@/app/team/components/invite-member-dialog";
 import { getBranchMembersAction } from "@/app/team/actions";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, Briefcase } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default async function EquipePage() {
   const supabase = await createClient();
@@ -25,16 +26,20 @@ export default async function EquipePage() {
 
   return (
     <AuthenticatedLayout>
-      <div className="border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
-        <div className="px-8 py-6">
+      <div className="relative overflow-hidden border-b-2 border-zinc-200 bg-gradient-to-r from-blue-600 to-sky-500 dark:border-zinc-800">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-10"></div>
+        <div className="relative px-8 py-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold">Equipe</h1>
-              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+              <h1 className="text-3xl font-bold text-white">Equipe</h1>
+              <p className="mt-2 text-sm text-blue-100">
                 Gerencie os membros do workspace
               </p>
             </div>
-            {userRole === "owner" && <InviteMemberDialog branchId={currentBranch.id} />}
+            <div className="flex items-center gap-3">
+              <ThemeToggle />
+              {userRole === "owner" && <InviteMemberDialog branchId={currentBranch.id} />}
+            </div>
           </div>
         </div>
       </div>
