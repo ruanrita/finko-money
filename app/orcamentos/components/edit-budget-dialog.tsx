@@ -52,11 +52,11 @@ export function EditBudgetDialog({ budget, open, onOpenChange }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="border-2">
         <form onSubmit={handleSubmit}>
-          <DialogHeader>
-            <DialogTitle>Editar Orçamento</DialogTitle>
-            <DialogDescription>
+          <DialogHeader className="pb-4 border-b-2 border-zinc-100 dark:border-zinc-800">
+            <DialogTitle className="text-2xl">Editar Orçamento</DialogTitle>
+            <DialogDescription className="text-base">
               Altere o orçamento de {budget.category.name}
             </DialogDescription>
           </DialogHeader>
@@ -81,8 +81,8 @@ export function EditBudgetDialog({ budget, open, onOpenChange }: Props) {
               />
             </div>
 
-            <div className="space-y-3">
-              <Label>Alertas</Label>
+            <div className="space-y-3 rounded-lg border-2 border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-900/50">
+              <Label className="font-semibold">Alertas</Label>
               <div className="space-y-2">
                 <div className="flex items-center space-x-2">
                   <Checkbox
@@ -149,16 +149,17 @@ export function EditBudgetDialog({ budget, open, onOpenChange }: Props) {
             </div>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="pt-4 border-t-2 border-zinc-100 dark:border-zinc-800">
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
               disabled={loading}
+              className="border-2"
             >
               Cancelar
             </Button>
-            <Button type="submit" disabled={loading || formData.amount <= 0}>
+            <Button type="submit" disabled={loading || formData.amount <= 0} className="bg-brand hover:bg-blue-700 shadow-md">
               {loading ? "Salvando..." : "Salvar"}
             </Button>
           </DialogFooter>

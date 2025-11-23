@@ -37,17 +37,22 @@ export default async function BudgetsPage({
 
   return (
     <AuthenticatedLayout>
-      <div className="container mx-auto max-w-6xl p-6 space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Orçamentos</h1>
-            <p className="text-muted-foreground mt-1">
-              Controle seus gastos por categoria
-            </p>
+      <div className="relative overflow-hidden border-b-2 border-zinc-200 bg-gradient-to-r from-blue-600 to-sky-500 dark:border-zinc-800">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-10"></div>
+        <div className="relative px-8 py-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-white">Orçamentos</h1>
+              <p className="mt-2 text-sm text-blue-100">
+                Controle seus gastos por categoria
+              </p>
+            </div>
+            <CreateBudgetDialog selectedMonth={selectedMonth} />
           </div>
-          <CreateBudgetDialog selectedMonth={selectedMonth} />
         </div>
+      </div>
 
+      <div className="container mx-auto max-w-6xl p-8 space-y-6">
         <MonthSelector selectedMonth={selectedMonth} />
 
         {summary && <BudgetSummary summary={summary} />}

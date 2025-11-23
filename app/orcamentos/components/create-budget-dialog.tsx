@@ -102,16 +102,16 @@ export function CreateBudgetDialog({ selectedMonth }: Props) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
+        <Button className="bg-white text-brand hover:bg-blue-50 shadow-md">
           <Plus className="h-4 w-4 mr-2" />
           Novo Orçamento
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="border-2">
         <form onSubmit={handleSubmit}>
-          <DialogHeader>
-            <DialogTitle>Criar Orçamento</DialogTitle>
-            <DialogDescription>
+          <DialogHeader className="pb-4 border-b-2 border-zinc-100 dark:border-zinc-800">
+            <DialogTitle className="text-2xl">Criar Orçamento</DialogTitle>
+            <DialogDescription className="text-base">
               Defina um orçamento mensal para uma categoria
             </DialogDescription>
           </DialogHeader>
@@ -182,8 +182,8 @@ export function CreateBudgetDialog({ selectedMonth }: Props) {
               />
             </div>
 
-            <div className="space-y-3">
-              <Label>Alertas</Label>
+            <div className="space-y-3 rounded-lg border-2 border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-900/50">
+              <Label className="font-semibold">Alertas</Label>
               <div className="space-y-2">
                 <div className="flex items-center space-x-2">
                   <Checkbox
@@ -250,16 +250,17 @@ export function CreateBudgetDialog({ selectedMonth }: Props) {
             </div>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="pt-4 border-t-2 border-zinc-100 dark:border-zinc-800">
             <Button
               type="button"
               variant="outline"
               onClick={() => setOpen(false)}
               disabled={loading}
+              className="border-2"
             >
               Cancelar
             </Button>
-            <Button type="submit" disabled={loading || !formData.category_id || formData.amount <= 0}>
+            <Button type="submit" disabled={loading || !formData.category_id || formData.amount <= 0} className="bg-brand hover:bg-blue-700 shadow-md">
               {loading ? "Criando..." : "Criar Orçamento"}
             </Button>
           </DialogFooter>

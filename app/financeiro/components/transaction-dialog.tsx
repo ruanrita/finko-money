@@ -197,12 +197,12 @@ export function TransactionDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>
+      <DialogContent className="max-w-2xl border-2">
+        <DialogHeader className="pb-4 border-b-2 border-zinc-100 dark:border-zinc-800">
+          <DialogTitle className="text-2xl">
             {transaction ? "Editar Lançamento" : "Novo Lançamento"}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-base">
             {transaction
               ? "Atualize os dados da transação"
               : "Adicione uma nova despesa ou receita"}
@@ -395,9 +395,9 @@ export function TransactionDialog({
           {/* Recorrência (apenas se NÃO for parcelado) */}
           {!isInstallment && (
             <>
-              <div className="flex items-center justify-between rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
+              <div className="flex items-center justify-between rounded-lg border-2 border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-900/50">
                 <div className="space-y-0.5">
-                  <Label>Transação Recorrente</Label>
+                  <Label className="font-semibold">Transação Recorrente</Label>
                   <p className="text-sm text-zinc-500 dark:text-zinc-400">
                     Esta transação se repete automaticamente?
                   </p>
@@ -442,16 +442,17 @@ export function TransactionDialog({
             />
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="pt-4 border-t-2 border-zinc-100 dark:border-zinc-800">
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
               disabled={loading}
+              className="border-2"
             >
               Cancelar
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" disabled={loading} className="bg-brand hover:bg-blue-700 shadow-md">
               {loading ? "Salvando..." : transaction ? "Atualizar" : "Criar"}
             </Button>
           </DialogFooter>
