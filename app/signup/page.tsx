@@ -208,7 +208,7 @@ export default function SignUpPage() {
                 </div>
               </div>
 
-              <div className="flex items-start gap-3">
+              {/* <div className="flex items-start gap-3">
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-green-400">
                   <Check className="h-5 w-5 text-green-900" />
                 </div>
@@ -218,7 +218,7 @@ export default function SignUpPage() {
                     Comece grátis, faça upgrade quando quiser
                   </p>
                 </div>
-              </div>
+              </div> */}
 
               <div className="flex items-start gap-3">
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-green-400">
