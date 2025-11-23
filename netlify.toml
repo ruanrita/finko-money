@@ -8,8 +8,9 @@
 ###############################################
 # SUPABASE MIGRATIONS SCRIPT
 ###############################################
-# Você chamará no package.json:
-# "supa:migrate": "npx supabase migrations up --non-interactive"
+# Configurado no package.json como:
+# "supa:migrate": "supabase migration up --db-url \"$DATABASE_URL\""
+# Certifique-se de configurar DATABASE_URL nas variáveis de ambiente do Netlify
 ###############################################
 
 ###############################################
