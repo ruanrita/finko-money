@@ -132,7 +132,7 @@ export class CategoryRepository {
 
     const { data, error } = await supabase
       .from("categories")
-      .update(input)
+      .update(input as any)
       .eq("id", id)
       .eq("branch_id", branchId)
       .select()

@@ -81,7 +81,7 @@ export class BranchRepository {
 
     const { data, error } = await supabase
       .from("branches")
-      .update(input)
+      .update(input as any)
       .eq("id", branchId)
       .select()
       .single();

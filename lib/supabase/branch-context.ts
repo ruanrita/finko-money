@@ -103,20 +103,22 @@ export async function getCurrentBranch(userId: string): Promise<BranchWithMember
       throw new Error("Erro ao criar branch padrão");
     }
 
+    const branchId = (newBranch as any).id;
+
     // Criar categorias padrão para o novo branch
     await supabase.from("categories").insert([
-      { user_id: userId, branch_id: newBranch.id, name: "Alimentacao", color: "#ef4444", icon: "Utensils" },
-      { user_id: userId, branch_id: newBranch.id, name: "Transporte", color: "#3b82f6", icon: "Car" },
-      { user_id: userId, branch_id: newBranch.id, name: "Moradia", color: "#8b5cf6", icon: "Home" },
-      { user_id: userId, branch_id: newBranch.id, name: "Lazer", color: "#ec4899", icon: "Gamepad2" },
-      { user_id: userId, branch_id: newBranch.id, name: "Saude", color: "#10b981", icon: "Heart" },
-      { user_id: userId, branch_id: newBranch.id, name: "Educacao", color: "#f59e0b", icon: "GraduationCap" },
-      { user_id: userId, branch_id: newBranch.id, name: "Assinaturas", color: "#6366f1", icon: "ShoppingCart" },
-      { user_id: userId, branch_id: newBranch.id, name: "Outros", color: "#6b7280", icon: "DollarSign" },
+      { user_id: userId, branch_id: branchId, name: "Alimentacao", color: "#ef4444", icon: "Utensils" },
+      { user_id: userId, branch_id: branchId, name: "Transporte", color: "#3b82f6", icon: "Car" },
+      { user_id: userId, branch_id: branchId, name: "Moradia", color: "#8b5cf6", icon: "Home" },
+      { user_id: userId, branch_id: branchId, name: "Lazer", color: "#ec4899", icon: "Gamepad2" },
+      { user_id: userId, branch_id: branchId, name: "Saude", color: "#10b981", icon: "Heart" },
+      { user_id: userId, branch_id: branchId, name: "Educacao", color: "#f59e0b", icon: "GraduationCap" },
+      { user_id: userId, branch_id: branchId, name: "Assinaturas", color: "#6366f1", icon: "ShoppingCart" },
+      { user_id: userId, branch_id: branchId, name: "Outros", color: "#6b7280", icon: "DollarSign" },
     ] as any);
 
     // Nota: Cookie será setado na primeira request subsequente
-    return newBranch;
+    return newBranch as any;
   }
 
   const firstBranch = branches[0];
