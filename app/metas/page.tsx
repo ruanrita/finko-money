@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { GoalCard } from "./components/goal-card";
 import { GoalStats } from "./components/goal-stats";
 import { Plus } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default async function MetasPage() {
   const supabase = await createClient();
@@ -45,12 +46,15 @@ export default async function MetasPage() {
                 Defina e acompanhe suas metas de economia e gastos
               </p>
             </div>
-            <Link href="/metas/criar">
-              <Button className="bg-white text-brand hover:bg-blue-50 shadow-md">
-                <Plus className="mr-2 h-4 w-4" />
-                Nova Meta
-              </Button>
-            </Link>
+            <div className="flex items-center gap-3">
+              <ThemeToggle />
+              <Link href="/metas/criar">
+                <Button className="bg-white text-brand hover:bg-blue-50 shadow-md">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Nova Meta
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </div>

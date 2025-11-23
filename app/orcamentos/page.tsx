@@ -6,6 +6,7 @@ import { BudgetSummary } from "./components/budget-summary";
 import { MonthSelector } from "./components/month-selector";
 import { CreateBudgetDialog } from "./components/create-budget-dialog";
 import { getBudgetsAction, getMonthSummaryAction } from "./actions";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default async function BudgetsPage({
   searchParams,
@@ -47,7 +48,10 @@ export default async function BudgetsPage({
                 Controle seus gastos por categoria
               </p>
             </div>
-            <CreateBudgetDialog selectedMonth={selectedMonth} />
+            <div className="flex items-center gap-3">
+              <ThemeToggle />
+              <CreateBudgetDialog selectedMonth={selectedMonth} />
+            </div>
           </div>
         </div>
       </div>

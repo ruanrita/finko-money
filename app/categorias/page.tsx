@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { AuthenticatedLayout } from "@/components/authenticated-layout";
 import { getCategoriesAction } from "./actions";
 import { CategoryList } from "./components/category-list";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default async function CategoriasPage() {
   const supabase = await createClient();
@@ -29,6 +30,7 @@ export default async function CategoriasPage() {
                 Gerencie as categorias das suas transações
               </p>
             </div>
+            <ThemeToggle />
           </div>
         </div>
       </div>

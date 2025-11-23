@@ -10,6 +10,7 @@ import { TransactionDialog } from "./components/transaction-dialog";
 import { AuthenticatedLayout } from "@/components/authenticated-layout";
 import { getTransactions, getCategories } from "./actions";
 import { generateRecurringOccurrences } from "@/lib/recurring-utils";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 type Transaction = {
   id: string;
@@ -159,12 +160,15 @@ export default function FinanceiroPage() {
                 Gerencie suas transações financeiras
               </p>
             </div>
-            <Button
-              onClick={() => setDialogOpen(true)}
-              className="bg-white text-brand hover:bg-blue-50 shadow-md"
-            >
-              Adicionar Lançamento
-            </Button>
+            <div className="flex items-center gap-3">
+              <ThemeToggle />
+              <Button
+                onClick={() => setDialogOpen(true)}
+                className="bg-white text-brand hover:bg-blue-50 shadow-md"
+              >
+                Adicionar Lançamento
+              </Button>
+            </div>
           </div>
         </div>
       </div>

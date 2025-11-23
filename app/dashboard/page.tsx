@@ -10,6 +10,7 @@ import { formatCurrency } from "@/lib/utils";
 import { SummaryCards } from "./components/summary-cards";
 import { GoalsWidget } from "./components/goals-widget";
 import { CategoryIcon } from "@/components/category-icon";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -87,6 +88,7 @@ export default async function DashboardPage() {
                 Bem-vindo de volta, {userData?.full_name || user.email}!
               </p>
             </div>
+            <ThemeToggle />
           </div>
         </div>
       </div>

@@ -4,6 +4,7 @@ import { AuthenticatedLayout } from "@/components/authenticated-layout";
 import { RemindersList } from "./components/reminders-list";
 import { CreateReminderDialog } from "./components/create-reminder-dialog";
 import { getRemindersAction } from "./actions";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default async function RemindersPage() {
   const supabase = await createClient();
@@ -30,7 +31,10 @@ export default async function RemindersPage() {
                 Gerencie lembretes para suas transações
               </p>
             </div>
-            <CreateReminderDialog />
+            <div className="flex items-center gap-3">
+              <ThemeToggle />
+              <CreateReminderDialog />
+            </div>
           </div>
         </div>
       </div>
