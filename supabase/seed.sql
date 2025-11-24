@@ -489,12 +489,21 @@ BEGIN
       LIMIT 1;
 
       IF v_maria_branch_id IS NULL THEN
-        -- Criar branch usando RPC
-        SELECT id INTO v_maria_branch_id
-        FROM public.create_branch_with_owner(
-          p_name := 'Finanças Pessoais - Maria',
-          p_description := 'Workspace financeiro pessoal'
+        -- Criar branch diretamente (não usar RPC pois requer auth)
+        v_maria_branch_id := gen_random_uuid();
+
+        INSERT INTO public.branches (id, name, description, created_at, updated_at)
+        VALUES (
+          v_maria_branch_id,
+          'Finanças Pessoais - Maria',
+          'Workspace financeiro pessoal',
+          NOW(),
+          NOW()
         );
+
+        -- Adicionar Maria como owner da branch
+        INSERT INTO public.branch_members (branch_id, user_id, role)
+        VALUES (v_maria_branch_id, v_user2_id, 'owner');
 
         RAISE NOTICE '✅ Branch própria criada para Maria (ID: %)', v_maria_branch_id;
 
