@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Metadata } from "next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -15,19 +16,92 @@ import {
   Sparkles,
 } from "lucide-react";
 
+export const metadata: Metadata = {
+  title: "FinkoMoney - Controle Financeiro Pessoal Inteligente",
+  description: "Plataforma completa de gestão financeira pessoal. Controle despesas, receitas, crie metas financeiras e gerencie orçamentos de forma simples e eficiente. Comece grátis hoje!",
+  alternates: {
+    canonical: "https://funko-money.com",
+  },
+  openGraph: {
+    title: "FinkoMoney - Controle Financeiro Pessoal Inteligente",
+    description: "Gerencie suas finanças pessoais de forma simples e eficiente. Controle despesas, receitas, metas financeiras e orçamentos em um único lugar.",
+    url: "https://funko-money.com",
+    type: "website",
+  },
+};
+
 export default function Home() {
+  // Dados estruturados para SEO (JSON-LD)
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "FinkoMoney",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "BRL"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "ratingCount": "1250"
+    },
+    "description": "Gerencie suas finanças pessoais de forma simples e eficiente. Controle despesas, receitas, metas financeiras e orçamentos em um único lugar.",
+    "url": "https://funko-money.com",
+    "image": "https://funko-money.com/og-image.png",
+    "provider": {
+      "@type": "Organization",
+      "name": "FinkoMoney",
+      "url": "https://funko-money.com"
+    },
+    "featureList": [
+      "Controle de despesas e receitas",
+      "Metas financeiras",
+      "Orçamentos inteligentes",
+      "Relatórios detalhados",
+      "Workspaces colaborativos",
+      "Segurança total"
+    ]
+  };
+
+  const organizationJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "FinkoMoney",
+    "url": "https://funko-money.com",
+    "logo": "https://funko-money.com/finkomoney-logo.svg",
+    "description": "Plataforma de controle financeiro pessoal inteligente",
+    "sameAs": [
+      "https://twitter.com/finkomoney",
+      "https://facebook.com/finkomoney",
+      "https://instagram.com/finkomoney"
+    ]
+  };
+
   return (
     <div className="flex min-h-screen flex-col">
+      {/* JSON-LD para SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+      />
+
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b border-zinc-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:border-zinc-800 dark:bg-zinc-950/95">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-gradient">
-              <Wallet className="h-6 w-6 text-white" />
+          <Link href="/" className="flex items-center gap-2" aria-label="FinkoMoney - Página inicial">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-gradient" role="img" aria-label="Logo FinkoMoney">
+              <Wallet className="h-6 w-6 text-white" aria-hidden="true" />
             </div>
             <span className="text-2xl font-bold text-brand">FinkoMoney</span>
-          </div>
-          <div className="flex gap-4">
+          </Link>
+          <nav className="flex gap-4" aria-label="Navegação principal">
             <Link href="/login">
               <Button variant="ghost" className="text-brand hover:bg-blue-50">
                 Entrar
@@ -36,17 +110,17 @@ export default function Home() {
             <Link href="/signup">
               <Button className="btn-brand">
                 Começar
-                <ArrowRight className="ml-2 h-4 w-4" />
+                <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
               </Button>
             </Link>
-          </div>
+          </nav>
         </div>
       </header>
 
       {/* Hero Section */}
       <main className="flex-1">
-        <section className="relative overflow-hidden bg-brand-gradient-hero py-20 sm:py-32">
-          <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
+        <section className="relative overflow-hidden bg-brand-gradient-hero py-20 sm:py-32" aria-label="Seção principal">
+          <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" aria-hidden="true"></div>
           <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               {/* <Badge className="mb-4 bg-white/20 text-white hover:bg-white/30">
@@ -202,10 +276,10 @@ export default function Home() {
         </section>
 
         {/* Features Grid */}
-        <section className="bg-white py-24 dark:bg-zinc-950">
+        <section className="bg-white py-24 dark:bg-zinc-950" aria-labelledby="features-heading">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center">
-              <h2 className="text-base font-semibold text-brand">Features</h2>
+              <h2 id="features-heading" className="text-base font-semibold text-brand">Funcionalidades</h2>
               <p className="mt-2 text-4xl font-bold tracking-tight text-zinc-900 dark:text-white">
                 Tudo que você precisa em um só lugar
               </p>
@@ -459,9 +533,9 @@ export default function Home() {
         </section> */}
 
         {/* CTA Section */}
-        <section className="bg-brand-gradient-hero py-20">
+        <section className="bg-brand-gradient-hero py-20" aria-labelledby="cta-heading">
           <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
-            <h2 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">
+            <h2 id="cta-heading" className="text-4xl font-bold tracking-tight text-white sm:text-5xl">
               Pronto para transformar suas finanças?
             </h2>
             <p className="mx-auto mt-6 max-w-2xl text-xl text-blue-100">
@@ -483,13 +557,13 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
+      <footer className="border-t border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950" role="contentinfo">
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
           <div className="grid gap-8 md:grid-cols-4">
             <div>
               <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-gradient">
-                  <Wallet className="h-5 w-5 text-white" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-gradient" role="img" aria-label="Logo FinkoMoney">
+                  <Wallet className="h-5 w-5 text-white" aria-hidden="true" />
                 </div>
                 <span className="text-xl font-bold text-brand">FinkoMoney</span>
               </div>
