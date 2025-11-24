@@ -122,26 +122,14 @@ function FinanceiroPageContent() {
       setTransactions(allTransactions as Transaction[]);
 
       // Calculate totals
-      // Para transações parceladas, considera apenas o valor da parcela mensal
+      // O banco já salva o valor da parcela (não o total), então basta somar diretamente
       const totalIncome = allTransactions
         .filter((t) => t.type === "income")
-        .reduce((sum, t) => {
-          const amount = Number(t.amount);
-          if (t.installment_type === "parcelado" && t.installments_count) {
-            return sum + (amount / t.installments_count);
-          }
-          return sum + amount;
-        }, 0);
+        .reduce((sum, t) => sum + Number(t.amount), 0);
 
       const totalExpenses = allTransactions
         .filter((t) => t.type === "expense")
-        .reduce((sum, t) => {
-          const amount = Number(t.amount);
-          if (t.installment_type === "parcelado" && t.installments_count) {
-            return sum + (amount / t.installments_count);
-          }
-          return sum + amount;
-        }, 0);
+        .reduce((sum, t) => sum + Number(t.amount), 0);
 
       setIncome(totalIncome);
       setExpenses(totalExpenses);

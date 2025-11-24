@@ -198,9 +198,7 @@ export function TransactionsTable({ transactions, onEdit }: TransactionsTablePro
                       transaction.type === "income" ? "text-green-600" : "text-red-600"
                     }`}>
                       {transaction.type === "income" ? "+" : "-"}
-                      {transaction.installment_type === "parcelado" && transaction.installments_count
-                        ? formatCurrency(Number(transaction.amount) / transaction.installments_count)
-                        : formatCurrency(Number(transaction.amount))}
+                      {formatCurrency(Number(transaction.amount))}
                     </td>
                     <td className="py-4 text-sm">
                       <Badge variant={status.variant}>
