@@ -8,7 +8,9 @@
       "Bash(git commit:*)",
       "Bash(npx tsc:*)",
       "Bash(tee:*)",
-      "Bash(cut:*)"
+      "Bash(cut:*)",
+      "Bash(dir \"S:\\Saas\\finko-money\\app\\login\")",
+      "Bash(dir \"S:\\Saas\\finko-money\\app\\signup\")"
     ],
     "deny": [],
     "ask": []

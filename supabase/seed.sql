@@ -478,14 +478,52 @@ BEGIN
       RAISE NOTICE '✅ Registro criado em public.users para Maria';
     END IF;
 
-    -- Adicionar Maria como member na branch
+    -- Criar branch própria para Maria
+    DECLARE
+      v_maria_branch_id uuid;
+    BEGIN
+      -- Verificar se Maria já tem uma branch própria
+      SELECT branch_id INTO v_maria_branch_id
+      FROM public.branch_members
+      WHERE user_id = v_user2_id AND role = 'owner'
+      LIMIT 1;
+
+      IF v_maria_branch_id IS NULL THEN
+        -- Criar branch usando RPC
+        SELECT id INTO v_maria_branch_id
+        FROM public.create_branch_with_owner(
+          p_name := 'Finanças Pessoais - Maria',
+          p_description := 'Workspace financeiro pessoal'
+        );
+
+        RAISE NOTICE '✅ Branch própria criada para Maria (ID: %)', v_maria_branch_id;
+
+        -- Criar categorias padrão para Maria
+        INSERT INTO public.categories (user_id, branch_id, name, color, icon)
+        VALUES
+          (v_user2_id, v_maria_branch_id, 'Alimentacao', '#ef4444', 'Utensils'),
+          (v_user2_id, v_maria_branch_id, 'Transporte', '#3b82f6', 'Car'),
+          (v_user2_id, v_maria_branch_id, 'Moradia', '#8b5cf6', 'Home'),
+          (v_user2_id, v_maria_branch_id, 'Lazer', '#ec4899', 'Gamepad2'),
+          (v_user2_id, v_maria_branch_id, 'Saude', '#10b981', 'Heart'),
+          (v_user2_id, v_maria_branch_id, 'Educacao', '#f59e0b', 'GraduationCap'),
+          (v_user2_id, v_maria_branch_id, 'Assinaturas', '#6366f1', 'ShoppingCart'),
+          (v_user2_id, v_maria_branch_id, 'Outros', '#6b7280', 'DollarSign');
+
+        RAISE NOTICE '✅ Categorias criadas para Maria';
+      ELSE
+        RAISE NOTICE '⚠️  Maria já tem branch própria (ID: %)', v_maria_branch_id;
+      END IF;
+    END;
+
+    -- Adicionar Maria como member na branch do Ruan também
     IF NOT EXISTS (SELECT 1 FROM public.branch_members WHERE user_id = v_user2_id AND branch_id = v_branch_id) THEN
       INSERT INTO public.branch_members (branch_id, user_id, role, invited_by)
       VALUES (v_branch_id, v_user2_id, 'member', v_user_id);
 
-      RAISE NOTICE '✅ Maria Silva adicionada como member na branch';
+      RAISE NOTICE '✅ Maria Silva adicionada como member na branch do Ruan';
     ELSE
-      RAISE NOTICE '⚠️  Maria Silva já é membro da branch';
+      RAISE NOTICE '⚠️  Maria Silva já é membro da branch do Ruan';
     END IF;
   END;
 
