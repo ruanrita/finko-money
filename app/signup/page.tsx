@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Wallet, ArrowLeft, Check, Sparkles } from "lucide-react";
+import { Wallet, ArrowLeft, Check, Sparkles, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export default function SignUpPage() {
   const [error, setError] = useState<string | null>(null);
@@ -22,7 +23,11 @@ export default function SignUpPage() {
     const confirmPassword = formData.get("confirm_password") as string;
 
     if (password !== confirmPassword) {
-      setError("As senhas não coincidem");
+      const errorMsg = "As senhas não coincidem";
+      setError(errorMsg);
+      toast.error("Erro no cadastro", {
+        description: errorMsg,
+      });
       setLoading(false);
       return;
     }
@@ -31,7 +36,15 @@ export default function SignUpPage() {
 
     if (result?.error) {
       setError(result.error);
+      toast.error("Erro ao criar conta", {
+        description: result.error,
+      });
       setLoading(false);
+    } else {
+      toast.success("Conta criada com sucesso!", {
+        description: "Redirecionando para o dashboard...",
+      });
+      // Loading state permanece true pois vai redirecionar
     }
   }
 
@@ -129,7 +142,14 @@ export default function SignUpPage() {
                   </div>
                 )}
                 <Button type="submit" className="btn-brand h-11 w-full" disabled={loading}>
-                  {loading ? "Criando conta..." : "Criar conta grátis"}
+                  {loading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Criando conta...
+                    </>
+                  ) : (
+                    "Criar conta grátis"
+                  )}
                 </Button>
               </form>
 
