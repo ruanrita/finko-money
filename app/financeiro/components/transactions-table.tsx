@@ -157,6 +157,13 @@ export function TransactionsTable({ transactions, onEdit }: TransactionsTablePro
                     </td>
                     <td className="py-4 text-sm font-medium">
                       {transaction.description}
+                      {transaction.installment_type === "parcelado" && transaction.installments_count && (
+                        <span className="ml-2 inline-flex items-center gap-1">
+                          <span className="text-xs text-purple-600 dark:text-purple-400">
+                            {transaction.current_installment || 1}/{transaction.installments_count}x
+                          </span>
+                        </span>
+                      )}
                       {transaction.is_recurring && (
                         <span className="ml-2 inline-flex items-center gap-1">
                           <span className="text-xs text-blue-600 dark:text-blue-400">🔄</span>
@@ -191,7 +198,9 @@ export function TransactionsTable({ transactions, onEdit }: TransactionsTablePro
                       transaction.type === "income" ? "text-green-600" : "text-red-600"
                     }`}>
                       {transaction.type === "income" ? "+" : "-"}
-                      {formatCurrency(Number(transaction.amount))}
+                      {transaction.installment_type === "parcelado" && transaction.installments_count
+                        ? formatCurrency(Number(transaction.amount) / transaction.installments_count)
+                        : formatCurrency(Number(transaction.amount))}
                     </td>
                     <td className="py-4 text-sm">
                       <Badge variant={status.variant}>
