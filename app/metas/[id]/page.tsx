@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentBranch } from "@/lib/supabase/branch-context";
 import { GoalService } from "@/src/modules/goals";
 import { AuthenticatedLayout } from "@/components/authenticated-layout";
 import { Button } from "@/components/ui/button";
@@ -40,6 +41,9 @@ export default async function GoalDetailPage({ params }: GoalDetailPageProps) {
     redirect("/login");
   }
 
+  // Pegar branch atual do usuário
+  const currentBranch = await getCurrentBranch(user.id);
+
   const { id } = await params;
 
   try {
@@ -65,7 +69,7 @@ export default async function GoalDetailPage({ params }: GoalDetailPageProps) {
     };
 
     return (
-      <AuthenticatedLayout>
+      <AuthenticatedLayout currentBranch={currentBranch}>
         <div className="border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
           <div className="px-8 py-6">
             <div className="flex items-start justify-between gap-4">

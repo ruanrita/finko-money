@@ -18,8 +18,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { switchBranchAction, getUserBranchesAction, getCurrentBranchAction } from "@/app/actions/branch";
+import { switchBranchAction, getUserBranchesAction } from "@/app/actions/branch";
 import { useRouter } from "next/navigation";
+import type { BranchWithMembers } from "@/src/types/database";
 
 type Branch = {
   id: string;
@@ -29,11 +30,15 @@ type Branch = {
   branch_members: any[];
 };
 
-export function BranchSwitcher() {
+interface BranchSwitcherProps {
+  initialBranch: BranchWithMembers;
+}
+
+export function BranchSwitcher({ initialBranch }: BranchSwitcherProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [branches, setBranches] = useState<Branch[]>([]);
-  const [currentBranch, setCurrentBranch] = useState<Branch | null>(null);
+  const [currentBranch, setCurrentBranch] = useState<Branch | null>(initialBranch as any);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -43,17 +48,10 @@ export function BranchSwitcher() {
   async function loadBranches() {
     setLoading(true);
     try {
-      const [branchesResult, currentResult] = await Promise.all([
-        getUserBranchesAction(),
-        getCurrentBranchAction(),
-      ]);
+      const branchesResult = await getUserBranchesAction();
 
       if (branchesResult.success) {
         setBranches(branchesResult.branches);
-      }
-
-      if (currentResult.success && currentResult.branch) {
-        setCurrentBranch(currentResult.branch);
       }
     } catch (error) {
       console.error("Erro ao carregar branches:", error);

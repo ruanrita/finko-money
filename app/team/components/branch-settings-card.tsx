@@ -122,15 +122,17 @@ export function BranchSettingsCard({ branch, branchId }: Props) {
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>Você tem certeza absoluta?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Esta ação não pode ser desfeita. Isso irá permanentemente deletar o workspace{" "}
-                  <strong>{branch.name}</strong> e remover todos os dados associados, incluindo:
-                  <ul className="list-disc list-inside mt-2 space-y-1">
-                    <li>Todas as transações (receitas e despesas)</li>
-                    <li>Todas as categorias personalizadas</li>
-                    <li>Todos os membros serão removidos</li>
-                    <li>Todos os dados históricos</li>
-                  </ul>
+                <AlertDialogDescription asChild>
+                  <div>
+                    Esta ação não pode ser desfeita. Isso irá permanentemente deletar o workspace{" "}
+                    <strong>{branch.name}</strong> e remover todos os dados associados, incluindo:
+                    <ul className="list-disc list-inside mt-2 space-y-1">
+                      <li>Todas as transações (receitas e despesas)</li>
+                      <li>Todas as categorias personalizadas</li>
+                      <li>Todos os membros serão removidos</li>
+                      <li>Todos os dados históricos</li>
+                    </ul>
+                  </div>
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>

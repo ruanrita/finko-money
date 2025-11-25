@@ -441,6 +441,7 @@ BEGIN
         confirmation_token,
         recovery_token,
         email_change_token_new,
+        email_change,
         email_change_token_current,
         is_sso_user
       ) VALUES (
@@ -455,6 +456,7 @@ BEGIN
         '{"full_name":"Maria Silva"}',
         NOW(),
         NOW(),
+        '',
         '',
         '',
         '',

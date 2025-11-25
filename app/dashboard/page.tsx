@@ -74,7 +74,7 @@ export default async function DashboardPage() {
   const monthName = now.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
 
   return (
-    <AuthenticatedLayout>
+    <AuthenticatedLayout currentBranch={currentBranch}>
       <div className="relative overflow-hidden border-b border-border bg-header-gradient">
         <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-10"></div>
         <div className="relative px-8 py-8">

@@ -58,6 +58,35 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // Set branch cookie if user is authenticated and cookie is missing
+  if (user && !isPublicRoute) {
+    const branchCookie = request.cookies.get("finko_current_branch");
+
+    if (!branchCookie) {
+      // Get user's first branch
+      const { data: branches } = await supabase
+        .from("branches")
+        .select(`
+          id,
+          branch_members!inner(user_id)
+        `)
+        .eq("branch_members.user_id", user.id)
+        .order("created_at", { ascending: true })
+        .limit(1);
+
+      if (branches && branches.length > 0) {
+        const branchId = branches[0].id;
+        supabaseResponse.cookies.set("finko_current_branch", branchId, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          maxAge: 60 * 60 * 24 * 365, // 1 year
+          path: "/",
+        });
+      }
+    }
+  }
+
   // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
   // creating a new response object with NextResponse.next() make sure to:
   // 1. Pass the request in it, like so:

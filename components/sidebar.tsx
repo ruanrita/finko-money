@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { BranchSwitcher } from "./branch-switcher";
 import { signOut } from "@/app/login/actions";
+import type { BranchWithMembers } from "@/src/types/database";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -34,7 +35,11 @@ const navigation = [
   { name: "Configurações", href: "/configuracoes", icon: Settings },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  currentBranch: BranchWithMembers;
+}
+
+export function Sidebar({ currentBranch }: SidebarProps) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
 
@@ -92,7 +97,7 @@ export function Sidebar() {
       {/* Branch Switcher */}
       {!collapsed && (
         <div className="border-b border-border p-2">
-          <BranchSwitcher />
+          <BranchSwitcher initialBranch={currentBranch} />
         </div>
       )}
 

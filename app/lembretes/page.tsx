@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentBranch } from "@/lib/supabase/branch-context";
 import { AuthenticatedLayout } from "@/components/authenticated-layout";
 import { RemindersList } from "./components/reminders-list";
 import { CreateReminderDialog } from "./components/create-reminder-dialog";
@@ -17,10 +18,13 @@ export default async function RemindersPage() {
     redirect("/login");
   }
 
+  // Pegar branch atual do usuário
+  const currentBranch = await getCurrentBranch(user.id);
+
   const reminders = await getRemindersAction();
 
   return (
-    <AuthenticatedLayout>
+    <AuthenticatedLayout currentBranch={currentBranch}>
       <div className="relative overflow-hidden border-b-2 border-border bg-header-gradient">
         <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-10"></div>
         <div className="relative px-8 py-8">

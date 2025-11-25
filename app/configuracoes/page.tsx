@@ -24,7 +24,7 @@ export default async function ConfiguracoesPage() {
   const userRole = await getUserRoleInBranch(user.id, currentBranch.id);
 
   return (
-    <AuthenticatedLayout>
+    <AuthenticatedLayout currentBranch={currentBranch}>
       <SettingsWrapper>
         <div className="relative overflow-hidden border-b-2 border-border bg-header-gradient">
           <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-10"></div>

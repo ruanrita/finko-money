@@ -35,7 +35,7 @@ export default async function MetasPage() {
   const otherGoals = goals.filter((g) => g.goal_type !== "emergency_fund");
 
   return (
-    <AuthenticatedLayout>
+    <AuthenticatedLayout currentBranch={currentBranch}>
       <div className="relative overflow-hidden border-b-2 border-border bg-header-gradient">
         <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-10"></div>
         <div className="relative px-8 py-8">

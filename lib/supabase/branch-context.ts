@@ -117,13 +117,11 @@ export async function getCurrentBranch(userId: string): Promise<BranchWithMember
       { user_id: userId, branch_id: branchId, name: "Outros", color: "#6b7280", icon: "DollarSign" },
     ] as any);
 
-    // Nota: Cookie será setado na primeira request subsequente
     return newBranch as any;
   }
 
   const firstBranch = branches[0];
 
-  // Nota: Cookie será setado na primeira request subsequente
   return firstBranch as any;
 }
 

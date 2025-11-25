@@ -29,6 +29,8 @@ export class UserService {
       password: input.password,
     });
 
+    console.log('data', {data, error});
+
     if (error) {
       throw new Error(`Erro ao fazer login: ${error.message}`);
     }

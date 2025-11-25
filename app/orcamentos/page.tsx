@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentBranch } from "@/lib/supabase/branch-context";
 import { AuthenticatedLayout } from "@/components/authenticated-layout";
 import { BudgetsList } from "./components/budgets-list";
 import { BudgetSummary } from "./components/budget-summary";
@@ -23,6 +24,9 @@ export default async function BudgetsPage({
     redirect("/login");
   }
 
+  // Pegar branch atual do usuário
+  const currentBranch = await getCurrentBranch(user.id);
+
   // Usar mês atual se não especificado
   const params = await searchParams;
   const now = new Date();
@@ -37,7 +41,7 @@ export default async function BudgetsPage({
   ]);
 
   return (
-    <AuthenticatedLayout>
+    <AuthenticatedLayout currentBranch={currentBranch}>
       <div className="relative overflow-hidden border-b-2 border-border bg-header-gradient">
         <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-10"></div>
         <div className="relative px-8 py-8">

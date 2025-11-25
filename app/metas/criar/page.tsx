@@ -30,7 +30,7 @@ export default async function CreateGoalPage() {
   ]);
 
   return (
-    <AuthenticatedLayout>
+    <AuthenticatedLayout currentBranch={currentBranch}>
       <div className="border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
         <div className="px-8 py-6">
           <div className="flex items-center gap-4">
