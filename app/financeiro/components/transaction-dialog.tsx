@@ -198,7 +198,7 @@ export function TransactionDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl border-2">
+      <DialogContent className="max-w-2xl border-2 border-gray-300 dark:border-gray-700">
         <DialogHeader className="pb-4 border-b-2 border-zinc-100 dark:border-zinc-800">
           <DialogTitle className="text-2xl">
             {transaction ? "Editar Lançamento" : "Novo Lançamento"}
@@ -451,7 +451,7 @@ export function TransactionDialog({
               variant="outline"
               onClick={() => onOpenChange(false)}
               disabled={loading}
-              className="border-2"
+              className="border-2 border-gray-300 dark:border-gray-700"
             >
               Cancelar
             </Button>

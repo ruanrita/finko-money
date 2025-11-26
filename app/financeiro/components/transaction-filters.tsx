@@ -1,9 +1,16 @@
 "use client";
 
+import { useState, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Filter } from "lucide-react";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 type Category = {
   id: string;
@@ -17,12 +24,24 @@ interface TransactionFiltersProps {
 export function TransactionFilters({ categories }: TransactionFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [isOpen, setIsOpen] = useState(false);
 
   const type = searchParams.get("type") || "all";
   const category = searchParams.get("category") || "all";
   const status = searchParams.get("status") || "all";
   const installmentType = searchParams.get("installment") || "all";
   const paymentMethod = searchParams.get("method") || "all";
+
+  // Contar filtros ativos
+  const activeFiltersCount = useMemo(() => {
+    let count = 0;
+    if (type !== "all") count++;
+    if (category !== "all") count++;
+    if (status !== "all") count++;
+    if (installmentType !== "all") count++;
+    if (paymentMethod !== "all") count++;
+    return count;
+  }, [type, category, status, installmentType, paymentMethod]);
 
   const updateFilter = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -36,183 +55,131 @@ export function TransactionFilters({ categories }: TransactionFiltersProps) {
     router.push(`/financeiro?${params.toString()}`);
   };
 
-  // Get current month and year
-  const now = new Date();
-  const currentMonth = now.getMonth();
-  const currentYear = now.getFullYear();
-
-  const monthYear = searchParams.get("month") || `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}`;
-
-  const updateMonth = (value: string) => {
+  const clearAllFilters = () => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set("month", value);
+    params.delete("type");
+    params.delete("category");
+    params.delete("status");
+    params.delete("installment");
+    params.delete("method");
     router.push(`/financeiro?${params.toString()}`);
   };
 
-  const navigateMonth = (direction: "prev" | "next") => {
-    const [year, month] = monthYear.split("-").map(Number);
-    const date = new Date(year, month - 1, 1);
-
-    if (direction === "prev") {
-      date.setMonth(date.getMonth() - 1);
-    } else {
-      date.setMonth(date.getMonth() + 1);
-    }
-
-    const newMonth = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
-    updateMonth(newMonth);
-  };
-
-  // Generate month options (last 12 months from current date)
-  const generateMonthOptions = () => {
-    const options = Array.from({ length: 12 }, (_, i) => {
-      const date = new Date(currentYear, currentMonth - i, 1);
-      const year = date.getFullYear();
-      const month = date.getMonth() + 1;
-      const value = `${year}-${String(month).padStart(2, "0")}`;
-      const label = date.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
-      return { value, label: label.charAt(0).toUpperCase() + label.slice(1) };
-    });
-
-    // Add selected month if not in list (for navigation to future/past months)
-    if (!options.find(opt => opt.value === monthYear)) {
-      const [year, month] = monthYear.split("-").map(Number);
-      const date = new Date(year, month - 1, 1);
-      const label = date.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
-      options.push({
-        value: monthYear,
-        label: label.charAt(0).toUpperCase() + label.slice(1)
-      });
-      // Sort by date (newest first)
-      options.sort((a, b) => b.value.localeCompare(a.value));
-    }
-
-    return options;
-  };
-
-  const monthOptions = generateMonthOptions();
-
   return (
-    <Card>
-      <CardContent className="pt-6">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
-          {/* Período com Navegação */}
-          <div className="space-y-2 lg:col-span-2">
-            <label className="text-sm font-medium">Período</label>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => navigateMonth("prev")}
-                className="shrink-0"
-              >
-                ←
-              </Button>
-              <Select value={monthYear} onValueChange={updateMonth}>
-                <SelectTrigger>
+    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+      <div className="flex items-center justify-between mb-3 sm:mb-4">
+        <CollapsibleTrigger asChild>
+          <Button variant="outline" className="gap-2 text-xs sm:text-sm">
+            <Filter className="h-3 w-3 sm:h-4 sm:w-4" />
+            Filtros
+            {activeFiltersCount > 0 && (
+              <Badge variant="secondary" className="ml-1 text-xs">
+                {activeFiltersCount}
+              </Badge>
+            )}
+          </Button>
+        </CollapsibleTrigger>
+      </div>
+
+      <CollapsibleContent>
+        <div className="rounded-lg border border-gray-300 bg-card p-4 sm:p-6">
+          <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            {/* Tipo */}
+            <div className="space-y-1.5 sm:space-y-2">
+              <label className="text-xs sm:text-sm font-medium">Tipo</label>
+              <Select value={type} onValueChange={(value) => updateFilter("type", value)}>
+                <SelectTrigger className="text-xs sm:text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {monthOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
+                  <SelectItem value="all" className="text-xs sm:text-sm">Todos</SelectItem>
+                  <SelectItem value="income" className="text-xs sm:text-sm">Receitas</SelectItem>
+                  <SelectItem value="expense" className="text-xs sm:text-sm">Despesas</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Categoria */}
+            <div className="space-y-1.5 sm:space-y-2">
+              <label className="text-xs sm:text-sm font-medium">Categoria</label>
+              <Select value={category} onValueChange={(value) => updateFilter("category", value)}>
+                <SelectTrigger className="text-xs sm:text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all" className="text-xs sm:text-sm">Todas</SelectItem>
+                  {categories.map((cat) => (
+                    <SelectItem key={cat.id} value={cat.id} className="text-xs sm:text-sm">
+                      {cat.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => navigateMonth("next")}
-                className="shrink-0"
-              >
-                →
-              </Button>
             </div>
-          </div>
 
-          {/* Tipo */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Tipo</label>
-            <Select value={type} onValueChange={(value) => updateFilter("type", value)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
-                <SelectItem value="income">Receitas</SelectItem>
-                <SelectItem value="expense">Despesas</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+            {/* Status */}
+            <div className="space-y-1.5 sm:space-y-2">
+              <label className="text-xs sm:text-sm font-medium">Status</label>
+              <Select value={status} onValueChange={(value) => updateFilter("status", value)}>
+                <SelectTrigger className="text-xs sm:text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all" className="text-xs sm:text-sm">Todos</SelectItem>
+                  <SelectItem value="paid" className="text-xs sm:text-sm">Pago</SelectItem>
+                  <SelectItem value="pending" className="text-xs sm:text-sm">Pendente</SelectItem>
+                  <SelectItem value="overdue" className="text-xs sm:text-sm">Atrasado</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-          {/* Categoria */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Categoria</label>
-            <Select value={category} onValueChange={(value) => updateFilter("category", value)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todas</SelectItem>
-                {categories.map((cat) => (
-                  <SelectItem key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+            {/* Forma de Pagamento */}
+            <div className="space-y-1.5 sm:space-y-2">
+              <label className="text-xs sm:text-sm font-medium">Forma</label>
+              <Select value={installmentType} onValueChange={(value) => updateFilter("installment", value)}>
+                <SelectTrigger className="text-xs sm:text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all" className="text-xs sm:text-sm">Todas</SelectItem>
+                  <SelectItem value="a_vista" className="text-xs sm:text-sm">À Vista</SelectItem>
+                  <SelectItem value="parcelado" className="text-xs sm:text-sm">Parcelado</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-          {/* Status */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Status</label>
-            <Select value={status} onValueChange={(value) => updateFilter("status", value)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
-                <SelectItem value="paid">Pago</SelectItem>
-                <SelectItem value="pending">Pendente</SelectItem>
-                <SelectItem value="overdue">Atrasado</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+            {/* Método de Pagamento */}
+            <div className="space-y-1.5 sm:space-y-2">
+              <label className="text-xs sm:text-sm font-medium">Método</label>
+              <Select value={paymentMethod} onValueChange={(value) => updateFilter("method", value)}>
+                <SelectTrigger className="text-xs sm:text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all" className="text-xs sm:text-sm">Todos</SelectItem>
+                  <SelectItem value="pix" className="text-xs sm:text-sm">PIX</SelectItem>
+                  <SelectItem value="boleto" className="text-xs sm:text-sm">Boleto</SelectItem>
+                  <SelectItem value="credito" className="text-xs sm:text-sm">Cartão de Crédito</SelectItem>
+                  <SelectItem value="debito" className="text-xs sm:text-sm">Cartão de Débito</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-          {/* Forma de Pagamento */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Forma</label>
-            <Select value={installmentType} onValueChange={(value) => updateFilter("installment", value)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todas</SelectItem>
-                <SelectItem value="a_vista">À Vista</SelectItem>
-                <SelectItem value="parcelado">Parcelado</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Método de Pagamento */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Método</label>
-            <Select value={paymentMethod} onValueChange={(value) => updateFilter("method", value)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
-                <SelectItem value="pix">PIX</SelectItem>
-                <SelectItem value="boleto">Boleto</SelectItem>
-                <SelectItem value="credito">Cartão de Crédito</SelectItem>
-                <SelectItem value="debito">Cartão de Débito</SelectItem>
-              </SelectContent>
-            </Select>
+            {/* Botão para limpar filtros */}
+            {activeFiltersCount > 0 && (
+              <div className="sm:col-span-2 lg:col-span-1 flex items-end">
+                <Button
+                  variant="ghost"
+                  onClick={clearAllFilters}
+                  className="w-full text-xs sm:text-sm"
+                >
+                  Limpar filtros
+                </Button>
+              </div>
+            )}
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </CollapsibleContent>
+    </Collapsible>
   );
 }

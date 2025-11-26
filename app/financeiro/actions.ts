@@ -183,9 +183,53 @@ export async function getTransactions(filters?: TransactionFilters) {
     // Pegar branch atual do usuário
     const currentBranch = await getCurrentBranch(user.id);
 
-    const transactions = await TransactionService.list(user.id, currentBranch.id, filters);
+    // Se não tem filtro de mês, busca normal
+    if (!filters?.month) {
+      const transactions = await TransactionService.list(user.id, currentBranch.id, filters);
+      return { data: transactions, error: null };
+    }
 
-    return { data: transactions, error: null };
+    // Se tem filtro de mês, buscar transações normais e recorrentes separadamente
+    const month = filters.month;
+
+    // Buscar transações NORMAIS (não recorrentes) do mês
+    const normalFilters = { ...filters, is_recurring: false };
+    const normalTransactions = await TransactionService.list(user.id, currentBranch.id, normalFilters);
+
+    // Buscar TODAS as transações recorrentes (sem filtro de mês)
+    const recurringFilters = { ...filters };
+    delete recurringFilters.month; // Remover filtro de mês
+    recurringFilters.is_recurring = true;
+
+    const allRecurringTransactions = await TransactionService.list(user.id, currentBranch.id, recurringFilters);
+
+    // Filtrar transações recorrentes que devem aparecer neste mês
+    const [year, monthNum] = month.split("-").map(Number);
+    const filteredRecurringTransactions = allRecurringTransactions.filter((t: any) => {
+      const originalDate = new Date(t.due_date);
+      const targetDate = new Date(year, monthNum - 1, 1);
+
+      // Só mostrar se o mês alvo for igual ou posterior à data original
+      if (targetDate < new Date(originalDate.getFullYear(), originalDate.getMonth(), 1)) {
+        return false;
+      }
+
+      switch (t.recurrence_type) {
+        case "monthly":
+          return true;
+        case "yearly":
+          return originalDate.getMonth() === monthNum - 1;
+        case "weekly":
+          return true;
+        default:
+          return false;
+      }
+    });
+
+    // Combinar transações normais + recorrentes filtradas
+    const allTransactions = [...normalTransactions, ...filteredRecurringTransactions];
+
+    return { data: allTransactions, error: null };
   } catch (error) {
     return { error: error instanceof Error ? error.message : "Erro ao buscar transações", data: null };
   }
@@ -211,5 +255,127 @@ export async function getCategories() {
     return { data: categories, error: null };
   } catch (error) {
     return { error: error instanceof Error ? error.message : "Erro ao buscar categorias", data: null };
+  }
+}
+
+export async function getCategoryTotals(month: string) {
+  try {
+    const supabase = await createClient();
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { expenses: [], income: [] };
+    }
+
+    // Pegar branch atual do usuário
+    const currentBranch = await getCurrentBranch(user.id);
+
+    // Calcular início e fim do mês
+    const [year, monthNum] = month.split("-").map(Number);
+    const startDate = new Date(year, monthNum - 1, 1);
+    const endDate = new Date(year, monthNum, 0, 23, 59, 59);
+
+    // Buscar transações NORMAIS (não recorrentes) do mês
+    const { data: normalExpenses } = await supabase
+      .from("transactions")
+      .select("amount, category_id, categories(name, color)")
+      .eq("branch_id", currentBranch.id)
+      .eq("type", "expense")
+      .eq("is_recurring", false)
+      .gte("due_date", startDate.toISOString())
+      .lte("due_date", endDate.toISOString());
+
+    const { data: normalIncome } = await supabase
+      .from("transactions")
+      .select("amount, category_id, categories(name, color)")
+      .eq("branch_id", currentBranch.id)
+      .eq("type", "income")
+      .eq("is_recurring", false)
+      .gte("due_date", startDate.toISOString())
+      .lte("due_date", endDate.toISOString());
+
+    // Buscar TODAS as transações recorrentes (independente da data)
+    const { data: recurringExpenses } = await supabase
+      .from("transactions")
+      .select("amount, category_id, due_date, is_recurring, recurrence_type, categories(name, color)")
+      .eq("branch_id", currentBranch.id)
+      .eq("type", "expense")
+      .eq("is_recurring", true);
+
+    const { data: recurringIncome } = await supabase
+      .from("transactions")
+      .select("amount, category_id, due_date, is_recurring, recurrence_type, categories(name, color)")
+      .eq("branch_id", currentBranch.id)
+      .eq("type", "income")
+      .eq("is_recurring", true);
+
+    // Filtrar transações recorrentes que devem aparecer neste mês
+    const filterRecurringForMonth = (transactions: any[]) => {
+      if (!transactions) return [];
+
+      return transactions.filter((t) => {
+        const originalDate = new Date(t.due_date);
+        const targetDate = new Date(year, monthNum - 1, 1);
+
+        // Só mostrar se o mês alvo for igual ou posterior à data original
+        if (targetDate < new Date(originalDate.getFullYear(), originalDate.getMonth(), 1)) {
+          return false;
+        }
+
+        switch (t.recurrence_type) {
+          case "monthly":
+            return true;
+          case "yearly":
+            return originalDate.getMonth() === monthNum - 1;
+          case "weekly":
+            // Simplificado: aceitar se estiver no mês certo ou depois
+            return true;
+          default:
+            return false;
+        }
+      });
+    };
+
+    const filteredRecurringExpenses = filterRecurringForMonth(recurringExpenses || []);
+    const filteredRecurringIncome = filterRecurringForMonth(recurringIncome || []);
+
+    // Combinar transações normais + recorrentes filtradas
+    const allExpenses = [...(normalExpenses || []), ...filteredRecurringExpenses];
+    const allIncome = [...(normalIncome || []), ...filteredRecurringIncome];
+
+    // Agregar por categoria
+    const aggregateByCategory = (transactions: any[]) => {
+      const categoryMap = new Map();
+
+      transactions?.forEach((t) => {
+        const categoryId = t.category_id || "no-category";
+        const categoryName = (t.categories as any)?.name || "Sem categoria";
+        const categoryColor = (t.categories as any)?.color || "#94a3b8";
+
+        if (categoryMap.has(categoryId)) {
+          const existing = categoryMap.get(categoryId);
+          existing.total += Number(t.amount);
+        } else {
+          categoryMap.set(categoryId, {
+            category_name: categoryName,
+            category_color: categoryColor,
+            total: Number(t.amount),
+          });
+        }
+      });
+
+      return Array.from(categoryMap.values());
+    };
+
+    return {
+      expenses: aggregateByCategory(allExpenses),
+      income: aggregateByCategory(allIncome),
+    };
+  } catch (error) {
+    console.error("Error fetching category totals:", error);
+    return { expenses: [], income: [] };
   }
 }

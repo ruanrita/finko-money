@@ -62,6 +62,7 @@ export const transactionFiltersSchema = z.object({
   status: z.enum(["paid", "pending", "overdue"]).optional(),
   payment_method: z.string().optional(),
   installment_type: installmentTypeEnum.optional(),
+  is_recurring: z.boolean().optional(),
   month: z.string().regex(/^\d{4}-\d{2}$/).optional(), // YYYY-MM
   start_date: z.string().optional(), // YYYY-MM-DD
   end_date: z.string().optional(), // YYYY-MM-DD

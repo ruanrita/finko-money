@@ -4,11 +4,12 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { FinancialChart } from "./components/financial-chart";
+import { CategoryPieChart } from "./components/category-pie-chart";
 import { TransactionsTable } from "./components/transactions-table";
 import { TransactionFilters } from "./components/transaction-filters";
 import { TransactionDialog } from "./components/transaction-dialog";
 import { AuthenticatedLayout } from "@/components/authenticated-layout";
-import { getTransactions, getCategories } from "./actions";
+import { getTransactions, getCategories, getCategoryTotals } from "./actions";
 import { generateRecurringOccurrences } from "@/lib/recurring-utils";
 import { ThemeToggle } from "@/components/theme-toggle";
 import type { BranchWithMembers } from "@/src/types/database";
@@ -55,6 +56,8 @@ export function FinanceiroPageContent({ currentBranch }: FinanceiroPageContentPr
   const [income, setIncome] = useState(0);
   const [expenses, setExpenses] = useState(0);
   const [currentMonth, setCurrentMonth] = useState("");
+  const [expensesByCategory, setExpensesByCategory] = useState<any[]>([]);
+  const [incomesByCategory, setIncomesByCategory] = useState<any[]>([]);
 
   useEffect(() => {
     fetchData();
@@ -140,6 +143,11 @@ export function FinanceiroPageContent({ currentBranch }: FinanceiroPageContentPr
       setExpenses(totalExpenses);
     }
 
+    // Buscar dados de categorias para o gráfico de pizza
+    const categoryTotals = await getCategoryTotals(monthParam);
+    setExpensesByCategory(categoryTotals.expenses);
+    setIncomesByCategory(categoryTotals.income);
+
     setLoading(false);
   }
 
@@ -158,29 +166,29 @@ export function FinanceiroPageContent({ currentBranch }: FinanceiroPageContentPr
     <AuthenticatedLayout currentBranch={currentBranch}>
       <div className="relative overflow-hidden border-b-2 border-border bg-header-gradient">
         <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-10"></div>
-        <div className="relative px-8 py-8">
-          <div className="flex items-center justify-between">
+        <div className="relative px-4 py-6 sm:px-6 md:px-8 md:py-8">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-white">Despesas e Receitas</h1>
-              <p className="mt-2 text-sm text-blue-100">
+              <h1 className="text-2xl font-bold text-white sm:text-3xl">Despesas e Receitas</h1>
+              <p className="mt-1 text-sm text-blue-100 sm:mt-2">
                 Gerencie suas transações financeiras
               </p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               <ThemeToggle />
               <Button
                 onClick={() => setDialogOpen(true)}
-                className="bg-white text-brand hover:bg-blue-50 shadow-md"
+                className="bg-white text-brand hover:bg-blue-50 shadow-md text-sm sm:text-base whitespace-nowrap"
               >
-                Adicionar Lançamento
+                Adicionar
               </Button>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="p-8">
-        <div className="space-y-6">
+      <div className="p-4 sm:p-6 md:p-8">
+        <div className="space-y-4 sm:space-y-6">
           {/* Filters */}
           <TransactionFilters categories={categories} />
 
@@ -191,12 +199,21 @@ export function FinanceiroPageContent({ currentBranch }: FinanceiroPageContentPr
             </div>
           ) : (
             <>
-              <FinancialChart income={income} expenses={expenses} month={currentMonth} />
+              {/* Gráficos lado a lado */}
+              <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
+                <FinancialChart income={income} expenses={expenses} month={currentMonth} />
+                <CategoryPieChart
+                  expensesByCategory={expensesByCategory}
+                  incomesByCategory={incomesByCategory}
+                  month={currentMonth}
+                />
+              </div>
 
               {/* Table */}
               <TransactionsTable
                 transactions={transactions}
                 onEdit={handleEdit as any}
+                selectedMonth={currentMonth}
               />
             </>
           )}

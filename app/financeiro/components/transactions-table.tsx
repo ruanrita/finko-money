@@ -5,9 +5,18 @@ import { formatCurrency, formatDate } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { deleteTransaction, markAsPaid, markAsUnpaid } from "../actions";
 import { toast } from "sonner";
 import { Pencil, Trash2, Check, X } from "lucide-react";
+import { MonthNavigation } from "./month-navigation";
 
 type Transaction = {
   id: string;
@@ -30,9 +39,10 @@ type Transaction = {
 interface TransactionsTableProps {
   transactions: Transaction[];
   onEdit: (transaction: Transaction) => void;
+  selectedMonth?: string;
 }
 
-export function TransactionsTable({ transactions, onEdit }: TransactionsTableProps) {
+export function TransactionsTable({ transactions, onEdit, selectedMonth }: TransactionsTableProps) {
   const [loading, setLoading] = useState<string | null>(null);
 
   const handleDelete = async (id: string) => {
@@ -105,57 +115,145 @@ export function TransactionsTable({ transactions, onEdit }: TransactionsTablePro
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Transações</CardTitle>
-        <CardDescription>
+      <CardHeader className="p-4 sm:p-6">
+        {selectedMonth ? (
+          <MonthNavigation selectedMonth={selectedMonth} title="Transações" />
+        ) : (
+          <CardTitle className="text-xl sm:text-2xl">Transações</CardTitle>
+        )}
+        <CardDescription className="text-xs sm:text-sm">
           Lista de todas as suas despesas e receitas
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-zinc-200 dark:border-zinc-800">
-                <th className="pb-3 text-left text-sm font-medium text-zinc-500 dark:text-zinc-400">
+      <CardContent className="p-4 sm:p-6">
+        {/* Mobile Cards View */}
+        <div className="block md:hidden space-y-3">
+          {transactions.map((transaction) => {
+            const status = getStatus(transaction);
+            const isPaid = !!transaction.paid_at;
+
+            return (
+              <div key={transaction.id} className="border-2 border-gray-300 dark:border-gray-700 rounded-lg p-4 space-y-3 bg-card">
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <p className="font-semibold text-sm">{transaction.description}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{formatDate(transaction.due_date)}</p>
+                  </div>
+                  <Badge variant={status.variant} className="text-xs">
+                    {status.label}
+                  </Badge>
+                </div>
+
+                <div className="flex items-center gap-2 flex-wrap">
+                  <Badge variant={transaction.type === "income" ? "success" : "destructive"} className="text-xs">
+                    {transaction.type === "income" ? "Receita" : "Despesa"}
+                  </Badge>
+                  {transaction.categories && (
+                    <Badge
+                      variant="secondary"
+                      className="text-xs"
+                      style={{ backgroundColor: `${transaction.categories.color}20`, color: transaction.categories.color }}
+                    >
+                      {transaction.categories.name}
+                    </Badge>
+                  )}
+                  {transaction.installment_type === "parcelado" && (
+                    <span className="text-xs text-purple-600 dark:text-purple-400">
+                      {transaction.current_installment || 1}/{transaction.installments_count}x
+                    </span>
+                  )}
+                  {transaction.is_recurring && (
+                    <span className="text-xs text-blue-600 dark:text-blue-400">🔄 Recorrente</span>
+                  )}
+                </div>
+
+                <div className="flex justify-between items-center pt-2 border-t">
+                  <span className={`text-lg font-bold ${transaction.type === "income" ? "text-green-600" : "text-red-600"}`}>
+                    {transaction.type === "income" ? "+" : "-"}{formatCurrency(Number(transaction.amount))}
+                  </span>
+                  <div className="flex gap-1">
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => handleTogglePaid(transaction.id, isPaid)}
+                      disabled={loading === transaction.id}
+                      className="h-8 w-8"
+                    >
+                      {isPaid ? <X className="h-4 w-4" /> : <Check className="h-4 w-4" />}
+                    </Button>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => onEdit(transaction)}
+                      disabled={loading === transaction.id}
+                      className="h-8 w-8"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => handleDelete(transaction.id)}
+                      disabled={loading === transaction.id}
+                      className="h-8 w-8"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-hidden rounded-lg border-2 border-border">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-gradient-to-r from-blue-50 to-sky-50 border-gray-300 hover:from-blue-50 hover:to-sky-50 dark:from-blue-950/30 dark:to-sky-950/30">
+                <TableHead className="font-semibold text-zinc-700 dark:text-zinc-300">
                   Data
-                </th>
-                <th className="pb-3 text-left text-sm font-medium text-zinc-500 dark:text-zinc-400">
+                </TableHead>
+                <TableHead className="font-semibold text-zinc-700 dark:text-zinc-300">
                   Descrição
-                </th>
-                <th className="pb-3 text-left text-sm font-medium text-zinc-500 dark:text-zinc-400">
+                </TableHead>
+                <TableHead className="font-semibold text-zinc-700 dark:text-zinc-300">
                   Categoria
-                </th>
-                <th className="pb-3 text-left text-sm font-medium text-zinc-500 dark:text-zinc-400">
+                </TableHead>
+                <TableHead className="font-semibold text-zinc-700 dark:text-zinc-300">
                   Tipo
-                </th>
-                <th className="pb-3 text-left text-sm font-medium text-zinc-500 dark:text-zinc-400">
+                </TableHead>
+                <TableHead className="font-semibold text-zinc-700 dark:text-zinc-300">
                   Método
-                </th>
-                <th className="pb-3 text-right text-sm font-medium text-zinc-500 dark:text-zinc-400">
+                </TableHead>
+                <TableHead className="text-right font-semibold text-zinc-700 dark:text-zinc-300">
                   Valor
-                </th>
-                <th className="pb-3 text-left text-sm font-medium text-zinc-500 dark:text-zinc-400">
+                </TableHead>
+                <TableHead className="font-semibold text-zinc-700 dark:text-zinc-300">
                   Status
-                </th>
-                <th className="pb-3 text-right text-sm font-medium text-zinc-500 dark:text-zinc-400">
+                </TableHead>
+                <TableHead className="text-right font-semibold text-zinc-700 dark:text-zinc-300">
                   Ações
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {transactions.map((transaction) => {
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {transactions.map((transaction, index) => {
                 const status = getStatus(transaction);
                 const isPaid = !!transaction.paid_at;
 
                 return (
-                  <tr
+                  <TableRow
                     key={transaction.id}
-                    className="border-b border-zinc-100 dark:border-zinc-800 last:border-0"
+                    className={`
+                      transition-all hover:bg-blue-50 dark:hover:bg-blue-950/20 border-border
+                      ${index % 2 === 0 ? 'bg-card' : 'bg-muted/30'}
+                    `}
                   >
-                    <td className="py-4 text-sm">
+                    <TableCell className="text-sm">
                       {formatDate(transaction.due_date)}
-                    </td>
-                    <td className="py-4 text-sm font-medium">
+                    </TableCell>
+                    <TableCell className="text-sm font-medium">
                       {transaction.description}
                       {transaction.installment_type === "parcelado" && transaction.installments_count && (
                         <span className="ml-2 inline-flex items-center gap-1">
@@ -173,8 +271,8 @@ export function TransactionsTable({ transactions, onEdit }: TransactionsTablePro
                       {(transaction as any).is_virtual_occurrence && (
                         <span className="ml-2 text-xs text-zinc-500">(Virtual)</span>
                       )}
-                    </td>
-                    <td className="py-4 text-sm">
+                    </TableCell>
+                    <TableCell className="text-sm">
                       {transaction.categories ? (
                         <Badge
                           variant="secondary"
@@ -185,27 +283,27 @@ export function TransactionsTable({ transactions, onEdit }: TransactionsTablePro
                       ) : (
                         <span className="text-zinc-400">-</span>
                       )}
-                    </td>
-                    <td className="py-4 text-sm">
+                    </TableCell>
+                    <TableCell className="text-sm">
                       <Badge variant={transaction.type === "income" ? "success" : "destructive"}>
                         {transaction.type === "income" ? "Receita" : "Despesa"}
                       </Badge>
-                    </td>
-                    <td className="py-4 text-sm">
+                    </TableCell>
+                    <TableCell className="text-sm">
                       {getPaymentMethodLabel(transaction.payment_method)}
-                    </td>
-                    <td className={`py-4 text-right text-sm font-bold ${
+                    </TableCell>
+                    <TableCell className={`text-right text-sm font-bold ${
                       transaction.type === "income" ? "text-green-600" : "text-red-600"
                     }`}>
                       {transaction.type === "income" ? "+" : "-"}
                       {formatCurrency(Number(transaction.amount))}
-                    </td>
-                    <td className="py-4 text-sm">
+                    </TableCell>
+                    <TableCell className="text-sm">
                       <Badge variant={status.variant}>
                         {status.label}
                       </Badge>
-                    </td>
-                    <td className="py-4 text-right">
+                    </TableCell>
+                    <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
                         <Button
                           size="icon"
@@ -238,12 +336,12 @@ export function TransactionsTable({ transactions, onEdit }: TransactionsTablePro
                           <Trash2 className="h-4 w-4 text-red-600 dark:text-red-500" />
                         </Button>
                       </div>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 );
               })}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       </CardContent>
     </Card>

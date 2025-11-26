@@ -1,4 +1,5 @@
 import { Sidebar } from "./sidebar";
+import { MobileNav } from "./mobile-nav";
 import type { BranchWithMembers } from "@/src/types/database";
 
 interface AuthenticatedLayoutProps {
@@ -9,10 +10,18 @@ interface AuthenticatedLayoutProps {
 export function AuthenticatedLayout({ children, currentBranch }: AuthenticatedLayoutProps) {
   return (
     <div className="flex h-screen overflow-hidden bg-background">
-      <Sidebar currentBranch={currentBranch} />
-      <main className="flex-1 overflow-y-auto bg-muted">
+      {/* Desktop Sidebar - Hidden on mobile */}
+      <div className="hidden md:flex">
+        <Sidebar currentBranch={currentBranch} />
+      </div>
+
+      {/* Main Content */}
+      <main className="flex-1 overflow-y-auto bg-muted pb-20 md:pb-0">
         {children}
       </main>
+
+      {/* Mobile Navigation - Only visible on mobile */}
+      <MobileNav currentBranch={currentBranch} />
     </div>
   );
 }

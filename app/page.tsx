@@ -94,23 +94,23 @@ export default function Home() {
 
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b border-zinc-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:border-zinc-800 dark:bg-zinc-950/95">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-          <Link href="/" className="flex items-center gap-2" aria-label="FinkoMoney - Página inicial">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-gradient" role="img" aria-label="Logo FinkoMoney">
-              <Wallet className="h-6 w-6 text-white" aria-hidden="true" />
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-3 py-3 sm:px-6 sm:py-4 lg:px-8">
+          <Link href="/" className="flex items-center gap-1.5 sm:gap-2" aria-label="FinkoMoney - Página inicial">
+            <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-brand-gradient" role="img" aria-label="Logo FinkoMoney">
+              <Wallet className="h-4 w-4 sm:h-6 sm:w-6 text-white" aria-hidden="true" />
             </div>
-            <span className="text-2xl font-bold text-brand">FinkoMoney</span>
+            <span className="text-lg sm:text-2xl font-bold text-brand">FinkoMoney</span>
           </Link>
-          <nav className="flex gap-4" aria-label="Navegação principal">
-            <Link href="/login">
+          <nav className="flex gap-2 sm:gap-4" aria-label="Navegação principal">
+            <Link href="/login" className="hidden sm:block">
               <Button variant="ghost" className="text-brand hover:bg-blue-50">
                 Entrar
               </Button>
             </Link>
             <Link href="/signup">
-              <Button className="btn-brand">
+              <Button className="btn-brand text-sm sm:text-base">
                 Começar
-                <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
+                <ArrowRight className="ml-1 sm:ml-2 h-3 w-3 sm:h-4 sm:w-4" aria-hidden="true" />
               </Button>
             </Link>
           </nav>

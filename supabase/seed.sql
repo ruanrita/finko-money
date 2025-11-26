@@ -295,33 +295,74 @@ BEGIN
   );
 
   -- 4️⃣ DESPESA PARCELADA: Notebook (12x)
-  INSERT INTO public.transactions (
-    user_id,
-    branch_id,
-    type,
-    amount,
-    description,
-    due_date,
-    payment_method,
-    category_id,
-    installment_type,
-    installments_count,
-    current_installment,
-    is_recurring
-  ) VALUES (
-    v_user_id,
-    v_branch_id,
-    'expense',
-    291.67, -- 3500 / 12 = 291,67 por parcela
-    'Notebook (1/12)',
-    DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '20 days',
-    'credito',
-    v_category_educacao,
-    'parcelado',
-    12,
-    1,
-    false
-  );
+  -- Criar a primeira parcela (pai)
+  DECLARE
+    v_notebook_parent_id uuid;
+    v_installment_date date;
+  BEGIN
+    INSERT INTO public.transactions (
+      user_id,
+      branch_id,
+      type,
+      amount,
+      description,
+      due_date,
+      payment_method,
+      category_id,
+      installment_type,
+      installments_count,
+      current_installment,
+      is_recurring
+    ) VALUES (
+      v_user_id,
+      v_branch_id,
+      'expense',
+      291.67, -- 3500 / 12 = 291,67 por parcela
+      'Notebook (1/12)',
+      DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '20 days',
+      'credito',
+      v_category_educacao,
+      'parcelado',
+      12,
+      1,
+      false
+    ) RETURNING id INTO v_notebook_parent_id;
+
+    -- Criar as parcelas 2 até 12
+    FOR i IN 2..12 LOOP
+      v_installment_date := DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '20 days' + ((i - 1) || ' months')::INTERVAL;
+
+      INSERT INTO public.transactions (
+        user_id,
+        branch_id,
+        type,
+        amount,
+        description,
+        due_date,
+        payment_method,
+        category_id,
+        installment_type,
+        installments_count,
+        current_installment,
+        parent_transaction_id,
+        is_recurring
+      ) VALUES (
+        v_user_id,
+        v_branch_id,
+        'expense',
+        291.67,
+        'Notebook (' || i || '/12)',
+        v_installment_date,
+        'credito',
+        v_category_educacao,
+        'parcelado',
+        12,
+        i,
+        v_notebook_parent_id,
+        false
+      );
+    END LOOP;
+  END;
 
   -- 5️⃣ DESPESA À VISTA: Mercado
   INSERT INTO public.transactions (

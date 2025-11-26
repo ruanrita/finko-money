@@ -39,6 +39,10 @@ export class TransactionRepository {
       query = query.eq("installment_type", filters.installment_type);
     }
 
+    if (filters?.is_recurring !== undefined) {
+      query = query.eq("is_recurring", filters.is_recurring);
+    }
+
     if (filters?.month) {
       const [year, month] = filters.month.split("-");
       const startDate = `${year}-${month}-01`;
@@ -118,6 +122,10 @@ export class TransactionRepository {
 
     if (filters?.installment_type) {
       query = query.eq("installment_type", filters.installment_type);
+    }
+
+    if (filters?.is_recurring !== undefined) {
+      query = query.eq("is_recurring", filters.is_recurring);
     }
 
     if (filters?.month) {
