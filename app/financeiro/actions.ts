@@ -73,14 +73,34 @@ export async function updateTransaction(id: string, formData: FormData) {
     // Pegar branch atual do usuário
     const currentBranch = await getCurrentBranch(user.id);
 
-    const input = {
+    const installmentType = (formData.get("installment_type") as "a_vista" | "parcelado") || "a_vista";
+    const installmentsCount = formData.get("installments_count")
+      ? parseInt(formData.get("installments_count") as string)
+      : 1;
+
+    const input: any = {
       type: formData.get("type") as "income" | "expense",
       amount: parseFloat(formData.get("amount") as string),
       description: formData.get("description") as string,
       due_date: formData.get("due_date") as string,
       category_id: (formData.get("category_id") as string) || null,
       payment_method: formData.get("payment_method") as string,
+      installment_type: installmentType,
       tags: formData.get("tags") ? (formData.get("tags") as string).split(",").map(t => t.trim()) : [],
+      ...(installmentType === "a_vista"
+        ? {
+            is_recurring: formData.get("is_recurring") === "true",
+            recurrence_type: (formData.get("recurrence_type") as "monthly" | "weekly" | "yearly") || null,
+            // Limpar campos de parcelamento quando mudar para à vista
+            installments_count: null,
+          }
+        : {
+            installments_count: installmentsCount,
+            // Limpar campos de recorrência quando mudar para parcelado
+            is_recurring: false,
+            recurrence_type: null,
+          }
+      ),
     };
 
     await TransactionService.update(id, currentBranch.id, user.id, input);

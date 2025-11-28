@@ -6,6 +6,7 @@ import { BudgetsList } from "./components/budgets-list";
 import { BudgetSummary } from "./components/budget-summary";
 import { MonthSelector } from "./components/month-selector";
 import { CreateBudgetDialog } from "./components/create-budget-dialog";
+import { CopyPreviousButton } from "./components/copy-previous-button";
 import { getBudgetsAction, getMonthSummaryAction } from "./actions";
 import { ThemeToggle } from "@/components/theme-toggle";
 
@@ -44,15 +45,15 @@ export default async function BudgetsPage({
     <AuthenticatedLayout currentBranch={currentBranch}>
       <div className="relative overflow-hidden border-b-2 border-border bg-header-gradient">
         <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-10"></div>
-        <div className="relative px-8 py-8">
-          <div className="flex items-center justify-between">
+        <div className="relative px-4 py-6 sm:px-6 md:px-8 md:py-8">
+          <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-white">Orçamentos</h1>
-              <p className="mt-2 text-sm text-blue-100">
+              <h1 className="text-2xl font-bold text-white sm:text-3xl">Orçamentos</h1>
+              <p className="mt-1 text-sm text-blue-100 sm:mt-2">
                 Controle seus gastos por categoria
               </p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               <ThemeToggle />
               <CreateBudgetDialog selectedMonth={selectedMonth} />
             </div>
@@ -60,8 +61,11 @@ export default async function BudgetsPage({
         </div>
       </div>
 
-      <div className="container mx-auto max-w-6xl p-8 space-y-6">
-        <MonthSelector selectedMonth={selectedMonth} />
+      <div className="container mx-auto max-w-6xl p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+          <CopyPreviousButton selectedMonth={selectedMonth} />
+          <MonthSelector selectedMonth={selectedMonth} />
+        </div>
 
         {summary && <BudgetSummary summary={summary} />}
 

@@ -29,10 +29,10 @@ export function SummaryCards({
   const [showYearly, setShowYearly] = useState(false);
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
+          <h2 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-100">
             Resumo Financeiro
           </h2>
           <p className="text-sm text-zinc-600 dark:text-zinc-400 capitalize">
@@ -43,26 +43,28 @@ export function SummaryCards({
           variant="outline"
           size="sm"
           onClick={() => setShowYearly(!showYearly)}
-          className="border-brand text-brand hover:bg-brand hover:text-white"
+          className="border-2 border-brand text-brand hover:bg-brand hover:text-white w-full sm:w-auto"
         >
           {showYearly ? (
             <>
               <EyeOff className="h-4 w-4 mr-2" />
-              Ocultar Anual
+              <span className="hidden sm:inline">Ocultar Anual</span>
+              <span className="sm:hidden">Anual</span>
             </>
           ) : (
             <>
               <Eye className="h-4 w-4 mr-2" />
-              Mostrar Anual
+              <span className="hidden sm:inline">Mostrar Anual</span>
+              <span className="sm:hidden">Anual</span>
             </>
           )}
         </Button>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid gap-4 sm:gap-6 md:grid-cols-3">
         {/* Receitas */}
         <Link href="/financeiro?type=income">
-          <Card className="group cursor-pointer border-2 transition-all hover:border-green-500 hover:shadow-lg">
+          <Card className="group cursor-pointer border-2 border-gray-300 dark:border-gray-700 transition-all hover:border-green-500 hover:shadow-lg">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardDescription className="text-zinc-600 dark:text-zinc-400">Receitas</CardDescription>
@@ -70,12 +72,12 @@ export function SummaryCards({
                   <TrendingUp className="h-5 w-5" />
                 </div>
               </div>
-              <CardTitle className="text-3xl font-bold text-green-600 dark:text-green-400">
+              <CardTitle className="text-2xl sm:text-3xl font-bold text-green-600 dark:text-green-400">
                 {formatCurrency(monthlyIncome)}
               </CardTitle>
               {showYearly && (
                 <>
-                  <p className="text-base text-zinc-500 dark:text-zinc-400">
+                  <p className="text-sm sm:text-base text-zinc-500 dark:text-zinc-400">
                     {formatCurrency(yearlyIncome)} <span className="text-xs">/ ano</span>
                   </p>
                 </>
@@ -86,7 +88,7 @@ export function SummaryCards({
 
         {/* Despesas */}
         <Link href="/financeiro?type=expense">
-          <Card className="group cursor-pointer border-2 transition-all hover:border-red-500 hover:shadow-lg">
+          <Card className="group cursor-pointer border-2 border-gray-300 dark:border-gray-700 transition-all hover:border-red-500 hover:shadow-lg">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardDescription className="text-zinc-600 dark:text-zinc-400">Despesas</CardDescription>
@@ -94,12 +96,12 @@ export function SummaryCards({
                   <TrendingDown className="h-5 w-5" />
                 </div>
               </div>
-              <CardTitle className="text-3xl font-bold text-red-600 dark:text-red-400">
+              <CardTitle className="text-2xl sm:text-3xl font-bold text-red-600 dark:text-red-400">
                 {formatCurrency(monthlyExpenses)}
               </CardTitle>
               {showYearly && (
                 <>
-                  <p className="text-base text-zinc-500 dark:text-zinc-400">
+                  <p className="text-sm sm:text-base text-zinc-500 dark:text-zinc-400">
                     {formatCurrency(yearlyExpenses)} <span className="text-xs">/ ano</span>
                   </p>
                 </>
@@ -110,7 +112,7 @@ export function SummaryCards({
 
         {/* Saldo */}
         <Link href="/financeiro">
-          <Card className={`group cursor-pointer border-2 transition-all hover:shadow-lg ${
+          <Card className={`group cursor-pointer border-2 border-gray-300 dark:border-gray-700 transition-all hover:shadow-lg ${
             monthlyBalance >= 0
               ? 'hover:border-blue-500'
               : 'hover:border-orange-500'
@@ -126,7 +128,7 @@ export function SummaryCards({
                   <Wallet className="h-5 w-5" />
                 </div>
               </div>
-              <CardTitle className={`text-3xl font-bold ${
+              <CardTitle className={`text-2xl sm:text-3xl font-bold ${
                 monthlyBalance >= 0
                   ? 'text-blue-600 dark:text-blue-400'
                   : 'text-orange-600 dark:text-orange-400'
@@ -135,7 +137,7 @@ export function SummaryCards({
               </CardTitle>
               {showYearly && (
                 <>
-                  <p className={`text-base ${
+                  <p className={`text-sm sm:text-base ${
                     yearlyBalance >= 0
                       ? 'text-zinc-500 dark:text-zinc-400'
                       : 'text-zinc-500 dark:text-zinc-400'

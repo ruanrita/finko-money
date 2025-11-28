@@ -37,9 +37,9 @@ export function GoalsWidget({ goals }: GoalsWidgetProps) {
   const totalGoals = goals.length;
 
   return (
-    <Card className="border-2">
+    <Card className="border-2 border-gray-300 dark:border-gray-700">
       <CardHeader>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
             <CardTitle className="flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400">
@@ -52,7 +52,7 @@ export function GoalsWidget({ goals }: GoalsWidgetProps) {
             </CardDescription>
           </div>
           <Link href="/metas">
-            <Button variant="ghost" size="sm" className="text-brand hover:bg-blue-50 hover:text-brand dark:hover:bg-blue-900/20">
+            <Button variant="ghost" size="sm" className="text-brand hover:bg-blue-50 hover:text-brand dark:hover:bg-blue-900/20 w-full sm:w-auto">
               Ver todas
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
@@ -82,14 +82,14 @@ export function GoalsWidget({ goals }: GoalsWidgetProps) {
           <div className="space-y-3">
             {topGoals.map((goal) => (
               <Link key={goal.id} href={`/metas/${goal.id}`}>
-                <div className="rounded-lg border-2 border-border bg-card p-4 transition-all hover:border-brand hover:shadow-md cursor-pointer">
+                <div className="rounded-lg border-2 border-gray-300 dark:border-gray-700 bg-card p-4 transition-all hover:border-brand hover:shadow-md cursor-pointer">
                   <div className="flex items-start justify-between gap-3 mb-3">
-                    <div className="flex items-start gap-3 flex-1">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-sky-500 text-2xl shadow-sm">
+                    <div className="flex items-start gap-3 flex-1 min-w-0">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-sky-500 text-2xl shadow-sm shrink-0">
                         {goal.icon}
                       </div>
-                      <div className="flex-1">
-                        <p className="font-semibold text-card-foreground">{goal.name}</p>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-card-foreground truncate">{goal.name}</p>
                         <Badge
                           variant="secondary"
                           className="mt-1.5 text-xs bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300"
@@ -98,7 +98,7 @@ export function GoalsWidget({ goals }: GoalsWidgetProps) {
                         </Badge>
                       </div>
                     </div>
-                    <div className="text-right">
+                    <div className="text-right shrink-0">
                       <p className={`text-xl font-bold ${statusColors[goal.status]}`}>
                         {Math.min(goal.progress_percentage, 100).toFixed(0)}%
                       </p>
@@ -110,7 +110,7 @@ export function GoalsWidget({ goals }: GoalsWidgetProps) {
                     className="h-2.5 mb-3"
                   />
 
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 text-xs text-muted-foreground">
                     <span className="font-medium">
                       {formatCurrency(goal.current_amount)} de {formatCurrency(goal.target_amount)}
                     </span>
@@ -127,7 +127,7 @@ export function GoalsWidget({ goals }: GoalsWidgetProps) {
 
             {totalGoals > 3 && (
               <Link href="/metas">
-                <Button variant="outline" className="w-full border-brand text-brand hover:bg-brand hover:text-white" size="sm">
+                <Button variant="outline" className="w-full border-2 border-brand text-brand hover:bg-brand hover:text-white" size="sm">
                   Ver todas as {totalGoals} metas
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>

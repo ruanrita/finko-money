@@ -15,7 +15,6 @@ import {
   Users,
   Menu,
   LogOut,
-  X,
   DollarSign,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -96,21 +95,13 @@ export function MobileNav({ currentBranch }: MobileNavProps) {
           </SheetHeader>
 
           {/* Header */}
-          <div className="flex h-16 items-center justify-between border-b-2 border-border px-6">
+          <div className="flex h-16 items-center border-b-2 border-border px-6">
             <Link href="/dashboard" className="flex items-center gap-2" onClick={() => setOpen(false)}>
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-gradient shadow-sm">
                 <Wallet className="h-5 w-5 text-white" />
               </div>
               <span className="text-lg font-bold text-brand">FinkoMoney</span>
             </Link>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setOpen(false)}
-              className="h-8 w-8"
-            >
-              <X className="h-4 w-4" />
-            </Button>
           </div>
 
           {/* Branch Switcher */}

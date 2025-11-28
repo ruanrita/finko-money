@@ -102,9 +102,9 @@ export function CreateBudgetDialog({ selectedMonth }: Props) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-white text-brand hover:bg-blue-50 shadow-md">
-          <Plus className="h-4 w-4 mr-2" />
-          Novo Orçamento
+        <Button className="bg-white text-brand hover:bg-blue-50 shadow-md whitespace-nowrap">
+          <Plus className="h-4 w-4 sm:mr-2" />
+          <span className="hidden sm:inline">Novo Orçamento</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="border-2">

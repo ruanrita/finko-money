@@ -48,6 +48,10 @@ export const updateTransactionSchema = z.object({
   payment_method: z.string().optional(),
   tags: z.array(z.string()).optional(),
   paid_at: z.string().or(z.date()).nullable().optional(),
+  installment_type: installmentTypeEnum.optional(),
+  is_recurring: z.boolean().optional(),
+  recurrence_type: recurrenceTypeEnum.nullable().optional(),
+  installments_count: z.number().int().min(2).max(100).optional(),
 });
 
 // Schema para marcar como pago/não pago

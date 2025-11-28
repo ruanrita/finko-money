@@ -75,13 +75,13 @@ export default async function DashboardPage() {
 
   return (
     <AuthenticatedLayout currentBranch={currentBranch}>
-      <div className="relative overflow-hidden border-b border-border bg-header-gradient">
+      <div className="relative overflow-hidden border-b-2 border-border bg-header-gradient">
         <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-10"></div>
-        <div className="relative px-8 py-8">
-          <div className="flex items-center justify-between">
+        <div className="relative px-4 py-6 sm:px-6 md:px-8 md:py-8">
+          <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-white">Dashboard</h1>
-              <p className="mt-2 text-sm text-blue-100">
+              <h1 className="text-2xl font-bold text-white sm:text-3xl">Dashboard</h1>
+              <p className="mt-1 text-sm text-blue-100 sm:mt-2">
                 Bem-vindo de volta, {userData?.full_name || user.email}!
               </p>
             </div>
@@ -90,7 +90,7 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      <div className="p-8">
+      <div className="p-4 sm:p-6 md:p-8">
         {/* Summary Cards */}
         <SummaryCards
           monthName={monthName}
@@ -103,12 +103,12 @@ export default async function DashboardPage() {
         />
 
         {/* Two Column Layout */}
-        <div className="mt-8 grid gap-8 lg:grid-cols-2">
+        <div className="mt-6 sm:mt-8 grid gap-4 sm:gap-6 md:gap-8 lg:grid-cols-2">
           {/* Goals Widget */}
           <GoalsWidget goals={goals} />
 
           {/* Recent Transactions */}
-          <Card className="border-2">
+          <Card className="border-2 border-gray-300 dark:border-gray-700">
           <CardHeader>
             <CardTitle>Próximas Transações</CardTitle>
             <CardDescription>
@@ -121,27 +121,27 @@ export default async function DashboardPage() {
                 {upcomingTransactions.map((transaction) => (
                   <div
                     key={transaction.id}
-                    className="flex items-center justify-between rounded-lg border border-border bg-card p-4 transition-all hover:border-brand hover:shadow-sm"
+                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-lg border-2 border-gray-300 dark:border-gray-700 bg-card p-4 transition-all hover:border-brand hover:shadow-sm"
                   >
-                    <div className="flex-1">
-                      <p className="font-semibold text-card-foreground">{transaction.description}</p>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-card-foreground truncate">{transaction.description}</p>
                       <p className="text-sm text-muted-foreground">
                         Vencimento: {new Date(transaction.due_date).toLocaleDateString('pt-BR')}
                       </p>
                     </div>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4">
                       {transaction.categories && (
-                        <Badge variant="secondary" className="flex items-center gap-1.5">
+                        <Badge variant="secondary" className="flex items-center gap-1.5 shrink-0">
                           <div
                             className="h-4 w-4 rounded flex items-center justify-center"
                             style={{ backgroundColor: `${transaction.categories.color}30`, color: transaction.categories.color }}
                           >
                             <CategoryIcon iconName={transaction.categories.icon} className="h-3 w-3" />
                           </div>
-                          {transaction.categories.name}
+                          <span className="hidden sm:inline">{transaction.categories.name}</span>
                         </Badge>
                       )}
-                      <p className={`text-lg font-bold ${
+                      <p className={`text-lg font-bold whitespace-nowrap ${
                         transaction.type === 'income' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
                       }`}>
                         {transaction.type === 'income' ? '+' : '-'}

@@ -12,6 +12,7 @@ import { AuthenticatedLayout } from "@/components/authenticated-layout";
 import { getTransactions, getCategories, getCategoryTotals } from "./actions";
 import { generateRecurringOccurrences } from "@/lib/recurring-utils";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { InlineLoader } from "@/components/inline-loader";
 import type { BranchWithMembers } from "@/src/types/database";
 
 type Transaction = {
@@ -156,10 +157,15 @@ export function FinanceiroPageContent({ currentBranch }: FinanceiroPageContentPr
     setDialogOpen(true);
   };
 
-  const handleCloseDialog = () => {
-    setDialogOpen(false);
-    setEditingTransaction(null);
-    fetchData();
+  const handleCloseDialog = (open: boolean) => {
+    setDialogOpen(open);
+    if (!open) {
+      setEditingTransaction(null);
+    }
+  };
+
+  const handleSuccess = () => {
+    fetchData(); // Só atualiza quando salvar com sucesso
   };
 
   return (
@@ -194,9 +200,7 @@ export function FinanceiroPageContent({ currentBranch }: FinanceiroPageContentPr
 
           {/* Chart */}
           {loading ? (
-            <div className="flex justify-center py-12">
-              <p className="text-zinc-500">Carregando...</p>
-            </div>
+            <InlineLoader text="Carregando transações" size="md" />
           ) : (
             <>
               {/* Gráficos lado a lado */}
@@ -226,6 +230,7 @@ export function FinanceiroPageContent({ currentBranch }: FinanceiroPageContentPr
         onOpenChange={handleCloseDialog}
         categories={categories}
         transaction={editingTransaction}
+        onSuccess={handleSuccess}
       />
     </AuthenticatedLayout>
   );

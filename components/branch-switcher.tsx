@@ -85,9 +85,19 @@ export function BranchSwitcher({ initialBranch }: BranchSwitcherProps) {
 
   if (loading) {
     return (
-      <div className="flex items-center gap-2 px-4 py-2">
-        <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-        <span className="text-sm">Carregando...</span>
+      <div className="flex items-center gap-3 px-4 py-3">
+        <div className="relative w-8 h-8">
+          <svg className="w-full h-full animate-spin" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="9" className="fill-none stroke-brand/20" strokeWidth="2" />
+            <circle cx="12" cy="12" r="9" className="fill-none stroke-brand" strokeWidth="2" strokeDasharray="14 28" strokeLinecap="round">
+              <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite" />
+            </circle>
+            <rect x="9" y="9" width="6" height="6" rx="1.5" className="fill-brand">
+              <animate attributeName="opacity" values="1;0.6;1" dur="1s" repeatCount="indefinite" />
+            </rect>
+          </svg>
+        </div>
+        <span className="text-sm font-medium text-muted-foreground">Carregando...</span>
       </div>
     );
   }

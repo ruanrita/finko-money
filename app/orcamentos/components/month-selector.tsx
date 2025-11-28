@@ -1,9 +1,8 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, Copy } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { copyFromPreviousMonthAction } from "../actions";
 
 type Props = {
   selectedMonth: string;
@@ -31,44 +30,24 @@ export function MonthSelector({ selectedMonth }: Props) {
     router.refresh();
   }
 
-  async function handleCopyPrevious() {
-    const result = await copyFromPreviousMonthAction(selectedMonth);
-
-    if (result.success) {
-      router.refresh();
-    } else {
-      alert(result.error || "Erro ao copiar orçamentos");
-    }
-  }
-
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-2">
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => navigateMonth('prev')}
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-        <h2 className="text-xl font-semibold capitalize min-w-[200px] text-center">
-          {monthName}
-        </h2>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => navigateMonth('next')}
-        >
-          <ChevronRight className="h-4 w-4" />
-        </Button>
-      </div>
-
+    <div className="flex items-center justify-center gap-2">
       <Button
         variant="outline"
-        onClick={handleCopyPrevious}
+        size="icon"
+        onClick={() => navigateMonth('prev')}
       >
-        <Copy className="h-4 w-4 mr-2" />
-        Copiar do Mês Anterior
+        <ChevronLeft className="h-4 w-4" />
+      </Button>
+      <h2 className="text-lg sm:text-xl font-semibold capitalize min-w-[180px] sm:min-w-[200px] text-center">
+        {monthName}
+      </h2>
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={() => navigateMonth('next')}
+      >
+        <ChevronRight className="h-4 w-4" />
       </Button>
     </div>
   );

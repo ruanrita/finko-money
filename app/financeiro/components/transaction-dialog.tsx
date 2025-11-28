@@ -65,6 +65,7 @@ interface TransactionDialogProps {
   onOpenChange: (open: boolean) => void;
   categories: Category[];
   transaction?: Transaction | null;
+  onSuccess?: () => void;
 }
 
 export function TransactionDialog({
@@ -72,6 +73,7 @@ export function TransactionDialog({
   onOpenChange,
   categories,
   transaction,
+  onSuccess,
 }: TransactionDialogProps) {
   const [loading, setLoading] = useState(false);
   const [isRecurring, setIsRecurring] = useState(false);
@@ -193,6 +195,7 @@ export function TransactionDialog({
       );
       onOpenChange(false);
       reset();
+      onSuccess?.(); // Chama callback de sucesso apenas quando salvar
     }
   };
 
