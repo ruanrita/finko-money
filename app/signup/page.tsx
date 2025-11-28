@@ -8,8 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Wallet, ArrowLeft, Check, Sparkles, Loader2 } from "lucide-react";
+import { Wallet, ArrowLeft, Check, Sparkles } from "lucide-react";
 import { toast } from "sonner";
+import { ButtonLoader } from "@/components/button-loader";
 
 export default function SignUpPage() {
   const [error, setError] = useState<string | null>(null);
@@ -144,8 +145,8 @@ export default function SignUpPage() {
                 <Button type="submit" className="btn-brand h-11 w-full" disabled={loading}>
                   {loading ? (
                     <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Criando conta...
+                      <ButtonLoader size="md" />
+                      <span className="ml-2">Criando conta...</span>
                     </>
                   ) : (
                     "Criar conta grátis"

@@ -7,8 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Wallet, ArrowLeft, TrendingUp, Target, Shield, Loader2 } from "lucide-react";
+import { Wallet, ArrowLeft, TrendingUp, Target, Shield } from "lucide-react";
 import { toast } from "sonner";
+import { ButtonLoader } from "@/components/button-loader";
 
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
@@ -106,8 +107,8 @@ export default function LoginPage() {
                 <Button type="submit" className="btn-brand h-11 w-full" disabled={loading}>
                   {loading ? (
                     <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Entrando...
+                      <ButtonLoader size="md" />
+                      <span className="ml-2">Entrando...</span>
                     </>
                   ) : (
                     "Entrar"
