@@ -56,17 +56,44 @@ export async function POST(request: NextRequest) {
 
 async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
   const userId = session.metadata?.userId;
-  if (!userId) return;
 
-  const subscription = await stripe.subscriptions.retrieve(session.subscription as string);
-  await updateUserSubscription(userId, subscription);
+  if (!userId) {
+    console.error('❌ No userId in checkout session metadata');
+    return;
+  }
+
+  console.log('🔄 Processing checkout completion for user:', userId);
+
+  if (!session.subscription) {
+    console.error('❌ No subscription ID in checkout session');
+    return;
+  }
+
+  try {
+    const subscription = await stripe.subscriptions.retrieve(session.subscription as string);
+    await updateUserSubscription(userId, subscription);
+  } catch (error: any) {
+    console.error('❌ Error processing checkout completion:', error.message);
+    throw error;
+  }
 }
 
 async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
   const userId = subscription.metadata?.userId;
-  if (!userId) return;
 
-  await updateUserSubscription(userId, subscription);
+  if (!userId) {
+    console.error('❌ No userId in subscription metadata');
+    return;
+  }
+
+  console.log('🔄 Updating subscription for user:', userId, 'Status:', subscription.status);
+
+  try {
+    await updateUserSubscription(userId, subscription);
+  } catch (error: any) {
+    console.error('❌ Error updating subscription:', error.message);
+    throw error;
+  }
 }
 
 async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
@@ -129,32 +156,79 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
 }
 
 async function updateUserSubscription(userId: string, subscription: Stripe.Subscription) {
-  const priceId = subscription.items.data[0].price.id;
+  console.log('📝 Updating subscription:', {
+    userId,
+    subscriptionId: subscription.id,
+    status: subscription.status,
+    currentPeriodStart: subscription.current_period_start,
+    currentPeriodEnd: subscription.current_period_end,
+  });
+
+  const priceId = subscription.items.data[0]?.price?.id;
+
+  if (!priceId) {
+    console.error('❌ No price ID in subscription');
+    return;
+  }
 
   // Buscar price no banco
-  const { data: price } = await supabaseAdmin
+  const { data: price, error: priceError } = await supabaseAdmin
     .from('subscription_prices')
     .select('id, plan_id')
     .eq('stripe_price_id', priceId)
     .single();
 
-  if (!price) {
-    console.error('❌ Price not found:', priceId);
+  if (priceError || !price) {
+    console.error('❌ Price not found in database:', priceId, priceError);
     return;
   }
 
+  console.log('✅ Found price in database:', { priceId, planId: price.plan_id });
+
+  // Helper para converter timestamp do Stripe (Unix) para ISO string
+  const toISOString = (timestamp: number | null | undefined): string | null => {
+    if (!timestamp || isNaN(timestamp)) {
+      console.warn('⚠️ Invalid timestamp received:', timestamp);
+      return null;
+    }
+    try {
+      const date = new Date(timestamp * 1000);
+      if (isNaN(date.getTime())) {
+        console.error('❌ Invalid date from timestamp:', timestamp);
+        return null;
+      }
+      return date.toISOString();
+    } catch (error) {
+      console.error('❌ Error converting timestamp:', timestamp, error);
+      return null;
+    }
+  };
+
+  // Converter timestamps
+  const periodStart = toISOString(subscription.current_period_start);
+  const periodEnd = toISOString(subscription.current_period_end);
+
+  console.log('📅 Converted timestamps:', { periodStart, periodEnd });
+
   // Atualizar users table
-  await supabaseAdmin
+  const { error: userError } = await supabaseAdmin
     .from('users')
     .update({
       subscription_plan_id: price.plan_id,
       subscription_status: subscription.status,
-      subscription_current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+      subscription_current_period_end: periodEnd,
     })
     .eq('id', userId);
 
+  if (userError) {
+    console.error('❌ Error updating users table:', userError);
+    throw userError;
+  }
+
+  console.log('✅ Updated users table');
+
   // Atualizar/criar user_subscriptions
-  await supabaseAdmin
+  const { error: subError } = await supabaseAdmin
     .from('user_subscriptions')
     .upsert(
       {
@@ -164,13 +238,19 @@ async function updateUserSubscription(userId: string, subscription: Stripe.Subsc
         plan_id: price.plan_id,
         price_id: price.id,
         status: subscription.status,
-        current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-        current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
-        cancel_at_period_end: subscription.cancel_at_period_end,
+        current_period_start: periodStart,
+        current_period_end: periodEnd,
+        cancel_at_period_end: subscription.cancel_at_period_end || false,
         updated_at: new Date().toISOString(),
       },
       { onConflict: 'stripe_subscription_id' }
     );
 
-  console.log('✅ User subscription updated:', userId);
+  if (subError) {
+    console.error('❌ Error updating user_subscriptions table:', subError);
+    throw subError;
+  }
+
+  console.log('✅ Updated user_subscriptions table');
+  console.log('✅ User subscription fully updated:', userId);
 }
