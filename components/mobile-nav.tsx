@@ -16,6 +16,7 @@ import {
   Menu,
   LogOut,
   DollarSign,
+  Shield,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -38,10 +39,14 @@ const navigation = [
 
 interface MobileNavProps {
   currentBranch: BranchWithMembers;
+  isAdmin?: boolean;
 }
 
-export function MobileNav({ currentBranch }: MobileNavProps) {
+export function MobileNav({ currentBranch, isAdmin = false }: MobileNavProps) {
   const pathname = usePathname();
+  const handleSignOut = async () => {
+    await signOut();
+  };
   const [open, setOpen] = useState(false);
 
   return (
@@ -111,6 +116,23 @@ export function MobileNav({ currentBranch }: MobileNavProps) {
 
           {/* Navigation */}
           <nav className="flex-1 space-y-1 p-4 overflow-y-auto" style={{ maxHeight: "calc(100vh - 250px)" }}>
+            {/* Admin Panel Link */}
+            {isAdmin && (
+              <Link
+                href="/admin"
+                onClick={() => setOpen(false)}
+                className={cn(
+                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all mb-2",
+                  pathname.startsWith("/admin")
+                    ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                    : "text-muted-foreground hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                )}
+              >
+                <Shield className="h-5 w-5 shrink-0" />
+                <span>Painel Admin</span>
+              </Link>
+            )}
+
             {navigation.map((item) => {
               const isActive = pathname === item.href || pathname?.startsWith(item.href + "/");
               const Icon = item.icon;

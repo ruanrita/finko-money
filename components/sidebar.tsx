@@ -15,6 +15,7 @@ import {
   ChevronLeft,
   ChevronRight,
   LogOut,
+  Shield,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -37,11 +38,16 @@ const navigation = [
 
 interface SidebarProps {
   currentBranch: BranchWithMembers;
+  isAdmin?: boolean;
 }
 
-export function Sidebar({ currentBranch }: SidebarProps) {
+export function Sidebar({ currentBranch, isAdmin = false }: SidebarProps) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+
+  const handleSignOut = async () => {
+    await signOut();
+  };
 
   return (
     <div
@@ -103,6 +109,23 @@ export function Sidebar({ currentBranch }: SidebarProps) {
 
       {/* Navigation */}
       <nav className="flex-1 space-y-1 p-3">
+        {/* Admin Panel Link */}
+        {isAdmin && (
+          <Link
+            href="/admin"
+            className={cn(
+              "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 mb-2",
+              pathname.startsWith("/admin")
+                ? "bg-red-100 text-red-700 shadow-sm dark:bg-red-900/30 dark:text-red-400"
+                : "text-muted-foreground hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+            )}
+            title={collapsed ? "Painel Admin" : undefined}
+          >
+            <Shield className={cn("h-5 w-5 shrink-0", pathname.startsWith("/admin") && "drop-shadow-sm")} />
+            {!collapsed && <span>Painel Admin</span>}
+          </Link>
+        )}
+
         {navigation.map((item) => {
           const isActive = pathname === item.href || pathname?.startsWith(item.href + "/");
           const Icon = item.icon;
@@ -133,7 +156,7 @@ export function Sidebar({ currentBranch }: SidebarProps) {
             <Button
               variant="ghost"
               className="w-full justify-start gap-3 text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-900/20 dark:hover:text-red-300"
-              onClick={() => signOut()}
+              onClick={handleSignOut}
             >
               <LogOut className="h-5 w-5 shrink-0" />
               <span className="font-medium">Sair</span>
@@ -146,7 +169,7 @@ export function Sidebar({ currentBranch }: SidebarProps) {
               variant="ghost"
               size="icon"
               className="w-full text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
-              onClick={() => signOut()}
+              onClick={handleSignOut}
               title="Sair"
             >
               <LogOut className="h-5 w-5" />

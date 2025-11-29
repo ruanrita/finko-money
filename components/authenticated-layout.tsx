@@ -5,14 +5,15 @@ import type { BranchWithMembers } from "@/src/types/database";
 interface AuthenticatedLayoutProps {
   children: React.ReactNode;
   currentBranch: BranchWithMembers;
+  isAdmin?: boolean;
 }
 
-export function AuthenticatedLayout({ children, currentBranch }: AuthenticatedLayoutProps) {
+export function AuthenticatedLayout({ children, currentBranch, isAdmin = false }: AuthenticatedLayoutProps) {
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       {/* Desktop Sidebar - Hidden on mobile */}
       <div className="hidden md:flex">
-        <Sidebar currentBranch={currentBranch} />
+        <Sidebar currentBranch={currentBranch} isAdmin={isAdmin} />
       </div>
 
       {/* Main Content */}
@@ -21,7 +22,7 @@ export function AuthenticatedLayout({ children, currentBranch }: AuthenticatedLa
       </main>
 
       {/* Mobile Navigation - Only visible on mobile */}
-      <MobileNav currentBranch={currentBranch} />
+      <MobileNav currentBranch={currentBranch} isAdmin={isAdmin} />
     </div>
   );
 }

@@ -33,6 +33,15 @@ const transactionSchema = z.object({
   is_recurring: z.boolean(),
   recurrence_type: z.enum(["monthly", "weekly", "yearly"]).optional(),
   tags: z.string().optional(),
+}).refine((data) => {
+  // Se is_recurring é true, recurrence_type é obrigatório
+  if (data.is_recurring && !data.recurrence_type) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Tipo de recorrência é obrigatório quando a transação é recorrente",
+  path: ["recurrence_type"],
 });
 
 type TransactionFormData = z.infer<typeof transactionSchema>;
@@ -433,6 +442,9 @@ export function TransactionDialog({
                       <SelectItem value="yearly">Anual</SelectItem>
                     </SelectContent>
                   </Select>
+                  {errors.recurrence_type && (
+                    <p className="text-sm text-red-600">{errors.recurrence_type.message}</p>
+                  )}
                 </div>
               )}
             </>

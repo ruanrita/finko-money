@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { login } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +15,7 @@ import { ButtonLoader } from "@/components/button-loader";
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -30,6 +32,18 @@ export default function LoginPage() {
         description: result.error,
       });
       setLoading(false);
+    } else if (result?.requires2FA) {
+      // Admin precisa verificar código 2FA
+      toast.success("Código de verificação enviado!", {
+        description: "Verifique seu email e insira o código.",
+      });
+
+      // Redireciona para página de verificação 2FA
+      const params = new URLSearchParams({
+        userId: result.userId,
+        email: result.email,
+      });
+      router.push(`/verify-2fa?${params.toString()}`);
     } else {
       toast.success("Login realizado com sucesso!", {
         description: "Redirecionando para o dashboard...",

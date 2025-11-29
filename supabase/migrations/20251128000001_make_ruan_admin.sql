@@ -1,0 +1,2 @@
+-- Migration removida - ruan@gmail.com não é mais admin
+-- Deixando migration vazia para manter histórico
