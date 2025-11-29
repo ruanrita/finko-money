@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +10,24 @@ import { toast } from 'sonner';
 export default function PricingPage() {
   const [interval, setInterval] = useState<'month' | 'year'>('month');
   const [loading, setLoading] = useState<string | null>(null);
+  const [priceIds, setPriceIds] = useState<any>({});
+
+  // Buscar price IDs do banco de dados
+  useEffect(() => {
+    async function loadPrices() {
+      try {
+        const res = await fetch('/api/subscription/prices');
+        const data = await res.json();
+
+        if (data.prices) {
+          setPriceIds(data.prices);
+        }
+      } catch (error) {
+        console.error('Failed to load prices:', error);
+      }
+    }
+    loadPrices();
+  }, []);
 
   const plans = [
     {
@@ -32,9 +50,10 @@ export default function PricingPage() {
     {
       name: 'Pro',
       price: { month: 15.90, year: 159 },
+      // Price IDs são carregados dinamicamente do banco de dados
       priceId: {
-        month: 'price_pro_monthly', // ⚠️ Substituir pelo ID real do Stripe
-        year: 'price_pro_yearly',   // ⚠️ Substituir pelo ID real do Stripe
+        month: priceIds.pro?.prices?.month?.stripePriceId || null,
+        year: priceIds.pro?.prices?.year?.stripePriceId || null,
       },
       description: 'Para controle total das suas finanças',
       features: [
