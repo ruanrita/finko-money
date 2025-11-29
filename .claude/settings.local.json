@@ -21,7 +21,9 @@
       "Bash(npx tsx:*)",
       "Bash(docker logs:*)",
       "Bash(npx supabase stop)",
-      "Bash(npx supabase:*)"
+      "Bash(npx supabase:*)",
+      "Bash(npm test:*)",
+      "Bash(npm uninstall jsdom)"
     ],
     "deny": [],
     "ask": []
