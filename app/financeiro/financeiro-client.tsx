@@ -45,9 +45,15 @@ type Category = {
 
 interface FinanceiroPageContentProps {
   currentBranch: BranchWithMembers;
+  userPlanName: string;
+  isEarlyAdopter: boolean;
 }
 
-export function FinanceiroPageContent({ currentBranch }: FinanceiroPageContentProps) {
+export function FinanceiroPageContent({
+  currentBranch,
+  userPlanName,
+  isEarlyAdopter
+}: FinanceiroPageContentProps) {
   const searchParams = useSearchParams();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -169,7 +175,11 @@ export function FinanceiroPageContent({ currentBranch }: FinanceiroPageContentPr
   };
 
   return (
-    <AuthenticatedLayout currentBranch={currentBranch}>
+    <AuthenticatedLayout
+      currentBranch={currentBranch}
+      userPlanName={userPlanName}
+      isEarlyAdopter={isEarlyAdopter}
+    >
       <div className="relative overflow-hidden border-b-2 border-border bg-header-gradient">
         <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-10"></div>
         <div className="relative px-4 py-6 sm:px-6 md:px-8 md:py-8">

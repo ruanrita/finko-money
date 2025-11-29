@@ -14,7 +14,9 @@ import {
   Check,
   ArrowRight,
   Sparkles,
+  Crown,
 } from "lucide-react";
+import { SubscriptionService } from "@/src/modules/subscription/subscription.service";
 
 export const metadata: Metadata = {
   title: "FinkoMoney - Controle Financeiro Pessoal Inteligente",
@@ -30,7 +32,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Home() {
+export default async function Home() {
+  // Verificar se assinaturas estão ativadas
+  const subscriptionsEnabled = await SubscriptionService.areSubscriptionsEnabled();
+
   // Dados estruturados para SEO (JSON-LD)
   const jsonLd = {
     "@context": "https://schema.org",
@@ -123,10 +128,17 @@ export default function Home() {
           <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" aria-hidden="true"></div>
           <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center">
-              {/* <Badge className="mb-4 bg-white/20 text-white hover:bg-white/30">
-                <Sparkles className="mr-1 h-3 w-3" />
-                Teste grátis por 30 dias
-              </Badge> */}
+              {!subscriptionsEnabled ? (
+                <Badge className="mb-4 bg-yellow-500/90 text-white hover:bg-yellow-600/90">
+                  <Crown className="mr-1 h-3 w-3" />
+                  Fase de Lançamento - Acesso Vitalício Gratuito
+                </Badge>
+              ) : (
+                <Badge className="mb-4 bg-white/20 text-white hover:bg-white/30">
+                  <Sparkles className="mr-1 h-3 w-3" />
+                  Teste grátis por 30 dias
+                </Badge>
+              )}
               <h1 className="text-5xl font-bold tracking-tight text-white sm:text-7xl">
                 Controle Financeiro
                 <br />
@@ -139,19 +151,27 @@ export default function Home() {
               <div className="mt-10 flex items-center justify-center gap-6">
                 <Link href="/signup">
                   <Button size="lg" className="h-12 bg-white px-8 text-lg font-semibold text-blue-600 shadow-brand-lg hover:bg-blue-50">
-                    Começar Grátis Agora
+                    {subscriptionsEnabled ? "Começar Grátis Agora" : "Garantir Acesso Vitalício"}
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
-                {/* <Link href="#pricing">
-                  <Button variant="outline" size="lg" className="h-12 border-2 border-white bg-transparent px-8 text-lg text-white hover:bg-white/10">
-                    Ver Preços
-                  </Button>
-                </Link> */}
+                {subscriptionsEnabled && (
+                  <Link href="#pricing">
+                    <Button variant="outline" size="lg" className="h-12 border-2 border-white bg-transparent px-8 text-lg text-white hover:bg-white/10">
+                      Ver Preços
+                    </Button>
+                  </Link>
+                )}
               </div>
-              {/* <p className="mt-4 text-sm text-blue-200">
-                ✨ Sem cartão de crédito • Cancele quando quiser
-              </p> */}
+              {subscriptionsEnabled ? (
+                <p className="mt-4 text-sm text-blue-200">
+                  ✨ Sem cartão de crédito • Cancele quando quiser
+                </p>
+              ) : (
+                <p className="mt-4 text-sm text-blue-200">
+                  👑 Cadastre-se agora e tenha acesso completo para sempre
+                </p>
+              )}
             </div>
 
             {/* Hero Image/Dashboard Preview */}
@@ -370,188 +390,303 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Pricing Section - Temporariamente desativado */}
-        {/* <section id="pricing" className="bg-zinc-50 py-24 dark:bg-zinc-900">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="text-center">
-              <h2 className="text-base font-semibold text-brand">Preços</h2>
-              <p className="mt-2 text-4xl font-bold tracking-tight text-zinc-900 dark:text-white">
-                Escolha o plano ideal para você
-              </p>
-              <p className="mx-auto mt-4 max-w-2xl text-lg text-zinc-600 dark:text-zinc-400">
-                Comece grátis e faça upgrade quando precisar de mais recursos
-              </p>
+        {/* Pricing Section - Conditional */}
+        {subscriptionsEnabled ? (
+          <section id="pricing" className="bg-zinc-50 py-24 dark:bg-zinc-900">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+              <div className="text-center">
+                <h2 className="text-base font-semibold text-brand">Preços</h2>
+                <p className="mt-2 text-4xl font-bold tracking-tight text-zinc-900 dark:text-white">
+                  Escolha o plano ideal para você
+                </p>
+                <p className="mx-auto mt-4 max-w-2xl text-lg text-zinc-600 dark:text-zinc-400">
+                  Comece grátis e faça upgrade quando precisar de mais recursos
+                </p>
+              </div>
+
+              <div className="mt-16 grid gap-8 lg:grid-cols-3">
+                {/* FREE Plan */}
+                <Card className="flex flex-col">
+                  <CardHeader>
+                    <CardTitle className="text-2xl">Básico</CardTitle>
+                    <div className="mt-4">
+                      <span className="text-5xl font-bold">R$ 0</span>
+                      <span className="text-zinc-600 dark:text-zinc-400">/mês</span>
+                    </div>
+                    <CardDescription className="mt-4">
+                      Ideal para uso pessoal e teste da plataforma
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex-1">
+                    <ul className="space-y-3">
+                      <li className="flex items-center gap-2">
+                        <Check className="h-5 w-5 text-green-600" />
+                        <span>1 workspace</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Check className="h-5 w-5 text-green-600" />
+                        <span>50 transações/mês</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Check className="h-5 w-5 text-green-600" />
+                        <span>Dashboard básico</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Check className="h-5 w-5 text-green-600" />
+                        <span>Relatórios simples</span>
+                      </li>
+                    </ul>
+                    <Link href="/signup" className="mt-8 block">
+                      <Button className="w-full" variant="outline">
+                        Começar Grátis
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+
+                {/* PRO Plan */}
+                <Card className="relative flex flex-col border-2 border-brand shadow-brand-lg">
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                    <Badge className="bg-brand px-4 py-1 text-white">Mais Popular</Badge>
+                  </div>
+                  <CardHeader>
+                    <CardTitle className="text-2xl">Pro</CardTitle>
+                    <div className="mt-4">
+                      <span className="text-5xl font-bold">R$ 29,90</span>
+                      <span className="text-zinc-600 dark:text-zinc-400">/mês</span>
+                    </div>
+                    <CardDescription className="mt-4">
+                      Para quem leva suas finanças a sério
+                    </CardDescription>
+                    <Badge className="mt-2 w-fit bg-green-100 text-green-700 hover:bg-green-100">
+                      🎁 30 dias grátis
+                    </Badge>
+                  </CardHeader>
+                  <CardContent className="flex-1">
+                    <ul className="space-y-3">
+                      <li className="flex items-center gap-2">
+                        <Check className="h-5 w-5 text-green-600" />
+                        <span className="font-medium">Tudo do Básico +</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Check className="h-5 w-5 text-green-600" />
+                        <span>3 workspaces</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Check className="h-5 w-5 text-green-600" />
+                        <span>Transações ilimitadas</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Check className="h-5 w-5 text-green-600" />
+                        <span>Metas e orçamentos</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Check className="h-5 w-5 text-green-600" />
+                        <span>Dashboard personalizável</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Check className="h-5 w-5 text-green-600" />
+                        <span>Exportação de relatórios</span>
+                      </li>
+                    </ul>
+                    <Link href="/signup" className="mt-8 block">
+                      <Button className="btn-brand w-full">
+                        Começar Trial Grátis
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+
+                {/* BUSINESS Plan */}
+                <Card className="flex flex-col">
+                  <CardHeader>
+                    <CardTitle className="text-2xl">Business</CardTitle>
+                    <div className="mt-4">
+                      <span className="text-5xl font-bold">R$ 99,90</span>
+                      <span className="text-zinc-600 dark:text-zinc-400">/mês</span>
+                    </div>
+                    <CardDescription className="mt-4">
+                      Para empresas que precisam de controle total
+                    </CardDescription>
+                    <Badge className="mt-2 w-fit bg-green-100 text-green-700 hover:bg-green-100">
+                      🎁 30 dias grátis
+                    </Badge>
+                  </CardHeader>
+                  <CardContent className="flex-1">
+                    <ul className="space-y-3">
+                      <li className="flex items-center gap-2">
+                        <Check className="h-5 w-5 text-green-600" />
+                        <span className="font-medium">Tudo do Pro +</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Check className="h-5 w-5 text-green-600" />
+                        <span>Workspaces ilimitados</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Check className="h-5 w-5 text-green-600" />
+                        <span>Até 15 membros</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Check className="h-5 w-5 text-green-600" />
+                        <span>Integração bancária</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Check className="h-5 w-5 text-green-600" />
+                        <span>AI Assistant</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Check className="h-5 w-5 text-green-600" />
+                        <span>Suporte prioritário</span>
+                      </li>
+                    </ul>
+                    <Link href="/signup" className="mt-8 block">
+                      <Button className="btn-brand w-full">
+                        Começar Trial Grátis
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
+          </section>
+        ) : (
+          /* Early Adopter Section */
+          <section className="bg-gradient-to-br from-yellow-50 via-white to-blue-50 py-24 dark:from-yellow-950/20 dark:via-zinc-950 dark:to-blue-950/20">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+              <div className="text-center">
+                <Badge className="mb-4 bg-yellow-500 text-white hover:bg-yellow-600">
+                  <Crown className="mr-1 h-4 w-4" />
+                  Oferta Limitada - Early Adopter
+                </Badge>
+                <h2 className="mt-2 text-4xl font-bold tracking-tight text-zinc-900 dark:text-white">
+                  Seja um dos primeiros usuários
+                </h2>
+                <p className="mx-auto mt-4 max-w-2xl text-lg text-zinc-600 dark:text-zinc-400">
+                  Cadastre-se agora durante nossa fase de lançamento e ganhe acesso vitalício gratuito com todos os recursos premium
+                </p>
+              </div>
 
-            <div className="mt-16 grid gap-8 lg:grid-cols-3">
-              {/* FREE Plan*/}
-              {/*
-              <Card className="flex flex-col">
-                <CardHeader>
-                  <CardTitle className="text-2xl">Básico</CardTitle>
-                  <div className="mt-4">
-                    <span className="text-5xl font-bold">R$ 0</span>
-                    <span className="text-zinc-600 dark:text-zinc-400">/mês</span>
-                  </div>
-                  <CardDescription className="mt-4">
-                    Ideal para uso pessoal e teste da plataforma
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="flex-1">
-                  <ul className="space-y-3">
-                    <li className="flex items-center gap-2">
-                      <Check className="h-5 w-5 text-green-600" />
-                      <span>1 workspace</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="h-5 w-5 text-green-600" />
-                      <span>50 transações/mês</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="h-5 w-5 text-green-600" />
-                      <span>Dashboard básico</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="h-5 w-5 text-green-600" />
-                      <span>Relatórios simples</span>
-                    </li>
-                  </ul>
-                  <Link href="/signup" className="mt-8 block">
-                    <Button className="w-full" variant="outline">
-                      Começar Grátis
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
+              <div className="mt-16 mx-auto max-w-3xl">
+                <Card className="border-2 border-yellow-200 bg-white shadow-2xl dark:border-yellow-800 dark:bg-zinc-900">
+                  <CardHeader className="text-center pb-8">
+                    <div className="flex justify-center mb-4">
+                      <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600">
+                        <Crown className="h-10 w-10 text-white" />
+                      </div>
+                    </div>
+                    <CardTitle className="text-3xl">Plano Lançamento Inicial</CardTitle>
+                    <div className="mt-6">
+                      <span className="text-6xl font-bold text-brand">R$ 0</span>
+                      <span className="text-2xl text-zinc-600 dark:text-zinc-400">/para sempre</span>
+                    </div>
+                    <CardDescription className="mt-4 text-lg">
+                      Acesso vitalício completo - Sem cobrança, sem pegadinhas
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid gap-4 md:grid-cols-2 mb-8">
+                      <ul className="space-y-4">
+                        <li className="flex items-start gap-3">
+                          <Check className="h-6 w-6 text-green-600 shrink-0 mt-0.5" />
+                          <span className="text-zinc-700 dark:text-zinc-300">Transações ilimitadas por mês</span>
+                        </li>
+                        <li className="flex items-start gap-3">
+                          <Check className="h-6 w-6 text-green-600 shrink-0 mt-0.5" />
+                          <span className="text-zinc-700 dark:text-zinc-300">Categorias customizadas ilimitadas</span>
+                        </li>
+                        <li className="flex items-start gap-3">
+                          <Check className="h-6 w-6 text-green-600 shrink-0 mt-0.5" />
+                          <span className="text-zinc-700 dark:text-zinc-300">Metas financeiras ilimitadas</span>
+                        </li>
+                        <li className="flex items-start gap-3">
+                          <Check className="h-6 w-6 text-green-600 shrink-0 mt-0.5" />
+                          <span className="text-zinc-700 dark:text-zinc-300">Orçamentos ilimitados</span>
+                        </li>
+                      </ul>
+                      <ul className="space-y-4">
+                        <li className="flex items-start gap-3">
+                          <Check className="h-6 w-6 text-green-600 shrink-0 mt-0.5" />
+                          <span className="text-zinc-700 dark:text-zinc-300">Membros de equipe ilimitados</span>
+                        </li>
+                        <li className="flex items-start gap-3">
+                          <Check className="h-6 w-6 text-green-600 shrink-0 mt-0.5" />
+                          <span className="text-zinc-700 dark:text-zinc-300">Workspaces ilimitadas</span>
+                        </li>
+                        <li className="flex items-start gap-3">
+                          <Check className="h-6 w-6 text-green-600 shrink-0 mt-0.5" />
+                          <span className="text-zinc-700 dark:text-zinc-300">Relatórios avançados completos</span>
+                        </li>
+                        <li className="flex items-start gap-3">
+                          <Check className="h-6 w-6 text-green-600 shrink-0 mt-0.5" />
+                          <span className="text-zinc-700 dark:text-zinc-300">Exportação em CSV e PDF</span>
+                        </li>
+                      </ul>
+                    </div>
 
-              {/* PRO Plan */}
-              {/*
-              <Card className="relative flex flex-col border-2 border-brand shadow-brand-lg">
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <Badge className="bg-brand px-4 py-1 text-white">Mais Popular</Badge>
-                </div>
-                <CardHeader>
-                  <CardTitle className="text-2xl">Pro</CardTitle>
-                  <div className="mt-4">
-                    <span className="text-5xl font-bold">R$ 29,90</span>
-                    <span className="text-zinc-600 dark:text-zinc-400">/mês</span>
-                  </div>
-                  <CardDescription className="mt-4">
-                    Para quem leva suas finanças a sério
-                  </CardDescription>
-                  <Badge className="mt-2 w-fit bg-green-100 text-green-700 hover:bg-green-100">
-                    🎁 30 dias grátis
-                  </Badge>
-                </CardHeader>
-                <CardContent className="flex-1">
-                  <ul className="space-y-3">
-                    <li className="flex items-center gap-2">
-                      <Check className="h-5 w-5 text-green-600" />
-                      <span className="font-medium">Tudo do Básico +</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="h-5 w-5 text-green-600" />
-                      <span>3 workspaces</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="h-5 w-5 text-green-600" />
-                      <span>Transações ilimitadas</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="h-5 w-5 text-green-600" />
-                      <span>Metas e orçamentos</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="h-5 w-5 text-green-600" />
-                      <span>Dashboard personalizável</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="h-5 w-5 text-green-600" />
-                      <span>Exportação de relatórios</span>
-                    </li>
-                  </ul>
-                  <Link href="/signup" className="mt-8 block">
-                    <Button className="btn-brand w-full">
-                      Começar Trial Grátis
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
+                    <div className="bg-yellow-50 dark:bg-yellow-900/10 rounded-lg p-6 mb-6">
+                      <p className="text-center text-sm text-yellow-800 dark:text-yellow-200">
+                        <Sparkles className="inline h-4 w-4 mr-1" />
+                        <strong>Oferta por tempo limitado!</strong> Ao se cadastrar agora, você garante acesso vitalício gratuito com todos os recursos,
+                        mesmo quando começarmos a cobrar dos novos usuários.
+                      </p>
+                    </div>
 
-              {/* BUSINESS Plan */}
-              {/*
-              <Card className="flex flex-col">
-                <CardHeader>
-                  <CardTitle className="text-2xl">Business</CardTitle>
-                  <div className="mt-4">
-                    <span className="text-5xl font-bold">R$ 99,90</span>
-                    <span className="text-zinc-600 dark:text-zinc-400">/mês</span>
-                  </div>
-                  <CardDescription className="mt-4">
-                    Para empresas que precisam de controle total
-                  </CardDescription>
-                  <Badge className="mt-2 w-fit bg-green-100 text-green-700 hover:bg-green-100">
-                    🎁 30 dias grátis
-                  </Badge>
-                </CardHeader>
-                <CardContent className="flex-1">
-                  <ul className="space-y-3">
-                    <li className="flex items-center gap-2">
-                      <Check className="h-5 w-5 text-green-600" />
-                      <span className="font-medium">Tudo do Pro +</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="h-5 w-5 text-green-600" />
-                      <span>Workspaces ilimitados</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="h-5 w-5 text-green-600" />
-                      <span>Até 15 membros</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="h-5 w-5 text-green-600" />
-                      <span>Integração bancária</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="h-5 w-5 text-green-600" />
-                      <span>AI Assistant</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="h-5 w-5 text-green-600" />
-                      <span>Suporte prioritário</span>
-                    </li>
-                  </ul>
-                  <Link href="/signup" className="mt-8 block">
-                    <Button className="btn-brand w-full">
-                      Começar Trial Grátis
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
+                    <Link href="/signup" className="block">
+                      <Button size="lg" className="w-full h-14 text-lg btn-brand">
+                        <Crown className="mr-2 h-5 w-5" />
+                        Garantir Meu Acesso Vitalício Agora
+                      </Button>
+                    </Link>
+
+                    <p className="text-center text-sm text-zinc-500 dark:text-zinc-400 mt-4">
+                      Não é necessário cartão de crédito • Acesso imediato
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
-          </div>
-        </section> */}
+          </section>
+        )}
 
         {/* CTA Section */}
         <section className="bg-brand-gradient-hero py-20" aria-labelledby="cta-heading">
           <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
             <h2 id="cta-heading" className="text-4xl font-bold tracking-tight text-white sm:text-5xl">
-              Pronto para transformar suas finanças?
+              {subscriptionsEnabled
+                ? "Pronto para transformar suas finanças?"
+                : "Garanta seu acesso vitalício gratuito"}
             </h2>
             <p className="mx-auto mt-6 max-w-2xl text-xl text-blue-100">
-              Junte-se a milhares de pessoas que já organizaram sua vida financeira com FinkoMoney
+              {subscriptionsEnabled
+                ? "Junte-se a milhares de pessoas que já organizaram sua vida financeira com FinkoMoney"
+                : "Cadastre-se agora e seja um dos primeiros usuários com acesso completo para sempre"}
             </p>
             <div className="mt-10 flex items-center justify-center gap-6">
               <Link href="/signup">
                 <Button size="lg" className="h-14 bg-white px-10 text-lg font-semibold text-blue-600 shadow-brand-lg hover:bg-blue-50">
-                  Começar
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  {subscriptionsEnabled ? (
+                    <>
+                      Começar
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </>
+                  ) : (
+                    <>
+                      <Crown className="mr-2 h-5 w-5" />
+                      Garantir Meu Acesso Agora
+                    </>
+                  )}
                 </Button>
               </Link>
             </div>
-            {/* <p className="mt-6 text-blue-200">
-              Sem cartão de crédito • Cancele quando quiser • Suporte em português
-            </p> */}
+            {subscriptionsEnabled ? (
+              <p className="mt-6 text-blue-200">
+                Sem cartão de crédito • Cancele quando quiser • Suporte em português
+              </p>
+            ) : (
+              <p className="mt-6 text-blue-200">
+                👑 Oferta por tempo limitado • Sem cartão de crédito • Acesso imediato
+              </p>
+            )}
           </div>
         </section>
       </main>
@@ -577,9 +712,11 @@ export default function Home() {
                 <li>
                   <Link href="#" className="hover:text-brand">Features</Link>
                 </li>
-                {/* <li>
-                  <Link href="#pricing" className="hover:text-brand">Preços</Link>
-                </li> */}
+                {subscriptionsEnabled && (
+                  <li>
+                    <Link href="#pricing" className="hover:text-brand">Preços</Link>
+                  </li>
+                )}
                 <li>
                   <Link href="#" className="hover:text-brand">Roadmap</Link>
                 </li>

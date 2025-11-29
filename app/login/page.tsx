@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Wallet, ArrowLeft, TrendingUp, Target, Shield } from "lucide-react";
 import { toast } from "sonner";
 import { ButtonLoader } from "@/components/button-loader";
+import { formatError } from "@/lib/error-messages";
 
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
@@ -27,9 +28,10 @@ export default function LoginPage() {
     const result = await login(formData);
 
     if (result?.error) {
-      setError(result.error);
+      const friendlyError = formatError(result.error);
+      setError(friendlyError);
       toast.error("Erro ao fazer login", {
-        description: result.error,
+        description: friendlyError,
       });
       setLoading(false);
     } else if (result?.requires2FA) {

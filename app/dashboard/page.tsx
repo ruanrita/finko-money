@@ -13,6 +13,7 @@ import { CategoryIcon } from "@/components/category-icon";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { getUserProfileAction } from "./actions";
 import { UserRepository } from "@/src/modules/user/user.repository";
+import { getUserPlanData } from "@/lib/user-plan-helper";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -31,9 +32,12 @@ export default async function DashboardPage() {
   // Fetch user data via server action
   const userData = await getUserProfileAction();
 
-  // Check if user is admin
+  // Check if user is admin and get plan info
   const userProfile = await UserRepository.findById(user.id);
   const isAdmin = userProfile?.is_admin || false;
+
+  // Get user plan information using helper
+  const { userPlanName, isEarlyAdopter } = await getUserPlanData(user.id);
 
   // Fetch all transactions via service layer
   const allTransactions = await TransactionService.list(user.id, currentBranch.id);
@@ -79,7 +83,12 @@ export default async function DashboardPage() {
   const monthName = now.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
 
   return (
-    <AuthenticatedLayout currentBranch={currentBranch} isAdmin={isAdmin}>
+    <AuthenticatedLayout
+      currentBranch={currentBranch}
+      isAdmin={isAdmin}
+      userPlanName={userPlanName}
+      isEarlyAdopter={isEarlyAdopter}
+    >
       <div className="relative overflow-hidden border-b-2 border-border bg-header-gradient">
         <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-10"></div>
         <div className="relative px-4 py-6 sm:px-6 md:px-8 md:py-8">

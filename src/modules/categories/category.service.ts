@@ -1,6 +1,7 @@
 import { CategoryRepository } from "./category.repository";
 import type { CreateCategoryInput, UpdateCategoryInput } from "./category.schema";
 import type { Database } from "@/types/database";
+import { UsageService } from "@/src/modules/usage/usage.service";
 
 type Category = Database["public"]["Tables"]["categories"]["Row"];
 
@@ -33,13 +34,25 @@ export class CategoryService {
     branchId: string,
     input: CreateCategoryInput
   ): Promise<Category> {
-    // Verifica se já existe categoria com esse nome no branch
+    // 1. Verificar limite do plano
+    const usageCheck = await UsageService.checkUsageLimit(userId, 'category', branchId);
+
+    if (!usageCheck.allowed) {
+      throw new Error(
+        `Limite de ${usageCheck.limit} categorias atingido. ` +
+        `Você está usando ${usageCheck.current}/${usageCheck.limit} categorias disponíveis no plano ${usageCheck.planName}. ` +
+        `Faça upgrade para criar mais categorias.`
+      );
+    }
+
+    // 2. Verifica se já existe categoria com esse nome no branch
     const exists = await CategoryRepository.existsByName(input.name, branchId, userId);
 
     if (exists) {
       throw new Error("Já existe uma categoria com este nome");
     }
 
+    // 3. Criar categoria
     return await CategoryRepository.create(userId, {
       name: input.name,
       color: input.color || "#6366f1",

@@ -16,38 +16,64 @@ import {
   ChevronRight,
   LogOut,
   Shield,
+  Lock,
+  FolderTree,
+  LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { useState, useMemo } from "react";
 import { BranchSwitcher } from "./branch-switcher";
 import { signOut } from "@/app/login/actions";
 import type { BranchWithMembers } from "@/src/types/database";
+import type { UserFeatureAccess } from "@/lib/features-helper";
 
-const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Despesas e Receitas", href: "/financeiro", icon: Receipt },
-  { name: "Orçamentos", href: "/orcamentos", icon: Wallet },
-  { name: "Categorias", href: "/categorias", icon: Tags },
-  { name: "Lembretes", href: "/lembretes", icon: Bell },
-  { name: "Metas", href: "/metas", icon: Target },
-  { name: "Relatórios", href: "/relatorios", icon: BarChart3 },
-  { name: "Equipe", href: "/equipe", icon: Users },
-  { name: "Configurações", href: "/configuracoes", icon: Settings },
-];
+// Icon mapping from string to lucide component
+const iconMap: Record<string, LucideIcon> = {
+  LayoutDashboard,
+  Receipt,
+  Wallet,
+  Tags: FolderTree, // Using FolderTree for categories
+  Bell,
+  Target,
+  BarChart3,
+  Settings,
+  Users,
+};
 
 interface SidebarProps {
   currentBranch: BranchWithMembers;
   isAdmin?: boolean;
+  userPlanName?: string;
+  isEarlyAdopter?: boolean;
+  features: UserFeatureAccess[];
 }
 
-export function Sidebar({ currentBranch, isAdmin = false }: SidebarProps) {
+export function Sidebar({
+  currentBranch,
+  isAdmin = false,
+  userPlanName = 'free',
+  isEarlyAdopter = false,
+  features = []
+}: SidebarProps) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
 
   const handleSignOut = async () => {
     await signOut();
   };
+
+  // Build navigation from features
+  const navigation = useMemo(() => {
+    return features.map(({ feature, hasAccess }) => ({
+      name: feature.display_name,
+      href: feature.path,
+      icon: iconMap[feature.icon || ''] || LayoutDashboard,
+      hasAccess,
+      isCore: feature.is_core
+    }));
+  }, [features]);
 
   return (
     <div
@@ -112,7 +138,7 @@ export function Sidebar({ currentBranch, isAdmin = false }: SidebarProps) {
         {/* Admin Panel Link */}
         {isAdmin && (
           <Link
-            href="/admin"
+            href="/admin/plans"
             className={cn(
               "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 mb-2",
               pathname.startsWith("/admin")
@@ -129,21 +155,38 @@ export function Sidebar({ currentBranch, isAdmin = false }: SidebarProps) {
         {navigation.map((item) => {
           const isActive = pathname === item.href || pathname?.startsWith(item.href + "/");
           const Icon = item.icon;
+          const hasAccess = item.hasAccess;
 
           return (
             <Link
               key={item.name}
-              href={item.href}
+              href={hasAccess ? item.href : "#"}
+              onClick={(e) => {
+                if (!hasAccess) {
+                  e.preventDefault();
+                  // TODO: Mostrar modal de upgrade
+                }
+              }}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all",
-                isActive
+                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all relative",
+                isActive && hasAccess
                   ? "bg-gradient-to-r from-blue-600 to-sky-500 text-white shadow-sm"
-                  : "text-card-foreground hover:bg-blue-50 hover:text-brand dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
+                  : hasAccess
+                  ? "text-card-foreground hover:bg-blue-50 hover:text-brand dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
+                  : "text-muted-foreground/40 hover:bg-muted/50 cursor-not-allowed opacity-60"
               )}
               title={collapsed ? item.name : undefined}
             >
-              <Icon className={cn("h-5 w-5 shrink-0", isActive && "drop-shadow-sm")} />
-              {!collapsed && <span>{item.name}</span>}
+              <Icon className={cn("h-5 w-5 shrink-0", isActive && hasAccess && "drop-shadow-sm")} />
+              {!hasAccess && <Lock className="h-3 w-3 absolute left-2 top-2 text-muted-foreground" />}
+              {!collapsed && (
+                <span className="flex-1">{item.name}</span>
+              )}
+              {!collapsed && !hasAccess && (
+                <Badge variant="outline" className="text-xs bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-800">
+                  Upgrade
+                </Badge>
+              )}
             </Link>
           );
         })}
@@ -151,6 +194,19 @@ export function Sidebar({ currentBranch, isAdmin = false }: SidebarProps) {
 
       {/* Footer */}
       <div className="border-t-2 border-border">
+        {!collapsed && !isEarlyAdopter && (
+          <div className="p-3 border-b border-border">
+            <Link href="/configuracoes/plano">
+              <Button
+                variant="ghost"
+                className="w-full justify-start gap-3 text-brand hover:bg-blue-50 dark:hover:bg-blue-900/20"
+              >
+                <Wallet className="h-5 w-5 shrink-0" />
+                <span className="font-medium">Meu Plano</span>
+              </Button>
+            </Link>
+          </div>
+        )}
         {!collapsed && (
           <div className="p-3">
             <Button

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   LayoutDashboard,
   Receipt,
@@ -17,37 +17,63 @@ import {
   LogOut,
   DollarSign,
   Shield,
+  Lock,
+  FolderTree,
+  LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { BranchSwitcher } from "./branch-switcher";
 import { signOut } from "@/app/login/actions";
 import type { BranchWithMembers } from "@/src/types/database";
+import type { UserFeatureAccess } from "@/lib/features-helper";
 
-const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Despesas e Receitas", href: "/financeiro", icon: Receipt },
-  { name: "Orçamentos", href: "/orcamentos", icon: Wallet },
-  { name: "Categorias", href: "/categorias", icon: Tags },
-  { name: "Lembretes", href: "/lembretes", icon: Bell },
-  { name: "Metas", href: "/metas", icon: Target },
-  { name: "Relatórios", href: "/relatorios", icon: BarChart3 },
-  { name: "Equipe", href: "/equipe", icon: Users },
-  { name: "Configurações", href: "/configuracoes", icon: Settings },
-];
+// Icon mapping from string to lucide component
+const iconMap: Record<string, LucideIcon> = {
+  LayoutDashboard,
+  Receipt,
+  Wallet,
+  Tags: FolderTree,
+  Bell,
+  Target,
+  BarChart3,
+  Settings,
+  Users,
+};
 
 interface MobileNavProps {
   currentBranch: BranchWithMembers;
   isAdmin?: boolean;
+  userPlanName?: string;
+  isEarlyAdopter?: boolean;
+  features: UserFeatureAccess[];
 }
 
-export function MobileNav({ currentBranch, isAdmin = false }: MobileNavProps) {
+export function MobileNav({
+  currentBranch,
+  isAdmin = false,
+  userPlanName = 'free',
+  isEarlyAdopter = false,
+  features = []
+}: MobileNavProps) {
   const pathname = usePathname();
   const handleSignOut = async () => {
     await signOut();
   };
   const [open, setOpen] = useState(false);
+
+  // Build navigation from features
+  const navigation = useMemo(() => {
+    return features.map(({ feature, hasAccess }) => ({
+      name: feature.display_name,
+      href: feature.path,
+      icon: iconMap[feature.icon || ''] || LayoutDashboard,
+      hasAccess,
+      isCore: feature.is_core
+    }));
+  }, [features]);
 
   return (
     <>
@@ -136,21 +162,37 @@ export function MobileNav({ currentBranch, isAdmin = false }: MobileNavProps) {
             {navigation.map((item) => {
               const isActive = pathname === item.href || pathname?.startsWith(item.href + "/");
               const Icon = item.icon;
+              const hasAccess = item.hasAccess;
 
               return (
                 <Link
                   key={item.name}
-                  href={item.href}
-                  onClick={() => setOpen(false)}
+                  href={hasAccess ? item.href : "#"}
+                  onClick={(e) => {
+                    if (!hasAccess) {
+                      e.preventDefault();
+                      // TODO: Mostrar modal de upgrade
+                    } else {
+                      setOpen(false);
+                    }
+                  }}
                   className={cn(
-                    "flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-all",
-                    isActive
+                    "flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-all relative",
+                    isActive && hasAccess
                       ? "bg-gradient-to-r from-blue-600 to-sky-500 text-white shadow-sm"
-                      : "text-card-foreground hover:bg-blue-50 hover:text-brand dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
+                      : hasAccess
+                      ? "text-card-foreground hover:bg-blue-50 hover:text-brand dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
+                      : "text-muted-foreground/40 hover:bg-muted/50 cursor-not-allowed opacity-60"
                   )}
                 >
-                  <Icon className={cn("h-5 w-5 shrink-0", isActive && "drop-shadow-sm")} />
-                  <span>{item.name}</span>
+                  <Icon className={cn("h-5 w-5 shrink-0", isActive && hasAccess && "drop-shadow-sm")} />
+                  {!hasAccess && <Lock className="h-3 w-3 absolute left-2 top-2 text-muted-foreground" />}
+                  <span className="flex-1">{item.name}</span>
+                  {!hasAccess && (
+                    <Badge variant="outline" className="text-xs bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-800">
+                      Upgrade
+                    </Badge>
+                  )}
                 </Link>
               );
             })}

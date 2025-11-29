@@ -10,6 +10,8 @@ import {
   ChevronRight,
   LogOut,
   Home,
+  CreditCard,
+  Grid3x3,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -18,6 +20,8 @@ import { signOut } from "@/app/login/actions";
 
 const adminNavigation = [
   { name: "Dashboard Admin", href: "/admin", icon: LayoutDashboard },
+  { name: "Planos", href: "/admin/plans", icon: CreditCard },
+  { name: "Features", href: "/admin/features", icon: Grid3x3 },
   { name: "Gerenciar Admins", href: "/admin/admins", icon: Shield },
   { name: "Logs de Emails", href: "/admin/logs", icon: Mail },
 ];

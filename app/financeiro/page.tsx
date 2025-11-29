@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getCurrentBranch } from "@/lib/supabase/branch-context";
 import { FinanceiroPageContent } from "./financeiro-client";
 import { Loader2 } from "lucide-react";
+import { getUserPlanData } from "@/lib/user-plan-helper";
 
 export default async function FinanceiroPage() {
   const supabase = await createClient();
@@ -16,8 +17,9 @@ export default async function FinanceiroPage() {
     redirect("/login");
   }
 
-  // Pegar branch atual do usuário
+  // Pegar branch atual do usuário e dados do plano
   const currentBranch = await getCurrentBranch(user.id);
+  const { userPlanName, isEarlyAdopter } = await getUserPlanData(user.id);
 
   return (
     <Suspense
@@ -30,7 +32,11 @@ export default async function FinanceiroPage() {
         </div>
       }
     >
-      <FinanceiroPageContent currentBranch={currentBranch} />
+      <FinanceiroPageContent
+        currentBranch={currentBranch}
+        userPlanName={userPlanName}
+        isEarlyAdopter={isEarlyAdopter}
+      />
     </Suspense>
   );
 }
