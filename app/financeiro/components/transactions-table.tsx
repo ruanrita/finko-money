@@ -40,9 +40,10 @@ interface TransactionsTableProps {
   transactions: Transaction[];
   onEdit: (transaction: Transaction) => void;
   selectedMonth?: string;
+  onUpdate?: () => void;
 }
 
-export function TransactionsTable({ transactions, onEdit, selectedMonth }: TransactionsTableProps) {
+export function TransactionsTable({ transactions, onEdit, selectedMonth, onUpdate }: TransactionsTableProps) {
   const [loading, setLoading] = useState<string | null>(null);
 
   const handleDelete = async (id: string) => {
@@ -58,6 +59,7 @@ export function TransactionsTable({ transactions, onEdit, selectedMonth }: Trans
       toast.error(result.error);
     } else {
       toast.success("Transação deletada com sucesso!");
+      onUpdate?.(); // Atualiza a lista
     }
   };
 
@@ -70,6 +72,7 @@ export function TransactionsTable({ transactions, onEdit, selectedMonth }: Trans
       toast.error(result.error);
     } else {
       toast.success(isPaid ? "Marcado como pendente!" : "Marcado como pago!");
+      onUpdate?.(); // Atualiza a lista imediatamente
     }
   };
 

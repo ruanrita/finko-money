@@ -1,6 +1,8 @@
 import * as React from "react";
 import { DayPicker } from "react-day-picker";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
@@ -18,10 +20,11 @@ function Calendar({
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
         caption: "flex justify-center pt-1 relative items-center",
-        caption_label: "text-sm font-medium",
+        caption_label: "text-sm font-medium text-brand",
         nav: "space-x-1 flex items-center",
         nav_button: cn(
-          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100"
+          buttonVariants({ variant: "outline" }),
+          "h-7 w-7 bg-transparent p-0 hover:bg-blue-50 hover:text-brand dark:hover:bg-blue-900/20"
         ),
         nav_button_previous: "absolute left-1",
         nav_button_next: "absolute right-1",
@@ -36,8 +39,8 @@ function Calendar({
         ),
         day_range_end: "day-range-end",
         day_selected:
-          "bg-zinc-900 text-zinc-50 hover:bg-zinc-900 hover:text-zinc-50 focus:bg-zinc-900 focus:text-zinc-50 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-50 dark:hover:text-zinc-900 dark:focus:bg-zinc-50 dark:focus:text-zinc-900",
-        day_today: "bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-50",
+          "bg-brand text-white hover:bg-blue-700 hover:text-white focus:bg-brand focus:text-white dark:bg-brand dark:text-white dark:hover:bg-blue-700 dark:hover:text-white dark:focus:bg-brand dark:focus:text-white rounded-md",
+        day_today: "bg-blue-50 text-brand border border-brand dark:bg-blue-900/20 dark:text-brand rounded-md",
         day_outside:
           "day-outside text-zinc-500 opacity-50 aria-selected:bg-zinc-100/50 aria-selected:text-zinc-500 aria-selected:opacity-30 dark:text-zinc-400 dark:aria-selected:bg-zinc-800/50 dark:aria-selected:text-zinc-400",
         day_disabled: "text-zinc-500 opacity-50 dark:text-zinc-400",

@@ -26,21 +26,26 @@ const transactionSchema = z.object({
   amount: z.string().min(1, "Valor é obrigatório"),
   description: z.string().min(1, "Descrição é obrigatória"),
   due_date: z.date(),
-  category_id: z.string().optional(),
+  category_id: z.string().min(1, "Categoria é obrigatória"),
   payment_method: z.string().optional(),
   installment_type: z.enum(["a_vista", "parcelado"]),
   installments_count: z.string().optional(),
   is_recurring: z.boolean(),
   recurrence_type: z.enum(["monthly", "weekly", "yearly"]).optional(),
   tags: z.string().optional(),
+  mark_as_paid: z.boolean().optional(),
 }).refine((data) => {
   // Se is_recurring é true, recurrence_type é obrigatório
   if (data.is_recurring && !data.recurrence_type) {
     return false;
   }
+  // Se installment_type é parcelado, installments_count é obrigatório
+  if (data.installment_type === "parcelado" && !data.installments_count) {
+    return false;
+  }
   return true;
 }, {
-  message: "Tipo de recorrência é obrigatório quando a transação é recorrente",
+  message: "Campos obrigatórios não preenchidos",
   path: ["recurrence_type"],
 });
 
@@ -89,6 +94,7 @@ export function TransactionDialog({
   const [isInstallment, setIsInstallment] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [localCategories, setLocalCategories] = useState<Category[]>(categories);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   const {
     register,
@@ -104,6 +110,7 @@ export function TransactionDialog({
       installment_type: "a_vista",
       is_recurring: false,
       due_date: new Date(),
+      mark_as_paid: false,
     },
   });
 
@@ -186,6 +193,11 @@ export function TransactionDialog({
 
     if (data.tags) {
       formData.append("tags", data.tags);
+    }
+
+    // Adicionar flag para marcar como pago ao criar
+    if (data.mark_as_paid) {
+      formData.append("mark_as_paid", "true");
     }
 
     const result = transaction
@@ -295,7 +307,7 @@ export function TransactionDialog({
                 value={watch("category_id")}
                 onValueChange={(value) => setValue("category_id", value)}
               >
-                <SelectTrigger>
+                <SelectTrigger className="border-2 border-gray-300 dark:border-gray-700">
                   <SelectValue placeholder="Selecione..." />
                 </SelectTrigger>
                 <SelectContent>
@@ -316,6 +328,9 @@ export function TransactionDialog({
                   ))}
                 </SelectContent>
               </Select>
+              {errors.category_id && (
+                <p className="text-sm text-red-600">{errors.category_id.message}</p>
+              )}
             </div>
 
             {/* Data de Vencimento */}
@@ -323,12 +338,13 @@ export function TransactionDialog({
               <div className="flex items-center justify-between mb-4 mt-3">
                 <Label>Data de Vencimento *</Label>
               </div>
-              <Popover>
+              <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
-                    className="w-full justify-start text-left font-normal"
+                    className="w-full justify-start text-left font-normal border-2 border-gray-300 dark:border-gray-700 hover:border-brand"
                   >
+                    <Calendar1Icon className="mr-2 h-4 w-4 text-brand" />
                     {selectedDate ? (
                       format(selectedDate, "PPP", { locale: ptBR })
                     ) : (
@@ -336,13 +352,16 @@ export function TransactionDialog({
                     )}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
+                <PopoverContent className="w-auto p-0 border-2 border-gray-300 dark:border-gray-700">
                   <Calendar
                     mode="single"
                     selected={selectedDate}
                     onSelect={(date) => {
                       setSelectedDate(date);
-                      if (date) setValue("due_date", date);
+                      if (date) {
+                        setValue("due_date", date);
+                        setIsCalendarOpen(false); // Fecha o popover ao selecionar
+                      }
                     }}
                     initialFocus
                   />
@@ -400,7 +419,11 @@ export function TransactionDialog({
                 max="48"
                 placeholder="Ex: 12"
                 {...register("installments_count")}
+                required
               />
+              {errors.installments_count && (
+                <p className="text-sm text-red-600">{errors.installments_count.message}</p>
+              )}
               <p className="text-xs text-zinc-500 dark:text-zinc-400">
                 Será criada automaticamente uma cobrança para cada mês
               </p>
@@ -459,6 +482,22 @@ export function TransactionDialog({
               {...register("tags")}
             />
           </div>
+
+          {/* Status */}
+          {!transaction && (
+            <div className="flex items-center justify-between rounded-lg border-2 border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-900/50">
+              <div className="space-y-0.5">
+                <Label className="font-semibold">Marcar como Pago</Label>
+                <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                  Criar transação já marcada como paga
+                </p>
+              </div>
+              <Switch
+                checked={watch("mark_as_paid") || false}
+                onCheckedChange={(checked) => setValue("mark_as_paid", checked)}
+              />
+            </div>
+          )}
 
           <DialogFooter className="pt-4 border-t-2 border-zinc-100 dark:border-zinc-800">
             <Button

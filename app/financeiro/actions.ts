@@ -48,6 +48,11 @@ export async function createTransaction(formData: FormData) {
       ),
     };
 
+    // Se mark_as_paid for true, adicionar paid_at
+    if (formData.get("mark_as_paid") === "true") {
+      input.paid_at = new Date().toISOString();
+    }
+
     await TransactionService.create(user.id, currentBranch.id, input);
 
     revalidatePath("/financeiro");

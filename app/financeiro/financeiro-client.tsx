@@ -212,6 +212,7 @@ export function FinanceiroPageContent() {
                 transactions={transactions}
                 onEdit={handleEdit as any}
                 selectedMonth={currentMonth}
+                onUpdate={fetchData}
               />
             </>
           )}

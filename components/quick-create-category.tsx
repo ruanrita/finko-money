@@ -69,6 +69,7 @@ export function QuickCreateCategory({
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
+    e.stopPropagation(); // Impede que o evento se propague para o form pai
 
     if (!name.trim()) return;
 
