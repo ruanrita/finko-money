@@ -1,6 +1,5 @@
 import * as React from "react";
 import { DayPicker } from "react-day-picker";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 
@@ -49,12 +48,6 @@ function Calendar({
           "aria-selected:bg-zinc-100 aria-selected:text-zinc-900 dark:aria-selected:bg-zinc-800 dark:aria-selected:text-zinc-50",
         day_hidden: "invisible",
         ...classNames,
-      }}
-      components={{
-        Chevron: ({ orientation, ...props }) => {
-          const Icon = orientation === "left" ? ChevronLeft : ChevronRight;
-          return <Icon className="h-4 w-4" {...props} />;
-        },
       }}
       {...props}
     />
