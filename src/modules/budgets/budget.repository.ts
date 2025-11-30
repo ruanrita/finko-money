@@ -112,8 +112,10 @@ export class BudgetRepository {
     else if (percentage >= 80) status = 'warning';
 
     // Calcular saldo diário e semanal
-    const dailyAvailable = remaining / daysRemaining;
-    const weeklyAvailable = dailyAvailable * 7;
+    const totalDaysInMonth = lastDay.getDate();
+    const dailyAvailable = remaining / daysRemaining; // Saldo diário para os dias restantes
+    const dailyBudget = budgetAmount / totalDaysInMonth; // Média diária do orçamento total
+    const weeklyAvailable = dailyBudget * 7; // Saldo semanal baseado na média mensal
 
     return {
       ...budget,
