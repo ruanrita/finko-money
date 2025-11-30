@@ -47,6 +47,7 @@ interface SidebarProps {
   isAdmin?: boolean;
   userPlanName?: string;
   isEarlyAdopter?: boolean;
+  subscriptionsEnabled?: boolean;
   features: UserFeatureAccess[];
 }
 
@@ -55,6 +56,7 @@ export function Sidebar({
   isAdmin = false,
   userPlanName = 'free',
   isEarlyAdopter = false,
+  subscriptionsEnabled = false,
   features = []
 }: SidebarProps) {
   const pathname = usePathname();
@@ -194,7 +196,7 @@ export function Sidebar({
 
       {/* Footer */}
       <div className="border-t-2 border-border">
-        {!collapsed && !isEarlyAdopter && (
+        {!collapsed && !isEarlyAdopter && subscriptionsEnabled && (
           <div className="p-3 border-b border-border">
             <Link href="/configuracoes/plano">
               <Button

@@ -48,6 +48,7 @@ interface MobileNavProps {
   isAdmin?: boolean;
   userPlanName?: string;
   isEarlyAdopter?: boolean;
+  subscriptionsEnabled?: boolean;
   features: UserFeatureAccess[];
 }
 
@@ -56,6 +57,7 @@ export function MobileNav({
   isAdmin = false,
   userPlanName = 'free',
   isEarlyAdopter = false,
+  subscriptionsEnabled = false,
   features = []
 }: MobileNavProps) {
   const pathname = usePathname();

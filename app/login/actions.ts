@@ -29,8 +29,12 @@ export async function login(formData: FormData) {
     // Busca perfil para verificar se é admin
     const profile = await UserRepository.findById(user.id);
 
+    if (!profile) {
+      return { error: "Perfil de usuário não encontrado" };
+    }
+
     // Se for admin, requer 2FA
-    if (profile?.is_admin) {
+    if (profile.is_admin) {
       // Faz logout temporário (usuário precisa verificar código)
       const supabase = await createClient();
       await supabase.auth.signOut();
@@ -43,7 +47,7 @@ export async function login(formData: FormData) {
       );
 
       if (!result.success) {
-        return { error: result.error || "Erro ao enviar código de verificação" };
+        return { error: result.error || "Erro ao enviar código de verificação de dois fatores" };
       }
 
       // Retorna indicando que precisa de 2FA

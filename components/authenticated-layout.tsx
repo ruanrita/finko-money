@@ -3,6 +3,7 @@ import { MobileNav } from "./mobile-nav";
 import type { BranchWithMembers } from "@/src/types/database";
 import { getUserFeaturesWithAccess, type UserFeatureAccess } from "@/lib/features-helper";
 import { createClient } from "@/lib/supabase/server";
+import { SubscriptionService } from "@/src/modules/subscription/subscription.service";
 
 interface AuthenticatedLayoutProps {
   children: React.ReactNode;
@@ -27,6 +28,9 @@ export async function AuthenticatedLayout({
   const features: UserFeatureAccess[] = user
     ? await getUserFeaturesWithAccess(user.id)
     : [];
+
+  // Check if subscriptions are enabled
+  const subscriptionsEnabled = await SubscriptionService.areSubscriptionsEnabled();
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       {/* Desktop Sidebar - Hidden on mobile */}
@@ -36,6 +40,7 @@ export async function AuthenticatedLayout({
           isAdmin={isAdmin}
           userPlanName={userPlanName}
           isEarlyAdopter={isEarlyAdopter}
+          subscriptionsEnabled={subscriptionsEnabled}
           features={features}
         />
       </div>
@@ -51,6 +56,7 @@ export async function AuthenticatedLayout({
         isAdmin={isAdmin}
         userPlanName={userPlanName}
         isEarlyAdopter={isEarlyAdopter}
+        subscriptionsEnabled={subscriptionsEnabled}
         features={features}
       />
     </div>

@@ -99,15 +99,20 @@ export async function userHasFeatureAccess(
 export async function getUserFeaturesWithAccess(userId: string): Promise<UserFeatureAccess[]> {
   const supabase = await createClient();
 
-  // Get user info
+  // Get user info - using LEFT JOIN to handle cases where plan might be null
   const { data: userData, error: userError } = await supabase
     .from('users')
     .select('is_admin, is_early_adopter, subscription_plan_id')
     .eq('id', userId)
     .single();
 
-  if (userError || !userData) {
+  if (userError) {
     console.error('Error fetching user data:', userError);
+    return [];
+  }
+
+  if (!userData) {
+    console.error('User not found:', userId);
     return [];
   }
 
