@@ -50,8 +50,10 @@ export interface BudgetWithStats extends Budget {
   remaining: number;       // Quanto ainda tem disponível
   percentage: number;      // Percentual usado
   status: 'ok' | 'warning' | 'danger' | 'exceeded'; // Status visual
-  daily_available: number; // Quanto pode gastar por dia
-  weekly_available: number; // Quanto pode gastar por semana
+  daily_available: number; // Média diária do orçamento total (orçamento / dias do mês)
+  daily_extra: number;     // Saldo extra por dia considerando dias restantes
+  weekly_available: number; // Média semanal do orçamento total
+  weekly_extra: number;    // Saldo extra semanal considerando dias restantes
   days_remaining: number;  // Dias restantes no mês
   previous_month_spent?: number; // Gasto do mês anterior para comparação
 }
