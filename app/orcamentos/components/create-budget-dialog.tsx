@@ -62,9 +62,22 @@ export function CreateBudgetDialog({ selectedMonth }: Props) {
   async function loadCategories() {
     const supabase = createClient();
 
+    // Buscar apenas categorias do branch atual do usuário
+    const { data: userData } = await supabase.auth.getUser();
+    if (!userData.user) return;
+
+    const { data: userBranch } = await supabase
+      .from("users")
+      .select("current_branch_id")
+      .eq("id", userData.user.id)
+      .single();
+
+    if (!userBranch?.current_branch_id) return;
+
     const { data } = await supabase
       .from("categories")
       .select("id, name, color, icon")
+      .eq("branch_id", userBranch.current_branch_id)
       .order("name", { ascending: true });
 
     if (data) {
