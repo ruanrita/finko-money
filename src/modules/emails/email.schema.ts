@@ -82,6 +82,20 @@ export const twoFactorEmailSchema = z.object({
   expiresInMinutes: z.number().positive().default(10),
 });
 
+/**
+ * Schema para email de alerta de orçamento
+ */
+export const budgetAlertEmailSchema = z.object({
+  to: z.string().email("Email inválido"),
+  userName: z.string().min(1, "Nome do usuário é obrigatório"),
+  categoryName: z.string().min(1, "Nome da categoria é obrigatório"),
+  budgetAmount: z.number().positive("Valor do orçamento deve ser positivo"),
+  spentAmount: z.number().nonnegative("Valor gasto deve ser não-negativo"),
+  percentage: z.number().nonnegative("Percentual deve ser não-negativo"),
+  alertLevel: z.enum(["80", "90", "100"]).transform(val => parseInt(val) as 80 | 90 | 100),
+  month: z.string().regex(/^\d{4}-\d{2}-01$/, "Mês deve estar no formato YYYY-MM-01"),
+});
+
 // Types inferidos
 export type SendHtmlEmailInput = z.infer<typeof sendHtmlEmailSchema>;
 export type SendReactEmailInput = z.infer<typeof sendReactEmailSchema>;
@@ -90,3 +104,4 @@ export type PasswordResetEmailInput = z.infer<typeof passwordResetEmailSchema>;
 export type TransactionConfirmationEmailInput = z.infer<typeof transactionConfirmationEmailSchema>;
 export type PaymentReminderEmailInput = z.infer<typeof paymentReminderEmailSchema>;
 export type TwoFactorEmailInput = z.infer<typeof twoFactorEmailSchema>;
+export type BudgetAlertEmailInput = z.infer<typeof budgetAlertEmailSchema>;

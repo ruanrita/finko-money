@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "supa:migrate": "node scripts/migrate.js",
+    "supa:deploy-functions": "supabase functions deploy --project-ref $SUPABASE_PROJECT_REF",
+    "supa:deploy-secrets": "supabase secrets set --project-ref $SUPABASE_PROJECT_REF RESEND_API_KEY=$RESEND_API_KEY NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL EMAIL_FROM=\"$EMAIL_FROM\"",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",

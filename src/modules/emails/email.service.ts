@@ -8,6 +8,7 @@ import type {
   TransactionConfirmationEmailInput,
   PaymentReminderEmailInput,
   TwoFactorEmailInput,
+  BudgetAlertEmailInput,
 } from "./email.schema";
 import {
   sendHtmlEmailSchema,
@@ -17,6 +18,7 @@ import {
   transactionConfirmationEmailSchema,
   paymentReminderEmailSchema,
   twoFactorEmailSchema,
+  budgetAlertEmailSchema,
 } from "./email.schema";
 import {
   WelcomeEmailTemplate,
@@ -24,6 +26,7 @@ import {
   TransactionConfirmationEmailTemplate,
   PaymentReminderEmailTemplate,
   TwoFactorEmailTemplate,
+  BudgetAlertEmailTemplate,
 } from "./views";
 
 export class EmailService {
@@ -267,6 +270,48 @@ export class EmailService {
           userName: validated.userName,
           codeLength: validated.code.length,
           expiresInMinutes: validated.expiresInMinutes,
+        },
+      }
+    );
+  }
+
+  /**
+   * Envia email de alerta de orçamento
+   */
+  static async sendBudgetAlertEmail(input: BudgetAlertEmailInput, userId?: string) {
+    const validated = budgetAlertEmailSchema.parse(input);
+
+    const alertLabels = {
+      80: "Atenção: 80% do Orçamento",
+      90: "Alerta: 90% do Orçamento",
+      100: "Orçamento Excedido",
+    };
+
+    return this.sendReactEmail(
+      {
+        to: validated.to,
+        subject: `${alertLabels[validated.alertLevel]} - ${validated.categoryName} - Finko Money`,
+        react: BudgetAlertEmailTemplate({
+          userName: validated.userName,
+          categoryName: validated.categoryName,
+          budgetAmount: validated.budgetAmount,
+          spentAmount: validated.spentAmount,
+          percentage: validated.percentage,
+          alertLevel: validated.alertLevel,
+          month: validated.month,
+        }),
+      },
+      {
+        userId,
+        emailType: `budget_alert_${validated.alertLevel}`,
+        metadata: {
+          userName: validated.userName,
+          categoryName: validated.categoryName,
+          budgetAmount: validated.budgetAmount,
+          spentAmount: validated.spentAmount,
+          percentage: validated.percentage,
+          alertLevel: validated.alertLevel,
+          month: validated.month,
         },
       }
     );

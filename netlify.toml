@@ -3,18 +3,30 @@
 ###############################################
 [build]
   publish = ".next"
-  command = "npm run supa:migrate && npm run build"
+  command = "npm run supa:migrate && npm run supa:deploy-functions && npm run build"
 
 ###############################################
-# SUPABASE MIGRATIONS SCRIPT
+# SUPABASE CONFIGURATION
 ###############################################
+# MIGRATIONS:
 # Configurado no package.json como:
 # "supa:migrate": "supabase migration up --db-url \"$SUPABASE_DB_URL\""
 #
 # Configure SUPABASE_DB_URL no Netlify com o formato:
 # postgresql://postgres:[PASSWORD]@db.[PROJECT_REF].supabase.co:6543/postgres?sslmode=require
 #
-# IMPORTANTE: Use a porta 6543 (Session Pooler) para compatibilidade IPv4
+# EDGE FUNCTIONS:
+# Configurado no package.json como:
+# "supa:deploy-functions": "supabase functions deploy --project-ref \"$SUPABASE_PROJECT_REF\""
+#
+# Configure as seguintes variáveis de ambiente no Netlify:
+# - SUPABASE_PROJECT_REF: seu-project-ref (ex: abcdefghijklmnop)
+# - SUPABASE_ACCESS_TOKEN: seu-access-token (gerado em https://app.supabase.com/account/tokens)
+# - SUPABASE_DB_URL: connection string (para migrations)
+#
+# IMPORTANTE:
+# - Use a porta 6543 (Session Pooler) no SUPABASE_DB_URL para compatibilidade IPv4
+# - O access token deve ter permissões de deploy
 ###############################################
 
 ###############################################
