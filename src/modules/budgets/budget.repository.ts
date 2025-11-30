@@ -116,7 +116,7 @@ export class BudgetRepository {
     const dailyBudget = budgetAmount / totalDaysInMonth; // Média diária do orçamento total
     const dailyExtra = daysRemaining > 0 ? remaining / daysRemaining : 0; // Saldo extra por dia nos dias restantes
     const weeklyBudget = dailyBudget * 7; // Média semanal do orçamento
-    const weeklyExtra = dailyExtra * 7; // Saldo extra semanal
+    const weeklyExtra = Math.min(remaining, dailyExtra * 7); // Saldo extra semanal (limitado ao remaining)
 
     return {
       ...budget,

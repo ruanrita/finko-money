@@ -229,6 +229,7 @@ export function CreateBudgetDialog({ selectedMonth }: Props) {
               </div>
             </div>
 
+            {/* Rollover desativado temporariamente
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="rollover"
@@ -241,9 +242,10 @@ export function CreateBudgetDialog({ selectedMonth }: Props) {
                 htmlFor="rollover"
                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
-                Rollover (sobra passa para o próximo mês)
+                Saldo não gasto acumulado para o próximo mês
               </label>
             </div>
+            */}
           </div>
 
           <DialogFooter className="pt-4 border-t-2 border-zinc-100 dark:border-zinc-800">
