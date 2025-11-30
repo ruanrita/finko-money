@@ -10,7 +10,20 @@
       "Bash(tee:*)",
       "Bash(cut:*)",
       "Bash(dir \"S:\\Saas\\finko-money\\app\\login\")",
-      "Bash(dir \"S:\\Saas\\finko-money\\app\\signup\")"
+      "Bash(dir \"S:\\Saas\\finko-money\\app\\signup\")",
+      "Bash(npx supabase gen types typescript --local)",
+      "Bash(dir \"S:\\Saas\\finko-money\\app\\financeiro\")",
+      "Bash(npx supabase db execute \"SELECT id, email, full_name, is_admin FROM public.users WHERE email = ''ruan.ritah@gmail.com'';\")",
+      "Bash(npx supabase db reset:*)",
+      "Bash(docker exec supabase_db_finko-money psql -U postgres -d postgres -c \"SELECT id, email, full_name, is_admin FROM public.users WHERE email = ''ruan.ritah@gmail.com'';\")",
+      "Bash(docker exec:*)",
+      "Bash(curl:*)",
+      "Bash(npx tsx:*)",
+      "Bash(docker logs:*)",
+      "Bash(npx supabase stop)",
+      "Bash(npx supabase:*)",
+      "Bash(npm test:*)",
+      "Bash(npm uninstall jsdom)"
     ],
     "deny": [],
     "ask": []

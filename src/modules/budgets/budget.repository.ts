@@ -112,8 +112,11 @@ export class BudgetRepository {
     else if (percentage >= 80) status = 'warning';
 
     // Calcular saldo diário e semanal
-    const dailyAvailable = remaining / daysRemaining;
-    const weeklyAvailable = dailyAvailable * 7;
+    const totalDaysInMonth = lastDay.getDate();
+    const dailyBudget = budgetAmount / totalDaysInMonth; // Média diária do orçamento total
+    const dailyExtra = daysRemaining > 0 ? remaining / daysRemaining : 0; // Saldo extra por dia nos dias restantes
+    const weeklyBudget = dailyBudget * 7; // Média semanal do orçamento
+    const weeklyExtra = Math.min(remaining, dailyExtra * 7); // Saldo extra semanal (limitado ao remaining)
 
     return {
       ...budget,
@@ -122,8 +125,10 @@ export class BudgetRepository {
       remaining,
       percentage,
       status,
-      daily_available: dailyAvailable,
-      weekly_available: weeklyAvailable,
+      daily_available: dailyBudget,
+      daily_extra: dailyExtra,
+      weekly_available: weeklyBudget,
+      weekly_extra: weeklyExtra,
       days_remaining: daysRemaining,
       previous_month_spent: previousMonthSpent,
     };

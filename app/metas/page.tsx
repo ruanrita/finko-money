@@ -9,6 +9,8 @@ import { GoalCard } from "./components/goal-card";
 import { GoalStats } from "./components/goal-stats";
 import { Plus } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { getUserPlanData } from "@/lib/user-plan-helper";
+import { UserRepository } from "@/src/modules/user/user.repository";
 
 export default async function MetasPage() {
   const supabase = await createClient();
@@ -24,6 +26,11 @@ export default async function MetasPage() {
   // Pegar branch atual do usuário
   const currentBranch = await getCurrentBranch(user.id);
 
+  // Buscar dados do plano e admin
+  const userProfile = await UserRepository.findById(user.id);
+  const isAdmin = userProfile?.is_admin || false;
+  const { userPlanName, isEarlyAdopter } = await getUserPlanData(user.id);
+
   // Buscar metas e estatísticas
   const [goals, stats] = await Promise.all([
     GoalService.listGoals(user.id, currentBranch.id, { is_active: true }),
@@ -35,7 +42,12 @@ export default async function MetasPage() {
   const otherGoals = goals.filter((g) => g.goal_type !== "emergency_fund");
 
   return (
-    <AuthenticatedLayout currentBranch={currentBranch}>
+    <AuthenticatedLayout
+      currentBranch={currentBranch}
+      isAdmin={isAdmin}
+      userPlanName={userPlanName}
+      isEarlyAdopter={isEarlyAdopter}
+    >
       <div className="relative overflow-hidden border-b-2 border-border bg-header-gradient">
         <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-10"></div>
         <div className="relative px-8 py-8">

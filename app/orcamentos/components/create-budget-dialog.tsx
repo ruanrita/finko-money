@@ -22,9 +22,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { createBudgetAction } from "../actions";
+import { createBudgetAction, getCategoriesAction } from "../actions";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
 import { QuickCreateCategory } from "@/components/quick-create-category";
 import { CategoryIcon } from "@/components/category-icon";
 
@@ -60,15 +59,12 @@ export function CreateBudgetDialog({ selectedMonth }: Props) {
   }, [open]);
 
   async function loadCategories() {
-    const supabase = createClient();
+    const result = await getCategoriesAction();
 
-    const { data } = await supabase
-      .from("categories")
-      .select("id, name, color, icon")
-      .order("name", { ascending: true });
-
-    if (data) {
-      setCategories(data);
+    if (result.success && result.data) {
+      setCategories(result.data);
+    } else {
+      console.error("Error loading categories:", result.error);
     }
   }
 
@@ -233,6 +229,7 @@ export function CreateBudgetDialog({ selectedMonth }: Props) {
               </div>
             </div>
 
+            {/* Rollover desativado temporariamente
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="rollover"
@@ -245,9 +242,10 @@ export function CreateBudgetDialog({ selectedMonth }: Props) {
                 htmlFor="rollover"
                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
-                Rollover (sobra passa para o próximo mês)
+                Saldo não gasto acumulado para o próximo mês
               </label>
             </div>
+            */}
           </div>
 
           <DialogFooter className="pt-4 border-t-2 border-zinc-100 dark:border-zinc-800">

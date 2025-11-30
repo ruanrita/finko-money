@@ -1,5 +1,6 @@
 import { ReminderRepository } from "./reminder.repository";
 import type { CreateReminderInput, UpdateReminderInput } from "./reminder.schema";
+import { UsageService } from "@/src/modules/usage/usage.service";
 
 export class ReminderService {
   static async getUserReminders(userId: string) {
@@ -15,6 +16,18 @@ export class ReminderService {
   }
 
   static async createReminder(input: CreateReminderInput, userId: string) {
+    // 1. Verificar limite de lembretes
+    const usageCheck = await UsageService.checkUsageLimit(userId, 'reminder');
+
+    if (!usageCheck.allowed) {
+      throw new Error(
+        `Limite de ${usageCheck.limit} lembretes atingido. ` +
+        `Você está usando ${usageCheck.current}/${usageCheck.limit} lembretes disponíveis no plano ${usageCheck.planName}. ` +
+        `Faça upgrade para criar mais lembretes.`
+      );
+    }
+
+    // 2. Criar lembrete
     return await ReminderRepository.create(input, userId);
   }
 

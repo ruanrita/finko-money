@@ -8,6 +8,8 @@ import { WorkspaceSettingsTab } from "./components/workspace-settings-tab";
 import { AccountSettingsTab } from "./components/account-settings-tab";
 import { TabsContent } from "@/components/ui/tabs";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { getUserPlanData } from "@/lib/user-plan-helper";
+import { UserRepository } from "@/src/modules/user/user.repository";
 
 export default async function ConfiguracoesPage() {
   const supabase = await createClient();
@@ -23,8 +25,18 @@ export default async function ConfiguracoesPage() {
   const currentBranch = await getCurrentBranch(user.id);
   const userRole = await getUserRoleInBranch(user.id, currentBranch.id);
 
+  // Buscar dados do plano e admin
+  const userProfile = await UserRepository.findById(user.id);
+  const isAdmin = userProfile?.is_admin || false;
+  const { userPlanName, isEarlyAdopter } = await getUserPlanData(user.id);
+
   return (
-    <AuthenticatedLayout currentBranch={currentBranch}>
+    <AuthenticatedLayout
+      currentBranch={currentBranch}
+      isAdmin={isAdmin}
+      userPlanName={userPlanName}
+      isEarlyAdopter={isEarlyAdopter}
+    >
       <SettingsWrapper>
         <div className="relative overflow-hidden border-b-2 border-border bg-header-gradient">
           <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-10"></div>

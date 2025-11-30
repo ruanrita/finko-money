@@ -1,5 +1,6 @@
 import { GoalRepository } from "./goal.repository";
 import { BranchAccessControl } from "@/lib/authorization/branch-access";
+import { UsageService } from "@/src/modules/usage/usage.service";
 import type {
   CreateGoalInput,
   UpdateGoalInput,
@@ -52,20 +53,32 @@ export class GoalService {
     branchId: string,
     data: CreateGoalInput
   ): Promise<CreateGoalResponse> {
-    // Verificar acesso ao branch
+    // 1. Verificar limite do plano
+    const usageCheck = await UsageService.checkUsageLimit(userId, 'goal', branchId);
+
+    if (!usageCheck.allowed) {
+      throw new Error(
+        `Limite de ${usageCheck.limit} metas atingido. ` +
+        `Você está usando ${usageCheck.current}/${usageCheck.limit} metas disponíveis no plano ${usageCheck.planName}. ` +
+        `Faça upgrade para criar mais metas.`
+      );
+    }
+
+    // 2. Verificar acesso ao branch
     await BranchAccessControl.requireMembership(branchId, userId);
 
-    // Validar categoria se fornecida
+    // 3. Validar categoria se fornecida
     if (data.category_id) {
       // TODO: Verificar se categoria existe e pertence ao usuário/branch
     }
 
-    // Se for reserva de emergência e não houver target_amount, calcular sugestão
+    // 4. Se for reserva de emergência e não houver target_amount, calcular sugestão
     if (data.goal_type === 'emergency_fund' && !data.target_amount) {
       const suggested = await GoalRepository.calculateEmergencyFundSuggestion(userId, branchId);
       data.target_amount = suggested;
     }
 
+    // 5. Criar meta
     const goal = await GoalRepository.create(userId, branchId, data);
 
     return {

@@ -1,5 +1,6 @@
 import { BudgetRepository } from "./budget.repository";
 import type { CreateBudgetInput, UpdateBudgetInput } from "./budget.schema";
+import { UsageService } from "@/src/modules/usage/usage.service";
 
 export class BudgetService {
   static async getMonthBudgets(userId: string, branchId: string, month: string) {
@@ -15,6 +16,18 @@ export class BudgetService {
   }
 
   static async createBudget(input: CreateBudgetInput, userId: string) {
+    // 1. Verificar limite do plano (budgets não têm branchId explícito, usar userId)
+    const usageCheck = await UsageService.checkUsageLimit(userId, 'budget');
+
+    if (!usageCheck.allowed) {
+      throw new Error(
+        `Limite de ${usageCheck.limit} orçamentos atingido. ` +
+        `Você está usando ${usageCheck.current}/${usageCheck.limit} orçamentos disponíveis no plano ${usageCheck.planName}. ` +
+        `Faça upgrade para criar mais orçamentos.`
+      );
+    }
+
+    // 2. Criar orçamento
     return await BudgetRepository.create(input, userId);
   }
 

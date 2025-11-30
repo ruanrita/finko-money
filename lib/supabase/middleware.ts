@@ -39,7 +39,7 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   // Public routes that don't require authentication
-  const publicRoutes = ["/", "/login", "/auth", "/signup"];
+  const publicRoutes = ["/", "/login", "/auth", "/signup", "/verify-2fa"];
   const isPublicRoute = publicRoutes.some(route =>
     request.nextUrl.pathname === route || request.nextUrl.pathname.startsWith(route + "/")
   );
@@ -56,6 +56,24 @@ export async function updateSession(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
     return NextResponse.redirect(url);
+  }
+
+  // Admin route protection
+  if (user && request.nextUrl.pathname.startsWith("/admin")) {
+    // Check if user is admin
+    const { data: profile } = await supabase
+      .from("users")
+      .select("is_admin")
+      .eq("id", user.id)
+      .single();
+
+    if (!profile || !profile.is_admin) {
+      // Redirect non-admin users to dashboard with error message
+      const url = request.nextUrl.clone();
+      url.pathname = "/dashboard";
+      url.searchParams.set("error", "unauthorized");
+      return NextResponse.redirect(url);
+    }
   }
 
   // Set branch cookie if user is authenticated and cookie is missing

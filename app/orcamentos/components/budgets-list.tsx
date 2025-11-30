@@ -197,6 +197,11 @@ export function BudgetsList({ budgets, selectedMonth }: Props) {
                         </div>
                         <p className="text-lg font-semibold">
                           {formatCurrency(budget.daily_available)}
+                          {budget.daily_extra > budget.daily_available && (
+                            <span className="text-green-600 ml-1">
+                              ({formatCurrency(budget.daily_extra)})
+                            </span>
+                          )}
                           <span className="text-xs text-muted-foreground ml-1">/dia</span>
                         </p>
                         <p className="text-xs text-muted-foreground">
@@ -210,10 +215,15 @@ export function BudgetsList({ budgets, selectedMonth }: Props) {
                         </div>
                         <p className="text-lg font-semibold">
                           {formatCurrency(budget.weekly_available)}
+                          {budget.weekly_extra > budget.weekly_available && (
+                            <span className="text-green-600 ml-1">
+                              ({formatCurrency(budget.weekly_extra)})
+                            </span>
+                          )}
                           <span className="text-xs text-muted-foreground ml-1">/semana</span>
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          Média para os próximos 7 dias
+                          Média mensal distribuída
                         </p>
                       </div>
                     </div>

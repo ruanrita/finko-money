@@ -5,6 +5,8 @@ import { AuthenticatedLayout } from "@/components/authenticated-layout";
 import { getCategoriesAction } from "./actions";
 import { CategoryList } from "./components/category-list";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { getUserPlanData } from "@/lib/user-plan-helper";
+import { UserRepository } from "@/src/modules/user/user.repository";
 
 export default async function CategoriasPage() {
   const supabase = await createClient();
@@ -20,10 +22,20 @@ export default async function CategoriasPage() {
   // Pegar branch atual do usuário
   const currentBranch = await getCurrentBranch(user.id);
 
+  // Buscar dados do plano e admin
+  const userProfile = await UserRepository.findById(user.id);
+  const isAdmin = userProfile?.is_admin || false;
+  const { userPlanName, isEarlyAdopter } = await getUserPlanData(user.id);
+
   const categories = await getCategoriesAction();
 
   return (
-    <AuthenticatedLayout currentBranch={currentBranch}>
+    <AuthenticatedLayout
+      currentBranch={currentBranch}
+      isAdmin={isAdmin}
+      userPlanName={userPlanName}
+      isEarlyAdopter={isEarlyAdopter}
+    >
       <div className="relative overflow-hidden border-b-2 border-border bg-header-gradient">
         <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-10"></div>
         <div className="relative px-8 py-8">

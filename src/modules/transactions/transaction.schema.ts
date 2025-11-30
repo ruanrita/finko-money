@@ -23,6 +23,15 @@ export const createSingleTransactionSchema = baseTransactionSchema.extend({
   installment_type: z.literal("a_vista"),
   is_recurring: z.boolean().default(false),
   recurrence_type: recurrenceTypeEnum.nullable().optional(),
+}).refine((data) => {
+  // Se is_recurring é true, recurrence_type é obrigatório
+  if (data.is_recurring && !data.recurrence_type) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Tipo de recorrência é obrigatório quando a transação é recorrente",
+  path: ["recurrence_type"],
 });
 
 // Schema para criação de transação parcelada
@@ -52,6 +61,15 @@ export const updateTransactionSchema = z.object({
   is_recurring: z.boolean().optional(),
   recurrence_type: recurrenceTypeEnum.nullable().optional(),
   installments_count: z.number().int().min(2).max(100).optional(),
+}).refine((data) => {
+  // Se is_recurring é true, recurrence_type é obrigatório
+  if (data.is_recurring && !data.recurrence_type) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Tipo de recorrência é obrigatório quando a transação é recorrente",
+  path: ["recurrence_type"],
 });
 
 // Schema para marcar como pago/não pago

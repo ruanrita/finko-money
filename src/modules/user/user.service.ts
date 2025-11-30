@@ -32,7 +32,7 @@ export class UserService {
     console.log('data', {data, error});
 
     if (error) {
-      throw new Error(`Erro ao fazer login: ${error.message}`);
+      throw new Error(error.message);
     }
 
     if (!data.user) {
@@ -65,7 +65,7 @@ export class UserService {
     });
 
     if (error) {
-      throw new Error(`Erro ao criar conta: ${error.message}`);
+      throw new Error(error.message);
     }
 
     if (!data.user) {
@@ -91,7 +91,7 @@ export class UserService {
     const { error } = await supabase.auth.signOut();
 
     if (error) {
-      throw new Error(`Erro ao sair: ${error.message}`);
+      throw new Error(error.message);
     }
   }
 

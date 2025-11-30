@@ -26,7 +26,7 @@ type Branch = {
   id: string;
   name: string;
   description: string | null;
-  created_at: string;
+  created_at: string | null;
   branch_members: any[];
 };
 

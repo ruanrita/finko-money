@@ -8,6 +8,7 @@ import type {
   TransactionWithCategory,
   TransactionInsert,
 } from "./transaction.schema";
+import { UsageService } from "@/src/modules/usage/usage.service";
 
 export class TransactionService {
   /**
@@ -42,6 +43,31 @@ export class TransactionService {
     branchId: string,
     input: CreateTransactionInput
   ): Promise<Transaction | Transaction[]> {
+    // 1. Verificar limite do plano
+    const usageCheck = await UsageService.checkUsageLimit(userId, 'transaction', branchId);
+
+    // Para parceladas, verificar se tem espaço para todas as parcelas
+    const transactionsToCreate = input.installment_type === 'parcelado'
+      ? input.installments_count
+      : 1;
+
+    const spaceAvailable = usageCheck.limit
+      ? (usageCheck.limit - usageCheck.current)
+      : Infinity;
+
+    if (!usageCheck.allowed || transactionsToCreate > spaceAvailable) {
+      const remaining = usageCheck.limit ? usageCheck.limit - usageCheck.current : 0;
+      throw new Error(
+        `Limite de transações atingido. ` +
+        `Você está usando ${usageCheck.current}/${usageCheck.limit} transações este mês. ` +
+        `${input.installment_type === 'parcelado'
+          ? `Essa compra parcelada criaria ${transactionsToCreate} transações, mas você tem espaço para apenas ${remaining}. `
+          : ''
+        }` +
+        `Faça upgrade do plano ${usageCheck.planName} para criar mais transações.`
+      );
+    }
+
     const dueDate = typeof input.due_date === "string"
       ? input.due_date
       : input.due_date.toISOString().split("T")[0];

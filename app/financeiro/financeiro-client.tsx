@@ -8,12 +8,10 @@ import { CategoryPieChart } from "./components/category-pie-chart";
 import { TransactionsTable } from "./components/transactions-table";
 import { TransactionFilters } from "./components/transaction-filters";
 import { TransactionDialog } from "./components/transaction-dialog";
-import { AuthenticatedLayout } from "@/components/authenticated-layout";
 import { getTransactions, getCategories, getCategoryTotals } from "./actions";
 import { generateRecurringOccurrences } from "@/lib/recurring-utils";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { InlineLoader } from "@/components/inline-loader";
-import type { BranchWithMembers } from "@/src/types/database";
 
 type Transaction = {
   id: string;
@@ -43,11 +41,7 @@ type Category = {
   icon?: string | null;
 };
 
-interface FinanceiroPageContentProps {
-  currentBranch: BranchWithMembers;
-}
-
-export function FinanceiroPageContent({ currentBranch }: FinanceiroPageContentProps) {
+export function FinanceiroPageContent() {
   const searchParams = useSearchParams();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -169,7 +163,7 @@ export function FinanceiroPageContent({ currentBranch }: FinanceiroPageContentPr
   };
 
   return (
-    <AuthenticatedLayout currentBranch={currentBranch}>
+    <>
       <div className="relative overflow-hidden border-b-2 border-border bg-header-gradient">
         <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-10"></div>
         <div className="relative px-4 py-6 sm:px-6 md:px-8 md:py-8">
@@ -232,6 +226,6 @@ export function FinanceiroPageContent({ currentBranch }: FinanceiroPageContentPr
         transaction={editingTransaction}
         onSuccess={handleSuccess}
       />
-    </AuthenticatedLayout>
+    </>
   );
 }

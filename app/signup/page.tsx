@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Wallet, ArrowLeft, Check, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { ButtonLoader } from "@/components/button-loader";
+import { formatError } from "@/lib/error-messages";
 
 export default function SignUpPage() {
   const [error, setError] = useState<string | null>(null);
@@ -39,9 +40,10 @@ export default function SignUpPage() {
     const result = await signup(formData);
 
     if (result?.error) {
-      setError(result.error);
+      const friendlyError = formatError(result.error);
+      setError(friendlyError);
       toast.error("Erro ao criar conta", {
-        description: result.error,
+        description: friendlyError,
       });
       setLoading(false);
     } else {
