@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 export type UserPlanData = {
   userPlanName: string;
   isEarlyAdopter: boolean;
+  isAdmin: boolean;
   planData: any | null;
 };
 
@@ -19,6 +20,7 @@ export async function getUserPlanData(userId: string): Promise<UserPlanData> {
       subscription_plan_id,
       subscription_status,
       is_early_adopter,
+      is_admin,
       subscription_plans!inner (
         id,
         name,
@@ -33,6 +35,7 @@ export async function getUserPlanData(userId: string): Promise<UserPlanData> {
     return {
       userPlanName: 'free',
       isEarlyAdopter: false,
+      isAdmin: false,
       planData: null
     };
   }
@@ -40,6 +43,7 @@ export async function getUserPlanData(userId: string): Promise<UserPlanData> {
   return {
     userPlanName: data?.subscription_plans?.name || 'free',
     isEarlyAdopter: data?.is_early_adopter || false,
+    isAdmin: data?.is_admin || false,
     planData: data
   };
 }
