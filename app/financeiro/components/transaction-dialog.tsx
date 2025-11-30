@@ -26,7 +26,7 @@ const transactionSchema = z.object({
   amount: z.string().min(1, "Valor é obrigatório"),
   description: z.string().min(1, "Descrição é obrigatória"),
   due_date: z.date(),
-  category_id: z.string().min(1, "Categoria é obrigatória"),
+  category_id: z.string().optional(),
   payment_method: z.string().optional(),
   installment_type: z.enum(["a_vista", "parcelado"]),
   installments_count: z.string().optional(),
@@ -35,18 +35,32 @@ const transactionSchema = z.object({
   tags: z.string().optional(),
   mark_as_paid: z.boolean().optional(),
 }).refine((data) => {
+  // Categoria é obrigatória
+  if (!data.category_id || data.category_id.trim() === "") {
+    return false;
+  }
+  return true;
+}, {
+  message: "Por favor, selecione uma categoria",
+  path: ["category_id"],
+}).refine((data) => {
   // Se is_recurring é true, recurrence_type é obrigatório
   if (data.is_recurring && !data.recurrence_type) {
     return false;
   }
+  return true;
+}, {
+  message: "Selecione o tipo de recorrência",
+  path: ["recurrence_type"],
+}).refine((data) => {
   // Se installment_type é parcelado, installments_count é obrigatório
   if (data.installment_type === "parcelado" && !data.installments_count) {
     return false;
   }
   return true;
 }, {
-  message: "Campos obrigatórios não preenchidos",
-  path: ["recurrence_type"],
+  message: "Informe o número de parcelas",
+  path: ["installments_count"],
 });
 
 type TransactionFormData = z.infer<typeof transactionSchema>;

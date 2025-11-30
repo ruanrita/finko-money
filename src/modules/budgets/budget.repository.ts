@@ -60,24 +60,61 @@ export class BudgetRepository {
     const lastDayStr = `${year}-${String(monthNum).padStart(2, '0')}-${String(lastDay.getDate()).padStart(2, '0')}`;
 
     // Buscar gastos da categoria no mês atual
-    const { data: transactions, error: transError } = await supabase
+    // 1. Buscar transações NORMAIS (não recorrentes) do mês
+    const { data: normalTransactions } = await supabase
       .from("transactions")
-      .select("amount")
+      .select("amount, due_date, is_recurring, recurrence_type")
       .eq("category_id", budget.category_id)
       .eq("branch_id", branchId)
       .eq("type", "expense")
+      .eq("is_recurring", false)
       .gte("due_date", firstDayStr)
       .lte("due_date", lastDayStr);
+
+    // 2. Buscar TODAS as transações recorrentes (sem filtro de mês)
+    const { data: recurringTransactions } = await supabase
+      .from("transactions")
+      .select("amount, due_date, is_recurring, recurrence_type")
+      .eq("category_id", budget.category_id)
+      .eq("branch_id", branchId)
+      .eq("type", "expense")
+      .eq("is_recurring", true);
+
+    // 3. Filtrar transações recorrentes que devem aparecer neste mês
+    const filteredRecurringTransactions = (recurringTransactions || []).filter((t: any) => {
+      const originalDate = new Date(t.due_date);
+      const targetDate = new Date(year, monthNum - 1, 1);
+
+      // Só mostrar se o mês alvo for igual ou posterior à data original
+      if (targetDate < new Date(originalDate.getFullYear(), originalDate.getMonth(), 1)) {
+        return false;
+      }
+
+      switch (t.recurrence_type) {
+        case "monthly":
+          return true;
+        case "yearly":
+          return originalDate.getMonth() === monthNum - 1;
+        case "weekly":
+          return true;
+        default:
+          return false;
+      }
+    });
+
+    // 4. Combinar transações normais + recorrentes filtradas
+    const allTransactions = [...(normalTransactions || []), ...filteredRecurringTransactions];
 
     console.log('Buscando transações:', {
       category: budget.categories?.name,
       firstDayStr,
       lastDayStr,
-      found: transactions?.length,
-      error: transError
+      normalFound: normalTransactions?.length || 0,
+      recurringFound: filteredRecurringTransactions.length,
+      totalFound: allTransactions.length,
     });
 
-    const spent = transactions?.reduce((sum: number, t: any) => sum + Number(t.amount), 0) || 0;
+    const spent = allTransactions.reduce((sum: number, t: any) => sum + Number(t.amount), 0);
 
     // Buscar gastos do mês anterior para comparação
     const previousDate = new Date(year, monthNum - 1, 1);
@@ -89,16 +126,43 @@ export class BudgetRepository {
     const previousFirstStr = `${prevYear}-${String(prevMonth).padStart(2, '0')}-01`;
     const previousLastStr = `${prevYear}-${String(prevMonth).padStart(2, '0')}-${String(prevLastDay).padStart(2, '0')}`;
 
-    const { data: previousTransactions } = await supabase
+    // 1. Buscar transações NORMAIS (não recorrentes) do mês anterior
+    const { data: prevNormalTransactions } = await supabase
       .from("transactions")
-      .select("amount")
+      .select("amount, due_date, is_recurring, recurrence_type")
       .eq("category_id", budget.category_id)
       .eq("branch_id", branchId)
       .eq("type", "expense")
+      .eq("is_recurring", false)
       .gte("due_date", previousFirstStr)
       .lte("due_date", previousLastStr);
 
-    const previousMonthSpent = previousTransactions?.reduce((sum: number, t: any) => sum + Number(t.amount), 0) || 0;
+    // 2. Filtrar transações recorrentes do mês anterior (já temos recurringTransactions de cima)
+    const filteredPrevRecurringTransactions = (recurringTransactions || []).filter((t: any) => {
+      const originalDate = new Date(t.due_date);
+      const targetDate = new Date(prevYear, prevMonth - 1, 1);
+
+      // Só mostrar se o mês alvo for igual ou posterior à data original
+      if (targetDate < new Date(originalDate.getFullYear(), originalDate.getMonth(), 1)) {
+        return false;
+      }
+
+      switch (t.recurrence_type) {
+        case "monthly":
+          return true;
+        case "yearly":
+          return originalDate.getMonth() === prevMonth - 1;
+        case "weekly":
+          return true;
+        default:
+          return false;
+      }
+    });
+
+    // 3. Combinar transações normais + recorrentes do mês anterior
+    const allPrevTransactions = [...(prevNormalTransactions || []), ...filteredPrevRecurringTransactions];
+
+    const previousMonthSpent = allPrevTransactions.reduce((sum: number, t: any) => sum + Number(t.amount), 0);
 
     // Calcular valores
     const budgetAmount = Number(budget.amount);

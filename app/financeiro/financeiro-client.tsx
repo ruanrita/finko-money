@@ -12,6 +12,7 @@ import { getTransactions, getCategories, getCategoryTotals } from "./actions";
 import { generateRecurringOccurrences } from "@/lib/recurring-utils";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { InlineLoader } from "@/components/inline-loader";
+import { ExportMenu } from "@/components/export-menu";
 
 type Transaction = {
   id: string;
@@ -176,6 +177,7 @@ export function FinanceiroPageContent() {
             </div>
             <div className="flex items-center gap-2 sm:gap-3">
               <ThemeToggle />
+              <ExportMenu transactions={transactions} month={currentMonth} disabled={loading} />
               <Button
                 onClick={() => setDialogOpen(true)}
                 className="bg-white text-brand hover:bg-blue-50 shadow-md text-sm sm:text-base whitespace-nowrap"
