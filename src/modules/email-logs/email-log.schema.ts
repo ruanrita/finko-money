@@ -11,7 +11,7 @@ export const createEmailLogSchema = z.object({
   status: z.enum(["pending", "sent", "failed"]).default("pending"),
   error_message: z.string().nullable().optional(),
   resend_id: z.string().nullable().optional(),
-  metadata: z.record(z.any()).nullable().optional(),
+  metadata: z.record(z.string(), z.any()).nullable().optional(),
 });
 
 /**

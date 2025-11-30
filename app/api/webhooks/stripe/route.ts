@@ -160,8 +160,8 @@ async function updateUserSubscription(userId: string, subscription: Stripe.Subsc
     userId,
     subscriptionId: subscription.id,
     status: subscription.status,
-    currentPeriodStart: subscription.current_period_start,
-    currentPeriodEnd: subscription.current_period_end,
+    currentPeriodStart: (subscription as any).current_period_start,
+    currentPeriodEnd: (subscription as any).current_period_end,
   });
 
   const priceId = subscription.items.data[0]?.price?.id;
@@ -205,8 +205,8 @@ async function updateUserSubscription(userId: string, subscription: Stripe.Subsc
   };
 
   // Converter timestamps
-  const periodStart = toISOString(subscription.current_period_start);
-  const periodEnd = toISOString(subscription.current_period_end);
+  const periodStart = toISOString((subscription as any).current_period_start);
+  const periodEnd = toISOString((subscription as any).current_period_end);
 
   console.log('📅 Converted timestamps:', { periodStart, periodEnd });
 
@@ -238,8 +238,8 @@ async function updateUserSubscription(userId: string, subscription: Stripe.Subsc
         plan_id: price.plan_id,
         price_id: price.id,
         status: subscription.status,
-        current_period_start: periodStart,
-        current_period_end: periodEnd,
+        current_period_start: periodStart!,
+        current_period_end: periodEnd!,
         cancel_at_period_end: subscription.cancel_at_period_end || false,
         updated_at: new Date().toISOString(),
       },

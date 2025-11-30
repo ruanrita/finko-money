@@ -15,7 +15,6 @@ export class TwoFactorRepository {
     // Use service client to bypass RLS (system operation during login)
     const supabase = createServiceClient();
 
-    // @ts-expect-error - verification_codes table exists but TypeScript cache needs refresh
     const { data: verificationCode, error } = await supabase
       .from("verification_codes")
       .insert({
@@ -44,7 +43,6 @@ export class TwoFactorRepository {
   ): Promise<VerificationCode | null> {
     const supabase = await createClient();
 
-    // @ts-expect-error - verification_codes table exists but TypeScript cache needs refresh
     const { data, error } = await supabase
       .from("verification_codes")
       .select("*")
@@ -71,7 +69,6 @@ export class TwoFactorRepository {
     // Use service client to bypass RLS (system operation)
     const supabase = createServiceClient();
 
-    // @ts-expect-error - verification_codes table exists but TypeScript cache needs refresh
     const { error } = await supabase
       .from("verification_codes")
       .update({
@@ -95,7 +92,6 @@ export class TwoFactorRepository {
     // Use service client to bypass RLS (system operation)
     const supabase = createServiceClient();
 
-    // @ts-expect-error - verification_codes table exists but TypeScript cache needs refresh
     const { error } = await supabase
       .from("verification_codes")
       .update({ is_used: true })
@@ -117,7 +113,6 @@ export class TwoFactorRepository {
   ): Promise<boolean> {
     const supabase = await createClient();
 
-    // @ts-expect-error - verification_codes table exists but TypeScript cache needs refresh
     const { data, error } = await supabase
       .from("verification_codes")
       .select("id")
@@ -141,7 +136,6 @@ export class TwoFactorRepository {
   static async cleanupExpiredCodes(): Promise<void> {
     const supabase = await createClient();
 
-    // @ts-expect-error - verification_codes table exists but TypeScript cache needs refresh
     const { error } = await supabase
       .from("verification_codes")
       .delete()

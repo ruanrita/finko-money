@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
         branchId = currentBranch.id;
       } catch (error) {
         // Se não conseguir pegar o branch, continua sem (vai usar apenas userId)
-        branchId = undefined;
+        branchId = null;
       }
     }
 

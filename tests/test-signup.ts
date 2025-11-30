@@ -30,7 +30,7 @@ async function testSignup() {
     console.log('1️⃣ Verificando se usuário já existe...');
     const { data: existingUser } = await supabase
       .from('users')
-      .select('email, full_name, is_early_adopter, subscription_status')
+      .select('id, email, full_name, is_early_adopter, subscription_status')
       .eq('email', testEmail)
       .single();
 
@@ -44,11 +44,8 @@ async function testSignup() {
       console.log('💡 Deletando usuário existente para refazer o teste...');
 
       // Deletar do auth.users (cascade deleta de public.users também)
-      const { data: authUser } = await supabase.auth.admin.getUserByEmail(testEmail);
-      if (authUser?.user) {
-        await supabase.auth.admin.deleteUser(authUser.user.id);
-        console.log('✅ Usuário deletado com sucesso\n');
-      }
+      await supabase.auth.admin.deleteUser(existingUser.id);
+      console.log('✅ Usuário deletado com sucesso\n');
     } else {
       console.log('✅ Usuário não existe (OK)\n');
     }
@@ -130,10 +127,11 @@ async function testSignup() {
     console.log('');
 
     if (profile.subscription_plans) {
+      const plan = Array.isArray(profile.subscription_plans) ? profile.subscription_plans[0] : profile.subscription_plans;
       console.log('✅ Plano atribuído:');
-      console.log(`   Nome: ${profile.subscription_plans.display_name}`);
-      console.log(`   Transações/mês: ${profile.subscription_plans.max_transactions}`);
-      console.log(`   Categorias: ${profile.subscription_plans.max_categories}`);
+      console.log(`   Nome: ${plan.display_name}`);
+      console.log(`   Transações/mês: ${plan.max_transactions}`);
+      console.log(`   Categorias: ${plan.max_categories}`);
     } else {
       console.error('❌ Nenhum plano foi atribuído!');
       console.error('   Isso indica que o trigger assign_initial_plan não executou');

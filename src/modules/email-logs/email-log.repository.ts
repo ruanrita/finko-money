@@ -17,7 +17,6 @@ export class EmailLogRepository {
     // Use service client to bypass RLS (system operation)
     const supabase = createServiceClient();
 
-    // @ts-expect-error - email_logs table exists but TypeScript cache needs refresh
     const { data: emailLog, error } = await supabase
       .from("email_logs")
       .insert({
@@ -35,7 +34,7 @@ export class EmailLogRepository {
       throw new Error(`Erro ao criar log de email: ${error.message}`);
     }
 
-    return emailLog;
+    return emailLog as EmailLog;
   }
 
   /**
@@ -45,7 +44,6 @@ export class EmailLogRepository {
     // Use service client to bypass RLS (system operation)
     const supabase = createServiceClient();
 
-    // @ts-expect-error - email_logs table exists but TypeScript cache needs refresh
     const { error } = await supabase
       .from("email_logs")
       .update({
@@ -67,7 +65,6 @@ export class EmailLogRepository {
     // Use service client to bypass RLS (system operation)
     const supabase = createServiceClient();
 
-    // @ts-expect-error - email_logs table exists but TypeScript cache needs refresh
     const { error } = await supabase
       .from("email_logs")
       .update({
@@ -94,7 +91,6 @@ export class EmailLogRepository {
   }): Promise<EmailLog[]> {
     const supabase = await createClient();
 
-    // @ts-expect-error - email_logs table exists but TypeScript cache needs refresh
     let query = supabase
       .from("email_logs")
       .select("*")
@@ -126,7 +122,7 @@ export class EmailLogRepository {
       throw new Error(`Erro ao listar logs de emails: ${error.message}`);
     }
 
-    return data || [];
+    return (data || []) as EmailLog[];
   }
 
   /**
@@ -135,7 +131,6 @@ export class EmailLogRepository {
   static async countByType(): Promise<Record<string, number>> {
     const supabase = await createClient();
 
-    // @ts-expect-error - email_logs table exists but TypeScript cache needs refresh
     const { data, error } = await supabase
       .from("email_logs")
       .select("email_type, status");
@@ -165,7 +160,6 @@ export class EmailLogRepository {
   }> {
     const supabase = await createClient();
 
-    // @ts-expect-error - email_logs table exists but TypeScript cache needs refresh
     const { data, error } = await supabase
       .from("email_logs")
       .select("status");

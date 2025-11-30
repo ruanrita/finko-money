@@ -7,14 +7,14 @@ export type Feature = {
   description: string | null;
   path: string;
   icon: string | null;
-  is_core: boolean;
-  sort_order: number;
+  is_core: boolean | null;
+  sort_order: number | null;
 };
 
 export type UserFeatureAccess = {
   feature: Feature;
   hasAccess: boolean;
-  isCore: boolean;
+  isCore: boolean | null;
 };
 
 /**

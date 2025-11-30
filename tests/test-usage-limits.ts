@@ -46,7 +46,7 @@ async function testUsageLimits() {
 
     console.log('\n✅ Todos os testes passaram!\n');
     console.log('📊 Resumo do Plano:');
-    console.log(`   Nome: ${userPlan.plan.display_name}`);
+    console.log(`   Nome: ${userPlan.plan?.display_name || 'N/A'}`);
     console.log(`   Early Adopter: ${userPlan.isEarlyAdopter ? 'Sim' : 'Não'}`);
     console.log(`   Status: ${userPlan.status}`);
     console.log('\n📈 Uso Atual:');

@@ -29,7 +29,7 @@ export class UsageService {
   static async checkUsageLimit(
     userId: string,
     resourceType: ResourceType,
-    branchId?: string
+    branchId?: string | null
   ): Promise<UsageLimitResult> {
     // 1. Buscar plano do usuário
     const { data: user, error: userError } = await supabaseAdmin
@@ -105,7 +105,7 @@ export class UsageService {
   private static async getCurrentUsage(
     userId: string,
     resourceType: ResourceType,
-    branchId?: string
+    branchId?: string | null
   ): Promise<number> {
     const tableName = this.getTableName(resourceType);
 
@@ -175,8 +175,8 @@ export class UsageService {
   /**
    * Mapeia tipo de recurso para nome da tabela
    */
-  private static getTableName(resourceType: ResourceType): string {
-    const tableMap: Record<ResourceType, string> = {
+  private static getTableName(resourceType: ResourceType): 'transactions' | 'categories' | 'goals' | 'budgets' | 'branch_members' | 'reminders' {
+    const tableMap: Record<ResourceType, 'transactions' | 'categories' | 'goals' | 'budgets' | 'branch_members' | 'reminders'> = {
       transaction: 'transactions',
       category: 'categories',
       goal: 'goals',

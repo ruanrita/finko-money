@@ -19,16 +19,16 @@ type SubscriptionPlan = {
   max_team_members: number | null;
   max_branches: number | null;
   max_reminders: number | null;
-  has_advanced_reports: boolean;
+  has_advanced_reports: boolean | null;
   export_formats: string[] | null;
   support_level: string | null;
   history_months: number | null;
 };
 
 type UserData = {
-  subscription_plan_id: string;
-  subscription_status: string;
-  is_early_adopter: boolean;
+  subscription_plan_id: string | null;
+  subscription_status: string | null;
+  is_early_adopter: boolean | null;
   subscription_plans: SubscriptionPlan;
 } | null;
 

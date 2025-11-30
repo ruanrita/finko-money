@@ -11,11 +11,11 @@ const mockSupabase = {
   from: vi.fn(() => mockSupabase),
   select: vi.fn(() => mockSupabase),
   eq: vi.fn(() => mockSupabase),
-  order: vi.fn(() => mockSupabase),
+  order: vi.fn(),
   single: vi.fn(),
-  limit: vi.fn(() => mockSupabase),
+  limit: vi.fn(),
   rpc: vi.fn(),
-}
+} as any
 
 vi.mock('@/lib/supabase/server', () => ({
   createClient: async () => mockSupabase,
