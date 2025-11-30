@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { BudgetService } from "@/src/modules/budgets";
 import type { CreateBudgetInput, UpdateBudgetInput } from "@/src/modules/budgets";
 import { getCurrentBranch } from "@/lib/supabase/branch-context";
+import { CategoryService } from "@/src/modules/categories";
 
 async function getAuthenticatedUser() {
   const supabase = await createClient();
@@ -90,5 +91,17 @@ export async function copyFromPreviousMonthAction(targetMonth: string) {
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };
+  }
+}
+
+export async function getCategoriesAction() {
+  const user = await getAuthenticatedUser();
+  const branch = await getCurrentBranch(user.id);
+
+  try {
+    const categories = await CategoryService.list(user.id, branch.id);
+    return { success: true, data: categories };
+  } catch (error: any) {
+    return { success: false, error: error.message, data: [] };
   }
 }
