@@ -41,7 +41,8 @@ export class TwoFactorRepository {
     code: string,
     type: string
   ): Promise<VerificationCode | null> {
-    const supabase = await createClient();
+    // Use service client because user might not be authenticated during 2FA verification
+    const supabase = createServiceClient();
 
     const { data, error } = await supabase
       .from("verification_codes")
@@ -111,7 +112,8 @@ export class TwoFactorRepository {
     userId: string,
     type: string
   ): Promise<boolean> {
-    const supabase = await createClient();
+    // Use service client because user might not be authenticated
+    const supabase = createServiceClient();
 
     const { data, error } = await supabase
       .from("verification_codes")
@@ -134,7 +136,8 @@ export class TwoFactorRepository {
    * Limpa códigos expirados (deve ser executado periodicamente)
    */
   static async cleanupExpiredCodes(): Promise<void> {
-    const supabase = await createClient();
+    // Use service client for cleanup operation
+    const supabase = createServiceClient();
 
     const { error } = await supabase
       .from("verification_codes")
