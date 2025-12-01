@@ -23,7 +23,8 @@
       "Bash(npx supabase stop)",
       "Bash(npx supabase:*)",
       "Bash(npm test:*)",
-      "Bash(npm uninstall jsdom)"
+      "Bash(npm uninstall jsdom)",
+      "WebFetch(domain:ui.shadcn.com)"
     ],
     "deny": [],
     "ask": []
