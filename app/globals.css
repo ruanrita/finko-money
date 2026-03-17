@@ -83,23 +83,23 @@
 }
 
 .dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  --background: #111113;
+  --foreground: #e4e4e7;
 
   /* Card & Surface Colors */
-  --card: #18181b;
-  --card-foreground: #ededed;
-  --popover: #18181b;
-  --popover-foreground: #ededed;
+  --card: #1c1c1f;
+  --card-foreground: #e4e4e7;
+  --popover: #1c1c1f;
+  --popover-foreground: #e4e4e7;
 
   /* Border & Divider Colors */
-  --border: #27272a;
-  --input: #27272a;
+  --border: #2e2e32;
+  --input: #2e2e32;
   --ring: #3b82f6;
 
   /* Muted Colors */
-  --muted: #27272a;
-  --muted-foreground: #a1a1aa;
+  --muted: #28282c;
+  --muted-foreground: #8e8e9a;
 
   /* Accent Colors */
   --accent-bg: #27272a;
@@ -132,23 +132,23 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #111113;
+    --foreground: #e4e4e7;
 
     /* Card & Surface Colors */
-    --card: #18181b;
-    --card-foreground: #ededed;
-    --popover: #18181b;
-    --popover-foreground: #ededed;
+    --card: #1c1c1f;
+    --card-foreground: #e4e4e7;
+    --popover: #1c1c1f;
+    --popover-foreground: #e4e4e7;
 
     /* Border & Divider Colors */
-    --border: #27272a;
-    --input: #27272a;
+    --border: #2e2e32;
+    --input: #2e2e32;
     --ring: #3b82f6;
 
     /* Muted Colors */
-    --muted: #27272a;
-    --muted-foreground: #a1a1aa;
+    --muted: #28282c;
+    --muted-foreground: #8e8e9a;
 
     /* Accent Colors */
     --accent-bg: #27272a;

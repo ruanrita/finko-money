@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --port 3434",
     "build": "next build",
-    "start": "next start",
+    "start": "next start --port 3434",
     "lint": "eslint",
     "supa:migrate": "node scripts/migrate.js",
     "supa:deploy-functions": "supabase functions deploy --project-ref $SUPABASE_PROJECT_REF",

@@ -291,11 +291,83 @@ export class TransactionService {
     startDate: string,
     endDate: string
   ): Promise<{ income: number; expense: number; balance: number }> {
-    const totals = await TransactionRepository.calculateTotals(
+    // Extrair o mês do período (assumindo que é sempre um mês completo)
+    const monthMatch = startDate.match(/^(\d{4}-\d{2})-/);
+    const month = monthMatch ? monthMatch[1] : null;
+
+    if (!month) {
+      // Se não for um mês específico, usa o cálculo tradicional
+      const totals = await TransactionRepository.calculateTotals(
+        branchId,
+        userId,
+        startDate,
+        endDate
+      );
+
+      return {
+        ...totals,
+        balance: totals.income - totals.expense,
+      };
+    }
+
+    // Buscar transações NORMAIS (não recorrentes) do período
+    const normalTransactions = await TransactionRepository.findByBranchId(
       branchId,
       userId,
-      startDate,
-      endDate
+      {
+        start_date: startDate,
+        end_date: endDate,
+        is_recurring: false,
+      }
+    );
+
+    // Buscar TODAS as transações recorrentes (sem filtro de data)
+    const allRecurringTransactions = await TransactionRepository.findByBranchId(
+      branchId,
+      userId,
+      {
+        is_recurring: true,
+      }
+    );
+
+    // Filtrar transações recorrentes que devem aparecer neste mês
+    const [year, monthNum] = month.split("-").map(Number);
+    const filteredRecurringTransactions = allRecurringTransactions.filter((t: any) => {
+      const originalDate = new Date(t.due_date);
+      const targetDate = new Date(year, monthNum - 1, 1);
+
+      // Só mostrar se o mês alvo for igual ou posterior à data original
+      if (targetDate < new Date(originalDate.getFullYear(), originalDate.getMonth(), 1)) {
+        return false;
+      }
+
+      switch (t.recurrence_type) {
+        case "monthly":
+          return true;
+        case "yearly":
+          return originalDate.getMonth() === monthNum - 1;
+        case "weekly":
+          return true;
+        default:
+          return false;
+      }
+    });
+
+    // Combinar transações normais + recorrentes filtradas
+    const allTransactions = [...normalTransactions, ...filteredRecurringTransactions];
+
+    // Calcular totais
+    const totals = allTransactions.reduce(
+      (acc, transaction) => {
+        const amount = Number(transaction.amount);
+        if (transaction.type === "income") {
+          acc.income += amount;
+        } else {
+          acc.expense += amount;
+        }
+        return acc;
+      },
+      { income: 0, expense: 0 }
     );
 
     return {

@@ -37,7 +37,7 @@ export function GoalsWidget({ goals }: GoalsWidgetProps) {
   const totalGoals = goals.length;
 
   return (
-    <Card className="border-2 border-gray-300 dark:border-gray-700">
+    <Card className="border border-border">
       <CardHeader>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
@@ -82,7 +82,7 @@ export function GoalsWidget({ goals }: GoalsWidgetProps) {
           <div className="space-y-3">
             {topGoals.map((goal) => (
               <Link key={goal.id} href={`/metas/${goal.id}`}>
-                <div className="rounded-lg border-2 border-gray-300 dark:border-gray-700 bg-card p-4 transition-all hover:border-brand hover:shadow-md cursor-pointer">
+                <div className="rounded-lg border border-border bg-card p-4 transition-all hover:border-brand/50 hover:shadow-sm cursor-pointer">
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="flex items-start gap-3 flex-1 min-w-0">
                       <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-sky-500 text-2xl shadow-sm shrink-0">

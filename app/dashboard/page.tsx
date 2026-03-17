@@ -89,7 +89,7 @@ export default async function DashboardPage() {
       userPlanName={userPlanName}
       isEarlyAdopter={isEarlyAdopter}
     >
-      <div className="relative overflow-hidden border-b-2 border-border bg-header-gradient">
+      <div className="relative overflow-hidden border-b border-white/10 bg-header-gradient">
         <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-10"></div>
         <div className="relative px-4 py-6 sm:px-6 md:px-8 md:py-8">
           <div className="flex flex-wrap items-center justify-between gap-4">
@@ -122,7 +122,7 @@ export default async function DashboardPage() {
           <GoalsWidget goals={goals} />
 
           {/* Recent Transactions */}
-          <Card className="border-2 border-gray-300 dark:border-gray-700">
+          <Card className="border border-border">
           <CardHeader>
             <CardTitle>Próximas Transações</CardTitle>
             <CardDescription>
@@ -135,7 +135,7 @@ export default async function DashboardPage() {
                 {upcomingTransactions.map((transaction) => (
                   <div
                     key={transaction.id}
-                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-lg border-2 border-gray-300 dark:border-gray-700 bg-card p-4 transition-all hover:border-brand hover:shadow-sm"
+                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-lg border border-border bg-card p-4 transition-all hover:border-brand/50 hover:shadow-sm"
                   >
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-card-foreground truncate">{transaction.description}</p>

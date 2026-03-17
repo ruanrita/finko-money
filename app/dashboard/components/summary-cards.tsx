@@ -64,7 +64,7 @@ export function SummaryCards({
       <div className="grid gap-4 sm:gap-6 md:grid-cols-3">
         {/* Receitas */}
         <Link href="/financeiro?type=income">
-          <Card className="group cursor-pointer border-2 border-gray-300 dark:border-gray-700 transition-all hover:border-green-500 hover:shadow-lg">
+          <Card className="group cursor-pointer border border-border transition-all hover:border-green-400 dark:hover:border-green-600 hover:shadow-md">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardDescription className="text-zinc-600 dark:text-zinc-400">Receitas</CardDescription>
@@ -88,7 +88,7 @@ export function SummaryCards({
 
         {/* Despesas */}
         <Link href="/financeiro?type=expense">
-          <Card className="group cursor-pointer border-2 border-gray-300 dark:border-gray-700 transition-all hover:border-red-500 hover:shadow-lg">
+          <Card className="group cursor-pointer border border-border transition-all hover:border-red-400 dark:hover:border-red-600 hover:shadow-md">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardDescription className="text-zinc-600 dark:text-zinc-400">Despesas</CardDescription>
@@ -112,10 +112,10 @@ export function SummaryCards({
 
         {/* Saldo */}
         <Link href="/financeiro">
-          <Card className={`group cursor-pointer border-2 border-gray-300 dark:border-gray-700 transition-all hover:shadow-lg ${
+          <Card className={`group cursor-pointer border border-border transition-all hover:shadow-md ${
             monthlyBalance >= 0
-              ? 'hover:border-blue-500'
-              : 'hover:border-orange-500'
+              ? 'hover:border-blue-400 dark:hover:border-blue-600'
+              : 'hover:border-orange-400 dark:hover:border-orange-600'
           }`}>
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
