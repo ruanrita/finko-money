@@ -104,7 +104,7 @@ export default async function Home() {
             <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-brand-gradient" role="img" aria-label="Logo FinkoMoney">
               <Wallet className="h-4 w-4 sm:h-6 sm:w-6 text-white" aria-hidden="true" />
             </div>
-            <span className="text-lg sm:text-2xl font-bold text-brand">FinkoMoney</span>
+            <span className="text-lg sm:text-2xl font-bold text-brand">FinkoMoney<span className="border border-red-700 px-3 py-1 rounded-full ml-2">test</span></span>
           </Link>
           <nav className="flex gap-2 sm:gap-4" aria-label="Navegação principal">
             <Link href="/login" className="hidden sm:block">
