@@ -17,8 +17,11 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+            nvm use 24
             cd /home/ubuntu/finko-money
             git pull origin main
             npm install
-            npm run build
+            npm run build || exit 1
             pm2 restart finkomoney
